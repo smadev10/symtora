@@ -1,0 +1,6 @@
+@Symtora.Api_HostAddress = http://localhost:5014
+
+GET {{Symtora.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

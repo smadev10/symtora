@@ -8,8 +8,10 @@ onboarding: processing stays **on the device**, it gives **no medical diagnosis*
 every entry is **deletable at any time**. Swiss context throughout (emergency number 144,
 Tox Info Suisse, etc.).
 
-> Prototype: screens and navigation are complete, but analysis, persistence, voice
-> transcription and auth run on hardcoded demo data.
+> Prototype: screens and navigation are complete. A real backend now exists (see
+> [`backend/`](backend/README.md)) for auth, analysis, and persistence, but the app itself
+> still isn't wired up to it — `App.js` still uses the hardcoded demo data in `src/data/`.
+> Voice transcription is not implemented yet either way.
 
 ## Features
 
@@ -47,7 +49,8 @@ npm run web
 - `react-native-svg` — all icons and the logo are hand‑drawn SVG (`src/icons.js`)
 - `react-native-web` + `react-dom` for the web target
 - No navigation library — a single screen state machine in `App.js`
-- No backend — demo content lives in `src/data/`
+- Frontend currently still runs on demo content from `src/data/` — see [`backend/`](backend/README.md)
+  for the real backend (not yet wired into the app)
 
 ## Project layout
 

@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: symtora
+      POSTGRES_USER: symtora
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-symtora}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symtora"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  model:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # One-shot job: pulls the model weights into the `ollama_models` volume on first run, then
+  # exits. `api` waits for this to finish so the first real request isn't the thing triggering a
+  # multi-GB download.
+  model-init:
+    image: ollama/ollama:latest
+    depends_on:
+      model:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://model:11434
+    command: ["pull", "${OLLAMA_MODEL:-llama3.1:8b}"]
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      model-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=db;Port=5432;Database=symtora;Username=symtora;Password=${POSTGRES_PASSWORD:-symtora}
+      Jwt__Secret: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+      Ollama__BaseUrl: http://model:11434
+      Ollama__Model: ${OLLAMA_MODEL:-llama3.1:8b}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
+  ollama_models:
