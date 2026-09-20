@@ -4,6 +4,9 @@ import type { Lang } from '@/i18n/translations';
 export const CASE_ORDER = ['headache', 'stomach', 'throat', 'knee'] as const;
 export type CaseKey = (typeof CASE_ORDER)[number];
 
+/** Headline counters on the home screen. */
+export const DEMO_KPIS = { entries: 9, regions: 3, emergencies: 0 } as const;
+
 /** Order the home screen lists recent entries in, newest first. */
 export const HISTORY_ORDER = ['headache', 'knee', 'stomach', 'throat'] as const;
 

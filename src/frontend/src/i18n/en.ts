@@ -122,6 +122,8 @@ const en: Translations = {
   },
   data: {
     kicker: 'SETTINGS',
+    signOut: 'Sign out',
+    signOutSubtitle: 'End the session on this device.',
     title: 'Data',
     langCard: 'Language',
     langSubtitle: 'Applies to the whole app.',

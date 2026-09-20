@@ -123,6 +123,8 @@ const de = {
   },
   data: {
     kicker: 'EINSTELLUNGEN',
+    signOut: 'Abmelden',
+    signOutSubtitle: 'Sitzung auf diesem Gerät beenden.',
     title: 'Daten',
     langCard: 'Sprache',
     langSubtitle: 'Gilt für die gesamte App.',

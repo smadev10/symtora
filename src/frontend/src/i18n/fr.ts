@@ -122,6 +122,8 @@ const fr: Translations = {
     disclaimer: 'Les tendances sont des indices, pas un diagnostic. L’analyse repose uniquement sur tes entrées.',
   },
   data: {
+    signOut: 'Se déconnecter',
+    signOutSubtitle: 'Terminer la session sur cet appareil.',
     kicker: 'PARAMÈTRES',
     title: 'Données',
     langCard: 'Langue',
