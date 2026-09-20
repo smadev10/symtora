@@ -9,8 +9,9 @@ every entry is **deletable at any time**. Swiss context throughout (emergency nu
 Tox Info Suisse, etc.).
 
 > Prototype: screens and navigation are complete. A real backend now exists (see
-> [`backend/`](backend/README.md)) for auth, analysis, and persistence, but the app itself
-> still isn't wired up to it — `App.js` still uses the hardcoded demo data in `src/data/`.
+> [`src/backend/`](src/backend/README.md)) for auth, analysis, and persistence, but the app itself
+> still isn't wired up to it — `App.js` still uses the hardcoded demo data in
+> `src/frontend/src/data/`.
 > Voice transcription is not implemented yet either way.
 
 ## Features
@@ -27,7 +28,11 @@ Tox Info Suisse, etc.).
 
 ## Getting started
 
+The app lives in `src/frontend`, the API in `src/backend` — every npm command below runs from
+the frontend folder.
+
 ```bash
+cd src/frontend
 npm install
 npm start          # expo start — then press a / i / w, or scan the QR in Expo Go
 ```
@@ -40,6 +45,10 @@ npm run ios
 npm run web
 ```
 
+For the API on its own, see [`src/backend/README.md`](src/backend/README.md). To run everything
+(app, API, database, model) at once, copy `.env.example` to `.env`, fill in `JWT_SECRET`, and
+`docker compose up --build`.
+
 ## Stack
 
 - **Expo SDK 54** / **React Native 0.81** / **React 19**
@@ -49,10 +58,20 @@ npm run web
 - `react-native-svg` — all icons and the logo are hand‑drawn SVG (`src/icons.js`)
 - `react-native-web` + `react-dom` for the web target
 - No navigation library — a single screen state machine in `App.js`
-- Frontend currently still runs on demo content from `src/data/` — see [`backend/`](backend/README.md)
-  for the real backend (not yet wired into the app)
+- Frontend currently still runs on demo content from `src/data/` — see
+  [`src/backend/`](src/backend/README.md) for the real backend (not yet wired into the app)
 
 ## Project layout
+
+Everything at the root is project‑level; all code sits under `src/`.
+
+| Path | Purpose |
+|---|---|
+| `docker-compose.yml` | The whole stack: app API, Postgres, and the self‑hosted model |
+| `src/backend/` | The .NET API — see its own [README](src/backend/README.md) |
+| `src/frontend/` | The Expo app (paths below are relative to it) |
+
+Inside `src/frontend/`:
 
 | Path | Purpose |
 |---|---|

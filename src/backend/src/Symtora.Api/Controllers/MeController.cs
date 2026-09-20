@@ -6,16 +6,19 @@ using Symtora.Api.Data;
 
 namespace Symtora.Api.Controllers;
 
+/// <summary>The signed-in user's own account and data controls.</summary>
 [ApiController]
 [Authorize]
 [Route("me")]
 public class MeController(SymtoraDbContext db) : ControllerBase
 {
-    /// <summary>
-    /// Fulfills the app's "delete your data anytime" promise: removes every symptom entry and
-    /// assessment for the current user (assessments cascade via the FK). The user account itself
-    /// is kept so they can still log in — this deletes their health data, not their account.
-    /// </summary>
+    /// <summary>Deletes all of the signed-in user's health data.</summary>
+    /// <remarks>
+    /// Backs the app's "deletable at any time" promise: removes every symptom entry and its
+    /// assessment. The account itself is kept, so the user stays logged in and can start over —
+    /// this deletes health data, not the account. There is no undo.
+    /// </remarks>
+    /// <response code="204">Everything deleted.</response>
     [HttpDelete("data")]
     public async Task<IActionResult> DeleteMyData(CancellationToken ct)
     {

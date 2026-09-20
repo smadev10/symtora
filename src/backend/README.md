@@ -2,7 +2,7 @@
 
 A minimal, capstone-scoped backend for Symtora: auth, symptom-entry analysis (run through a
 self-hosted local model — no third-party AI API involved), history/patterns, and a
-"delete my data" endpoint. See the [backend architecture plan](../.claude/plans) discussed
+"delete my data" endpoint. See the [backend architecture plan](../../.claude/plans) discussed
 during design for the full rationale; the short version:
 
 - **Self-hosted model, not a hosted API** (Claude/OpenAI): symptom text never leaves
@@ -18,6 +18,7 @@ during design for the full rationale; the short version:
 ### With Docker (how this is meant to run)
 
 ```bash
+cd ../..               # the compose file lives at the repo root
 cp .env.example .env   # then fill in JWT_SECRET (see the comment in .env.example)
 docker compose up --build
 ```
@@ -33,11 +34,21 @@ You need Postgres and Ollama running locally (or reachable) and pointed at by
 `appsettings.Development.json` (defaults to `localhost`):
 
 ```bash
-cd backend
+cd src/backend
 dotnet tool restore                                   # installs dotnet-ef locally, once
 dotnet ef database update --project src/Symtora.Api   # applies migrations
 dotnet run --project src/Symtora.Api
 ```
+
+### Looking the API up
+
+With the app running, the browsable API reference (Scalar) is at
+**`http://localhost:5014/scalar`**, and the raw OpenAPI document at `/openapi/v1.json`. Log in via
+`POST /auth/login`, paste the returned token into the reference's *Authorize* field, and the
+`[Authorize]` endpoints are runnable straight from the page.
+
+Both are served whenever `OpenApi:Enabled` is true, which defaults to "only in Development". The
+container has them off — set `EXPOSE_API_DOCS=true` in `.env` to publish them there too.
 
 ## Project layout
 
@@ -48,7 +59,7 @@ dotnet run --project src/Symtora.Api
 | `src/Symtora.Api/Services/Auth/` | Password hashing, JWT issuance, register/login logic |
 | `src/Symtora.Api/Services/Analysis/` | Prompt building, Ollama client, response parsing, the background job queue + worker |
 | `src/Symtora.Api/Controllers/` | `AuthController`, `EntriesController`, `PatternsController`, `MeController` |
-| `tests/Symtora.Api.Tests/` | Unit tests — run with `dotnet test` from `backend/` |
+| `tests/Symtora.Api.Tests/` | Unit tests — run with `dotnet test` from `src/backend/` |
 
 ## API
 
@@ -62,6 +73,7 @@ dotnet run --project src/Symtora.Api
 | `GET /patterns` | Bearer | Body-region breakdown (count, last urgency, last seen) |
 | `DELETE /me/data` | Bearer | Deletes all of the current user's entries/assessments (keeps the account) |
 | `GET /health` | – | Liveness check |
+| `GET /scalar` | – | Browsable API reference (see below); `GET /openapi/v1.json` for the raw document |
 
 ## Not included yet (by design, see plan's open items)
 

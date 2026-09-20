@@ -7,12 +7,19 @@ using Symtora.Api.Dtos;
 
 namespace Symtora.Api.Controllers;
 
+/// <summary>Aggregated views over a user's history, for the app's patterns screen.</summary>
 [ApiController]
 [Authorize]
 [Route("patterns")]
 public class PatternsController(SymtoraDbContext db) : ControllerBase
 {
-    /// <summary>Body-region breakdown of the current user's completed entries over time.</summary>
+    /// <summary>Body-region breakdown of the signed-in user's analysed entries.</summary>
+    /// <remarks>
+    /// One row per body region, ordered by most recent: how many entries it has, the urgency of
+    /// the latest one, and when that was. Entries without a body region, or still awaiting
+    /// analysis, are left out.
+    /// </remarks>
+    /// <response code="200">The breakdown. An empty array until entries have been analysed.</response>
     [HttpGet]
     public async Task<ActionResult<List<PatternResponse>>> Get(CancellationToken ct)
     {

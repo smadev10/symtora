@@ -1,0 +1,59 @@
+@Symtora.Api_HostAddress = http://localhost:5014
+
+# Run `login` (or `register`) first — the authenticated requests below reuse its token.
+@token = {{login.response.body.$.token}}
+@entryId = {{createEntry.response.body.$.id}}
+
+### Liveness check.
+GET {{Symtora.Api_HostAddress}}/health
+Accept: application/json
+
+### Browsable API reference — open in a browser, not here.
+# {{Symtora.Api_HostAddress}}/scalar
+
+### Create an account. Password must be at least 8 characters.
+# @name register
+POST {{Symtora.Api_HostAddress}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "demo@symtora.ch",
+  "password": "demo-password"
+}
+
+### Log in and capture the token used by every request below.
+# @name login
+POST {{Symtora.Api_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@symtora.ch",
+  "password": "demo-password"
+}
+
+### Queue a symptom entry for analysis. Returns 202 immediately with status "Pending".
+# @name createEntry
+POST {{Symtora.Api_HostAddress}}/entries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "text": "Seit heute Mittag habe ich starke Kopfschmerzen, vor allem hinter der Stirn. Das Licht tut weh und mein Nacken ist steif. Fieber habe ich keines.",
+  "bodyRegion": "head"
+}
+
+### Poll this until status is "Done" or "Failed" — local inference takes a while.
+GET {{Symtora.Api_HostAddress}}/entries/{{entryId}}
+Authorization: Bearer {{token}}
+
+### Full history for the current user, newest first.
+GET {{Symtora.Api_HostAddress}}/entries
+Authorization: Bearer {{token}}
+
+### Body-region breakdown: count, last urgency, last seen.
+GET {{Symtora.Api_HostAddress}}/patterns
+Authorization: Bearer {{token}}
+
+### Deletes every entry and assessment for the current user. The account itself is kept.
+DELETE {{Symtora.Api_HostAddress}}/me/data
+Authorization: Bearer {{token}}

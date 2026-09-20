@@ -1,8 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 using Symtora.Api.Data;
 using Symtora.Api.Models;
 using Symtora.Api.Options;
@@ -51,13 +54,54 @@ builder.Services
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+
+// .NET 10 generates the OpenAPI document but says nothing about authentication on its own, so the
+// bearer scheme is declared by hand — without it the API reference has no Authorize field and every
+// [Authorize] endpoint just answers 401 when tried from the UI.
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes[JwtBearerDefaults.AuthenticationScheme] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            In = ParameterLocation.Header,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+        };
+
+        return Task.CompletedTask;
+    });
+
+    // Attached per operation rather than globally so /auth/register, /auth/login and /health aren't
+    // shown as requiring a token they don't need.
+    options.AddOperationTransformer((operation, context, _) =>
+    {
+        if (context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().Any())
+        {
+            operation.Security ??= [];
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, context.Document)] = [],
+            });
+        }
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// On by default while developing; the deployed stack opts in with OpenApi__Enabled=true instead of
+// needing a rebuild (see EXPOSE_API_DOCS in .env.example).
+if (builder.Configuration.GetValue("OpenApi:Enabled", builder.Environment.IsDevelopment()))
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options => options
+        .WithTitle("Symtora API")
+        .AddPreferredSecuritySchemes(JwtBearerDefaults.AuthenticationScheme));
 }
 
 await MigrateDatabaseAsync(app);
@@ -66,7 +110,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
+    .WithSummary("Liveness check.")
+    .WithDescription("Answers 200 as soon as the API is serving. Says nothing about the database or the model — it is what the container orchestrator polls, not a readiness probe.");
 
 app.Run();
 

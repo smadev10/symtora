@@ -54,10 +54,10 @@ logs/
 *.tsbuildinfo
 
 # generated native folders
-/ios
-/android
+src/frontend/ios/
+src/frontend/android/
 
 # .NET backend
-backend/**/bin/
-backend/**/obj/
-backend/**/.vs/
+src/backend/**/bin/
+src/backend/**/obj/
+src/backend/**/.vs/
