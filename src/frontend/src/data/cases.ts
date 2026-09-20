@@ -4,6 +4,20 @@ import type { Lang } from '@/i18n/translations';
 export const CASE_ORDER = ['headache', 'stomach', 'throat', 'knee'] as const;
 export type CaseKey = (typeof CASE_ORDER)[number];
 
+/** Order the home screen lists recent entries in, newest first. */
+export const HISTORY_ORDER = ['headache', 'knee', 'stomach', 'throat'] as const;
+
+/** How often each recurring trigger was seen, aligned with TR.triggers. */
+export const TRIGGER_COUNTS = [6, 4, 3] as const;
+
+/** Dialable numbers, aligned with TR.emergencyContacts. */
+export const EMERGENCY_NUMBERS = [
+  { number: '144', tel: 'tel:144' },
+  { number: '112', tel: 'tel:112' },
+  { number: '145', tel: 'tel:145' },
+  { number: '143', tel: 'tel:143' },
+] as const;
+
 /** Drives the urgency badge colour on the home history rows. */
 export const URGENCIES = ['low', 'mid', 'high'] as const;
 export type Urgency = (typeof URGENCIES)[number];

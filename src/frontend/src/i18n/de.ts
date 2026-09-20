@@ -167,6 +167,20 @@ const de = {
     offlineTitle: 'Offline',
     offlineBody: 'Keine Verbindung. Angezeigt werden die zuletzt geladenen Daten.',
   },
+  recentDates: ['Heute', 'Gestern', 'Vor 3 Tagen', 'Letzte Woche'],
+  probLabels: { high: 'wahrscheinlich', mid: 'möglich', low: 'gering' },
+  retentionLabels: { d7: '7 Tage', d30: '30 Tage', d365: '1 Jahr' },
+  triggers: [
+    { label: 'Bildschirmzeit', sub: 'Kopfschmerz am Abend' },
+    { label: 'Training', sub: 'Knie und Rücken' },
+    { label: 'Prüfungswochen', sub: 'Bauchschmerz, Übelkeit' },
+  ],
+  emergencyContacts: [
+    { label: 'Sanitätsnotruf', sub: 'Schweiz, rund um die Uhr' },
+    { label: 'Euronotruf', sub: 'Europaweit, auch ohne SIM' },
+    { label: 'Tox Info Suisse', sub: 'Vergiftungen' },
+    { label: 'Die Dargebotene Hand', sub: 'Gespräch in Krisen' },
+  ],
 };
 
 export default de;

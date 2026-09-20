@@ -165,6 +165,20 @@ const en: Translations = {
     offlineTitle: 'Offline',
     offlineBody: 'No connection. Showing the data loaded last.',
   },
+  recentDates: ['Today', 'Yesterday', '3 days ago', 'Last week'],
+  probLabels: { high: 'likely', mid: 'possible', low: 'unlikely' },
+  retentionLabels: { d7: '7 days', d30: '30 days', d365: '1 year' },
+  triggers: [
+    { label: 'Screen time', sub: 'Headache in the evening' },
+    { label: 'Training', sub: 'Knee and back' },
+    { label: 'Exam weeks', sub: 'Stomach ache, nausea' },
+  ],
+  emergencyContacts: [
+    { label: 'Ambulance', sub: 'Switzerland, 24/7' },
+    { label: 'European emergency', sub: 'Europe-wide, even without a SIM' },
+    { label: 'Poison center', sub: 'Poisoning' },
+    { label: 'Helpline', sub: 'Talk in a crisis' },
+  ],
 };
 
 export default en;

@@ -2,10 +2,13 @@ import {
   CASES,
   CASE_ORDER,
   DIST,
+  EMERGENCY_NUMBERS,
   HEAT,
+  HISTORY_ORDER,
   PROBABILITIES,
   SEGMENT_TINTS,
   TREND,
+  TRIGGER_COUNTS,
   URGENCIES,
 } from '@/data/cases';
 import { LANGS, TR } from '@/i18n/translations';
@@ -91,6 +94,36 @@ describe('case order', () => {
     // the wrong case.
     for (const lang of LANGS) {
       expect(TR[lang].chips).toHaveLength(CASE_ORDER.length);
+    }
+  });
+});
+
+describe('index-matched translation arrays', () => {
+  it('gives every recurring trigger a count', () => {
+    for (const lang of LANGS) {
+      expect(TR[lang].triggers).toHaveLength(TRIGGER_COUNTS.length);
+    }
+  });
+
+  it('gives every emergency contact a dialable number', () => {
+    // The label comes from TR and the number from here; a mismatch would
+    // put the wrong number under the wrong name.
+    for (const lang of LANGS) {
+      expect(TR[lang].emergencyContacts).toHaveLength(EMERGENCY_NUMBERS.length);
+    }
+  });
+
+  it('only lists history entries that exist as cases', () => {
+    for (const key of HISTORY_ORDER) {
+      expect(CASE_ORDER).toContain(key);
+    }
+  });
+
+  it('labels every probability tier a cause can carry', () => {
+    for (const lang of LANGS) {
+      for (const prob of PROBABILITIES) {
+        expect(typeof TR[lang].probLabels[prob]).toBe('string');
+      }
     }
   });
 });

@@ -166,6 +166,20 @@ const fr: Translations = {
     offlineTitle: 'Hors ligne',
     offlineBody: 'Pas de connexion. Affichage des dernières données chargées.',
   },
+  recentDates: ["Aujourd'hui", 'Hier', 'Il y a 3 jours', 'La semaine dernière'],
+  probLabels: { high: 'probable', mid: 'possible', low: 'peu probable' },
+  retentionLabels: { d7: '7 jours', d30: '30 jours', d365: '1 an' },
+  triggers: [
+    { label: 'Temps d’écran', sub: 'Mal de tête le soir' },
+    { label: 'Entraînement', sub: 'Genou et dos' },
+    { label: 'Semaines d’examens', sub: 'Mal au ventre, nausée' },
+  ],
+  emergencyContacts: [
+    { label: 'Ambulance', sub: 'Suisse, 24 h/24' },
+    { label: 'Urgence européenne', sub: 'Dans toute l’Europe, même sans carte SIM' },
+    { label: 'Tox Info Suisse', sub: 'Intoxications' },
+    { label: 'La Main Tendue', sub: 'Écoute en cas de crise' },
+  ],
 };
 
 export default fr;
