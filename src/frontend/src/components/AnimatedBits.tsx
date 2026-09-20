@@ -4,8 +4,20 @@ import Svg, { Circle } from 'react-native-svg';
 
 const USE_NATIVE = Platform.OS !== 'web';
 
+type SpinnerProps = {
+  size?: number;
+  color?: string;
+  trackColor?: string;
+  testID?: string;
+};
+
 // Rotating ring with a ~70% coloured arc over a full-circle track.
-export function Spinner({ size = 32, color = '#285172', trackColor = '#e4e8eb' }) {
+export function Spinner({
+  size = 32,
+  color = '#285172',
+  trackColor = '#e4e8eb',
+  testID,
+}: SpinnerProps) {
   const spin = useRef(new Animated.Value(0)).current;
   const strokeWidth = Math.max(2, size * 0.11);
   const r = (size - strokeWidth) / 2;
@@ -18,7 +30,7 @@ export function Spinner({ size = 32, color = '#285172', trackColor = '#e4e8eb' }
         duration: 900,
         easing: Easing.linear,
         useNativeDriver: USE_NATIVE,
-      })
+      }),
     );
     loop.start();
     return () => loop.stop();
@@ -27,9 +39,19 @@ export function Spinner({ size = 32, color = '#285172', trackColor = '#e4e8eb' }
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
 
   return (
-    <Animated.View style={{ width: size, height: size, transform: [{ rotate }] }}>
+    <Animated.View
+      testID={testID}
+      style={{ width: size, height: size, transform: [{ rotate }] }}
+    >
       <Svg width={size} height={size}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke={trackColor}
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -45,7 +67,7 @@ export function Spinner({ size = 32, color = '#285172', trackColor = '#e4e8eb' }
   );
 }
 
-function Ring({ size, delay }) {
+function Ring({ size, delay }: { size: number; delay: number }) {
   const t = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -57,7 +79,7 @@ function Ring({ size, delay }) {
           duration: 1800,
           easing: Easing.out(Easing.ease),
           useNativeDriver: USE_NATIVE,
-        })
+        }),
       ),
     ]);
     anim.start();
@@ -81,17 +103,34 @@ function Ring({ size, delay }) {
 }
 
 // Concentric pulsing rings, sits behind the record button (dark screen only).
-export function PulseRing({ size = 92 }) {
+export function PulseRing({ size = 92, testID }: { size?: number; testID?: string }) {
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      testID={testID}
+      style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
+    >
       <Ring size={size} delay={0} />
       <Ring size={size} delay={900} />
     </View>
   );
 }
 
+type WaveBarProps = {
+  height?: number;
+  color?: string;
+  delay?: number;
+  duration?: number;
+  testID?: string;
+};
+
 // Single audio-wave bar, looped scaleY between a floor and full height.
-export function WaveBar({ height = 20, color = '#b9dcf7', delay = 0, duration = 700 }) {
+export function WaveBar({
+  height = 20,
+  color = '#b9dcf7',
+  delay = 0,
+  duration = 700,
+  testID,
+}: WaveBarProps) {
   const t = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -99,9 +138,19 @@ export function WaveBar({ height = 20, color = '#b9dcf7', delay = 0, duration = 
       Animated.delay(delay),
       Animated.loop(
         Animated.sequence([
-          Animated.timing(t, { toValue: 1, duration, easing: Easing.inOut(Easing.ease), useNativeDriver: USE_NATIVE }),
-          Animated.timing(t, { toValue: 0, duration, easing: Easing.inOut(Easing.ease), useNativeDriver: USE_NATIVE }),
-        ])
+          Animated.timing(t, {
+            toValue: 1,
+            duration,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: USE_NATIVE,
+          }),
+          Animated.timing(t, {
+            toValue: 0,
+            duration,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: USE_NATIVE,
+          }),
+        ]),
       ),
     ]);
     anim.start();
@@ -110,6 +159,7 @@ export function WaveBar({ height = 20, color = '#b9dcf7', delay = 0, duration = 
 
   return (
     <Animated.View
+      testID={testID}
       style={{
         width: 3,
         height,

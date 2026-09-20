@@ -1,0 +1,70 @@
+import { StyleSheet } from 'react-native';
+
+import { lh, ls, themedStyles } from './styles';
+
+/** Shared by login, signup and the profile form, which use the same field chrome. */
+export const authStyles = themedStyles((tk) =>
+  StyleSheet.create({
+    screen: { flex: 1, padding: 24, paddingTop: 64, backgroundColor: tk.screenBg },
+    top: { alignItems: 'center', gap: 6, marginBottom: 28 },
+    avatar: { width: 72, height: 72, marginBottom: 10, alignItems: 'center', justifyContent: 'center' },
+    wordmark: { color: tk.textStrong, fontWeight: '800', fontSize: 16, letterSpacing: ls(16, 0.1) },
+    subtitle: { color: tk.textMuted, fontSize: 12.5, textAlign: 'center' },
+    form: { gap: 10 },
+    input: {
+      height: 50,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: tk.divider,
+      backgroundColor: tk.card,
+      color: tk.textStrong,
+      fontSize: 14,
+      paddingHorizontal: 16,
+    },
+    dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 6 },
+    dividerLine: { flex: 1, height: 1, backgroundColor: tk.divider },
+    oauthButton: {
+      width: '100%',
+      height: 50,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: tk.divider,
+      backgroundColor: tk.card,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+    },
+    oauthButtonText: { color: tk.textStrong, fontWeight: '600', fontSize: 14 },
+    backRow: {
+      textAlign: 'center',
+      color: tk.textNormal,
+      fontSize: 12.5,
+      fontWeight: '600',
+      marginTop: 16,
+    },
+    footnote: { textAlign: 'center', color: tk.textMuted, fontSize: 12, marginTop: 16 },
+    consentRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 18 },
+    checkbox: {
+      width: 18,
+      height: 18,
+      marginTop: 1,
+      borderRadius: 4,
+      borderWidth: 1.5,
+      borderColor: tk.divider,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkboxChecked: { backgroundColor: tk.accent, borderColor: tk.accent },
+    fieldLabel: { color: tk.textMuted, fontSize: 11.5, fontWeight: '600', marginTop: 4 },
+    photoLink: { color: tk.accent, fontSize: 12.5, fontWeight: '600' },
+    savedNote: { textAlign: 'center', color: '#2f8f5b', fontSize: 12.5, fontWeight: '600' },
+    error: {
+      textAlign: 'center',
+      color: '#c62828',
+      fontSize: 12.5,
+      fontWeight: '600',
+      lineHeight: lh(12.5, 1.4),
+    },
+  }),
+);

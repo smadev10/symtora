@@ -1,11 +1,29 @@
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { G, Path, Circle, Line, Polyline, Rect } from 'react-native-svg';
 
 import AppText from './AppText';
 
+export type IconProps = {
+  size?: number;
+  color?: string;
+};
+
+type BaseProps = IconProps & {
+  viewBox?: string;
+  children: ReactNode;
+};
+
+type AvatarProps = {
+  size?: number;
+  name?: string;
+  bg?: string;
+  fg?: string;
+};
+
 // Feather-style outline icons on a 24x24 grid. `Base` applies the shared stroke
 // presentation so each icon only declares geometry.
-function Base({ size = 22, color = '#142939', viewBox = '0 0 24 24', children }) {
+function Base({ size = 22, color = '#142939', viewBox = '0 0 24 24', children }: BaseProps) {
   return (
     <Svg width={size} height={size} viewBox={viewBox} fill="none">
       <G stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" fill="none">
@@ -15,7 +33,7 @@ function Base({ size = 22, color = '#142939', viewBox = '0 0 24 24', children })
   );
 }
 
-export function IconMic({ size = 22, color = '#142939' }) {
+export function IconMic({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
@@ -26,7 +44,7 @@ export function IconMic({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconChevron({ size = 22, color = '#142939' }) {
+export function IconChevron({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Polyline points="9 6 15 12 9 18" />
@@ -34,7 +52,7 @@ export function IconChevron({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconChevronLeft({ size = 22, color = '#142939' }) {
+export function IconChevronLeft({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Polyline points="15 6 9 12 15 18" />
@@ -42,7 +60,7 @@ export function IconChevronLeft({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconCheck({ size = 22, color = '#142939' }) {
+export function IconCheck({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Polyline points="20 6 9 17 4 12" />
@@ -50,7 +68,7 @@ export function IconCheck({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconWarning({ size = 22, color = '#142939' }) {
+export function IconWarning({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
@@ -60,7 +78,7 @@ export function IconWarning({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconInfo({ size = 22, color = '#142939' }) {
+export function IconInfo({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Circle cx="12" cy="12" r="10" />
@@ -70,7 +88,7 @@ export function IconInfo({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconStop({ size = 22, color = '#ffffff' }) {
+export function IconStop({ size = 22, color = '#ffffff' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="6" y="6" width="12" height="12" rx="2" fill={color} />
@@ -78,7 +96,7 @@ export function IconStop({ size = 22, color = '#ffffff' }) {
   );
 }
 
-export function IconStorage({ size = 22, color = '#142939' }) {
+export function IconStorage({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Line x1="22" y1="12" x2="2" y2="12" />
@@ -89,7 +107,7 @@ export function IconStorage({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconDownload({ size = 22, color = '#142939' }) {
+export function IconDownload({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -99,7 +117,7 @@ export function IconDownload({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconPhone({ size = 22, color = '#142939' }) {
+export function IconPhone({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -107,7 +125,7 @@ export function IconPhone({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconLocation({ size = 22, color = '#142939' }) {
+export function IconLocation({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -116,7 +134,7 @@ export function IconLocation({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconHome({ size = 22, color = '#142939' }) {
+export function IconHome({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -125,7 +143,7 @@ export function IconHome({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconHistory({ size = 22, color = '#142939' }) {
+export function IconHistory({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M3 3v5h5" />
@@ -135,7 +153,7 @@ export function IconHistory({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconSliders({ size = 22, color = '#142939' }) {
+export function IconSliders({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Line x1="4" y1="21" x2="4" y2="14" />
@@ -151,7 +169,7 @@ export function IconSliders({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconPlus({ size = 22, color = '#142939' }) {
+export function IconPlus({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Line x1="12" y1="5" x2="12" y2="19" />
@@ -160,7 +178,7 @@ export function IconPlus({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconClose({ size = 22, color = '#142939' }) {
+export function IconClose({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Line x1="18" y1="6" x2="6" y2="18" />
@@ -169,7 +187,7 @@ export function IconClose({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconSun({ size = 22, color = '#142939' }) {
+export function IconSun({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Circle cx="12" cy="12" r="5" />
@@ -185,7 +203,7 @@ export function IconSun({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconMoon({ size = 22, color = '#142939' }) {
+export function IconMoon({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -193,7 +211,7 @@ export function IconMoon({ size = 22, color = '#142939' }) {
   );
 }
 
-export function IconGoogle({ size = 22 }) {
+export function IconGoogle({ size = 22 }: { size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 48 48">
       <Path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
@@ -204,7 +222,7 @@ export function IconGoogle({ size = 22 }) {
   );
 }
 
-export function IconApple({ size = 22, color = '#142939' }) {
+export function IconApple({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -215,7 +233,7 @@ export function IconApple({ size = 22, color = '#142939' }) {
   );
 }
 
-export function LogoMark({ size = 22 }) {
+export function LogoMark({ size = 22 }: { size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64">
       <Rect x="0" y="0" width="64" height="64" rx="16" fill="#142939" />
@@ -231,7 +249,7 @@ export function LogoMark({ size = 22 }) {
   );
 }
 
-export function Avatar({ size = 40, name = '', bg = '#eef4f9', fg = '#285172' }) {
+export function Avatar({ size = 40, name = '', bg = '#eef4f9', fg = '#285172' }: AvatarProps) {
   const initials =
     name
       .trim()

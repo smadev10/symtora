@@ -18,10 +18,17 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      "expo-secure-store",
+      "expo-router"
+    ],
+    "scheme": "symtora",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
