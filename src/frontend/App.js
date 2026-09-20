@@ -11,9 +11,9 @@ import {
   OpenSans_800ExtraBold,
 } from '@expo-google-fonts/open-sans';
 
-import AppText from './src/AppText';
-import { Spinner, PulseRing, WaveBar } from './src/AnimatedBits';
-import { TR } from './src/data/translations';
+import AppText from './src/components/AppText';
+import { Spinner, PulseRing, WaveBar } from './src/components/AnimatedBits';
+import { TR } from './src/i18n/translations';
 import { CASES, HEAT, DIST, TREND } from './src/data/cases';
 import {
   LogoMark,
@@ -38,7 +38,7 @@ import {
   IconGoogle,
   IconApple,
   Avatar,
-} from './src/icons';
+} from './src/components/icons';
 
 const T = AppText;
 const ls = (size, em) => Math.round(size * em * 100) / 100;

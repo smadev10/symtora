@@ -1,4 +1,41 @@
-export const CASES = {
+import type { Lang } from '@/i18n/translations';
+
+/** Chip order on the "new entry" screen: chip i selects CASE_ORDER[i]. */
+export const CASE_ORDER = ['headache', 'stomach', 'throat', 'knee'] as const;
+export type CaseKey = (typeof CASE_ORDER)[number];
+
+/** Drives the urgency badge colour on the home history rows. */
+export const URGENCIES = ['low', 'mid', 'high'] as const;
+export type Urgency = (typeof URGENCIES)[number];
+
+/** Drives the probability pill on each possible cause. */
+export const PROBABILITIES = ['high', 'mid', 'low'] as const;
+export type Probability = (typeof PROBABILITIES)[number];
+
+/**
+ * Transcript highlight colours. Capitalised and prefixed with `tint` to look up
+ * a theme token, so these names are load-bearing.
+ */
+export const SEGMENT_TINTS = ['blue', 'orange', 'green', 'neutral'] as const;
+export type SegmentTint = (typeof SEGMENT_TINTS)[number];
+
+export type TranscriptSegment = { t: string; c: SegmentTint | null };
+export type Finding = { label: string; pct: number };
+export type Cause = { label: string; prob: Probability; desc: string };
+
+export type DemoCase = {
+  title: string;
+  urgency: Urgency;
+  urgencyLabel: string;
+  urgencyTag: string;
+  urgencyDesc: string;
+  segments: TranscriptSegment[];
+  findings: Finding[];
+  causes: Cause[];
+  steps: string[];
+};
+
+export const CASES: Record<Lang, Record<CaseKey, DemoCase>> = {
   de: {
     headache: {
       title: 'Kopfschmerzen',
@@ -355,12 +392,15 @@ export const CASES = {
   },
 };
 
-export const HEAT = [
+/** Entries per pattern region (rows) per ISO week (columns). */
+export const HEAT: number[][] = [
   [1, 2, 1, 3, 2, 1, 3, 2],
   [0, 1, 0, 1, 1, 0, 0, 1],
   [0, 2, 1, 0, 2, 1, 2, 2],
   [0, 0, 1, 0, 0, 1, 0, 0],
   [1, 0, 1, 0, 1, 0, 1, 0],
 ];
-export const DIST = [42, 24, 18, 9, 7];
-export const TREND = [1, 2, 1, 3, 2, 2, 1, 0, 2, 3, 4, 2, 1, 2];
+/** Share of entries per pattern region, in percent. */
+export const DIST: number[] = [42, 24, 18, 9, 7];
+/** Daily entry intensity over the last 14 days. */
+export const TREND: number[] = [1, 2, 1, 3, 2, 2, 1, 0, 2, 3, 4, 2, 1, 2];
