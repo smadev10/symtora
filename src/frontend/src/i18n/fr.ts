@@ -149,6 +149,23 @@ const fr: Translations = {
   regions: ['Tête', 'Nuque', 'Ventre', 'Genou', 'Gorge'],
   patternRegions: ['Tête', 'Ventre', 'Dos', 'Poitrine', 'Peau'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
+  errors: {
+    network: 'Impossible de joindre le serveur. Vérifie ta connexion Internet.',
+    timeout: 'Le serveur ne répond pas. Réessaie plus tard.',
+    validation: 'Vérifie les informations saisies.',
+    unauthorized: 'E-mail ou mot de passe incorrect.',
+    notFound: 'Introuvable.',
+    server: 'Une erreur est survenue sur le serveur.',
+    unknown: 'Une erreur est survenue.',
+  },
+  states: {
+    loading: 'Chargement …',
+    retry: 'Réessayer',
+    emptyTitle: 'Aucune entrée',
+    emptyBody: 'Décris tes symptômes pour commencer.',
+    offlineTitle: 'Hors ligne',
+    offlineBody: 'Pas de connexion. Affichage des dernières données chargées.',
+  },
 };
 
 export default fr;

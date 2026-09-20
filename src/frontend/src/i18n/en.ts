@@ -148,6 +148,23 @@ const en: Translations = {
   regions: ['Head', 'Neck', 'Stomach', 'Knee', 'Throat'],
   patternRegions: ['Head', 'Stomach', 'Back', 'Chest', 'Skin'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
+  errors: {
+    network: 'Cannot reach the server. Check your internet connection.',
+    timeout: 'The server is not responding. Try again later.',
+    validation: 'Please check your input.',
+    unauthorized: 'Email or password is incorrect.',
+    notFound: 'Not found.',
+    server: 'Something went wrong on the server.',
+    unknown: 'Something went wrong.',
+  },
+  states: {
+    loading: 'Loading …',
+    retry: 'Try again',
+    emptyTitle: 'No entries yet',
+    emptyBody: 'Describe your symptoms to get started.',
+    offlineTitle: 'Offline',
+    offlineBody: 'No connection. Showing the data loaded last.',
+  },
 };
 
 export default en;

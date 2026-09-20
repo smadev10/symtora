@@ -150,6 +150,23 @@ const de = {
   regions: ['Kopf', 'Nacken', 'Bauch', 'Knie', 'Hals'],
   patternRegions: ['Kopf', 'Bauch', 'Rücken', 'Brust', 'Haut'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
+  errors: {
+    network: 'Keine Verbindung zum Server. Prüfe deine Internetverbindung.',
+    timeout: 'Der Server antwortet nicht. Versuche es später erneut.',
+    validation: 'Bitte überprüfe deine Eingaben.',
+    unauthorized: 'E-Mail oder Passwort stimmt nicht.',
+    notFound: 'Nicht gefunden.',
+    server: 'Auf dem Server ist ein Fehler aufgetreten.',
+    unknown: 'Etwas ist schiefgelaufen.',
+  },
+  states: {
+    loading: 'Wird geladen …',
+    retry: 'Erneut versuchen',
+    emptyTitle: 'Noch keine Einträge',
+    emptyBody: 'Beschreibe deine Beschwerden, um zu starten.',
+    offlineTitle: 'Offline',
+    offlineBody: 'Keine Verbindung. Angezeigt werden die zuletzt geladenen Daten.',
+  },
 };
 
 export default de;
