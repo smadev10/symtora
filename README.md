@@ -1,93 +1,178 @@
-# Symtora
+<div align="center">
 
-**KI-Diagnose · Vertiefungsarbeit** — an interactive prototype of a symptom‑triage app.
+<img src="docs/images/hero.png" alt="Symtora — KI-gestützte Symptomanalyse" width="100%">
 
-Describe what's wrong by text or voice; the app sorts your input into an urgency level,
-possible causes and concrete next steps. It is built around three promises shown at
-onboarding: processing stays **on the device**, it gives **no medical diagnosis**, and
-every entry is **deletable at any time**. Swiss context throughout (emergency number 144,
-Tox Info Suisse, etc.).
+<br>
 
-> Prototype: screens and navigation are complete. **Sign‑in and registration run against the
-> real API** (see [`src/backend/`](src/backend/README.md)); the session and your settings
-> survive a restart. Entries and patterns still read the demo content in
-> `src/frontend/src/data/`, behind the repository interface the API implementation will
-> replace — the backend's assessment shape doesn't yet carry the findings, transcript
-> segments and probabilities the result screen renders.
-> Voice transcription is not implemented.
+**Describe what's wrong. Get an urgency level, possible causes and concrete next steps.**
 
-## Features
+A symptom-triage app built as a Swiss *Vertiefungsarbeit* (capstone): an Expo client,
+a .NET API, and a self-hosted language model that never sends health text to a
+third party.
 
-- Onboarding with consent gate
-- Text entry (quick chips, char counter) and a voice‑recording screen
-- Assessment result: urgency banner, detected findings, possible causes, transcript
-  highlights, next steps, medical disclaimer
-- Home dashboard: 14‑day intensity chart, stat cards, body‑region breakdown
-- Patterns screen: frequency heatmap + recurring triggers
-- Emergency screen with tap‑to‑call hotlines and warning signs
-- Settings: storage, retention, on‑device‑only toggle, export, wipe‑all
-- Three languages (DE / EN / FR) and light / dark themes, switchable at runtime
+<br>
+
+[![Status](https://img.shields.io/badge/status-prototype-f2a33c)](#project-status)
+[![Version](https://img.shields.io/badge/version-0.1.0--dev-4a8fd4)](src/frontend/app.json)
+[![Expo SDK](https://img.shields.io/badge/Expo_SDK-57-000020?logo=expo&logoColor=white)](https://docs.expo.dev/versions/v57.0.0/)
+[![React Native](https://img.shields.io/badge/React_Native-0.86-61dafb?logo=react&logoColor=black)](https://reactnative.dev)
+[![.NET](https://img.shields.io/badge/.NET-10-512bd4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Ollama](https://img.shields.io/badge/model-self--hosted-1a1a1a?logo=ollama&logoColor=white)](https://ollama.com)
+[![Languages](https://img.shields.io/badge/i18n-DE_·_EN_·_FR-2e7d5b)](src/frontend/src/i18n)
+[![License](https://img.shields.io/badge/license-MIT-555)](LICENSE)
+
+</div>
+
+> [!WARNING]
+> **Symtora is not a medical device and gives no diagnosis.** It is a student project.
+> In an emergency in Switzerland, call **144**.
+
+---
+
+## What it is
+
+You describe a complaint in your own words — by text, or (planned) by voice. The app
+sorts that description into an **urgency level**, a list of **detected findings**,
+**possible causes** with a confidence label, and **concrete next steps**. Over time it
+builds a picture of your history: a 14-day intensity trend, a breakdown by body region,
+and recurring triggers.
+
+Three promises are shown at onboarding and carried through the whole app:
+
+| Promise | What it means here |
+|---|---|
+| **Processing stays under your control** | Analysis runs on a self-hosted model (Ollama), not a third-party AI API. Symptom text never leaves infrastructure you run. |
+| **No medical diagnosis** | Every result screen carries a disclaimer; urgency is a triage hint, not a finding. |
+| **Deletable at any time** | `DELETE /me/data` wipes every entry and assessment for the account in one tap. |
+
+The Swiss context is throughout: emergency numbers 144 / 112 / 145 (Tox Info Suisse) /
+143, and the three national languages.
+
+## Screens
+
+<img src="docs/images/screens.png" alt="All twelve Symtora screens: login, registration, onboarding, home, new entry, recording, loading, assessment, emergency, patterns, data settings, profile" width="100%">
+
+## Project status
+
+This is a working prototype, not a finished product. Being precise about what is real:
+
+| Area | State |
+|---|---|
+| Screens, navigation, theming, i18n | **Done** — all 12 screens, DE/EN/FR, light/dark, switchable at runtime |
+| Sign-in & registration | **Live against the API** — the session and your settings survive a restart |
+| Entries, assessments, patterns | **Demo data** from `src/frontend/src/data/cases.ts`, behind the `EntriesRepository` seam the API implementation will replace |
+| Backend analysis pipeline | **Built** — `POST /entries` enqueues a job, a worker runs it through Ollama, `GET /entries/:id` is polled until it is `Done` |
+| Google / Apple sign-in | **Placeholders** — the buttons render, the API has password auth only |
+| Voice transcription | **Not implemented** — the recording screen exists, there is no speech-to-text service |
+
+The client and the analysis pipeline are not joined up yet: the backend's assessment shape
+doesn't carry the findings, transcript segments and probabilities the result screen renders.
+That mapping is the next piece of work.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  A["<b>Expo app</b><br/>iOS · Android · Web"] -->|"REST + JWT"| B["<b>ASP.NET Core API</b><br/>:8080"]
+  B --> C[("<b>PostgreSQL 16</b><br/>users · entries · assessments")]
+  B -->|"analysis job"| D["<b>Ollama</b><br/>self-hosted model"]
+```
+
+Two decisions shape the rest:
+
+- **A self-hosted model, not a hosted AI API.** Symptom text is health data; routing it
+  through a third party would contradict the promise the onboarding makes.
+- **`POST /entries` is asynchronous.** It returns `202` immediately and the client polls,
+  because local-model inference can take a while and a long synchronous call is fragile on
+  a mobile network.
 
 ## Getting started
 
-The app lives in `src/frontend`, the API in `src/backend` — every npm command below runs from
-the frontend folder.
+### Option A — the whole stack, with Docker
+
+Brings up the API, Postgres, Ollama, and a one-shot job that pulls the model weights before
+the API starts serving.
+
+```bash
+git clone https://github.com/smadev10/symtora.git
+cd symtora
+cp .env.example .env         # then set JWT_SECRET — e.g. openssl rand -base64 48
+docker compose up --build
+```
+
+The API is then on **`http://localhost:8080`**. The first run downloads the model
+(multi-GB); later runs reuse the `ollama_models` volume.
+
+Then start the app against it:
 
 ```bash
 cd src/frontend
 npm install
-npm start          # expo start — then press a / i / w, or scan the QR in Expo Go
+cp .env.example .env         # EXPO_PUBLIC_API_URL=http://localhost:8080
+npm start                    # press a / i / w, or scan the QR in Expo Go
 ```
 
-Platform shortcuts:
+### Option B — local dev loop, without Docker
+
+Faster to iterate on. Needs Postgres and Ollama reachable on `localhost` (see
+`src/backend/src/Symtora.Api/appsettings.Development.json`).
 
 ```bash
-npm run android
-npm run ios
-npm run web
+cd src/backend
+dotnet tool restore                                   # installs dotnet-ef locally, once
+dotnet ef database update --project src/Symtora.Api   # applies migrations
+dotnet run --project src/Symtora.Api
 ```
 
-For the API on its own, see [`src/backend/README.md`](src/backend/README.md). To run everything
-(app, API, database, model) at once, copy `.env.example` to `.env`, fill in `JWT_SECRET`, and
-`docker compose up --build`.
+> [!IMPORTANT]
+> Run this way the API listens on **`5014`**, not `8080` — set `EXPO_PUBLIC_API_URL` in
+> `src/frontend/.env` accordingly.
 
-## Stack
+In Development you also get the browsable API reference (Scalar) at
+**`http://localhost:5014/scalar`**, and the raw OpenAPI document at `/openapi/v1.json`.
+Log in via `POST /auth/login`, paste the returned token into the reference's *Authorize*
+field, and every `[Authorize]` endpoint is runnable straight from the page. In the
+container both are off unless you set `EXPOSE_API_DOCS=true` in `.env`.
 
-- **Expo SDK 57** / **React Native 0.86** / **React 19**, TypeScript throughout
-- **expo-router** — file‑based routes under `src/app/`, with back, web URLs and
-  `symtora://` deep links
-- `@react-native-async-storage/async-storage` for settings, `expo-secure-store` for the
-  session token (Keychain/Keystore on native; AsyncStorage on web, where SecureStore has
-  no implementation)
-- `expo-font` + `@expo-google-fonts/open-sans` (loaded via the `expo-font` config plugin)
-- `react-native-safe-area-context`, `react-native-screens`
-- `react-native-svg` — all icons and the logo are hand‑drawn SVG (`src/components/icons.tsx`)
-- `react-native-web` + `react-dom` for the web target
-- `jest-expo` + `@testing-library/react-native` for tests
+### Pointing the app at the API
 
-### Scripts
+`EXPO_PUBLIC_API_URL` is inlined into the JS bundle at build time, so nothing secret
+belongs in it. Which value you need depends on where the app runs:
+
+| Running the app on | `EXPO_PUBLIC_API_URL` |
+|---|---|
+| Web / iOS simulator | `http://localhost:8080` (or `:5014` for Option B) |
+| Android emulator | `http://10.0.2.2:8080` |
+| A physical device (Expo Go) | `http://<your-lan-ip>:8080` — device and host must be on the same network |
+
+### Everyday commands
 
 ```bash
-npm test         # jest
-npm run typecheck  # tsc --noEmit
+# frontend — from src/frontend
+npm start            # expo start
+npm run android      # or: ios, web
+npm test             # jest (jest-expo + @testing-library/react-native)
+npm run typecheck    # tsc --noEmit
+
+# backend — from src/backend
+dotnet test
 ```
-
-### Configuration
-
-`EXPO_PUBLIC_API_URL` points the app at the API — copy `src/frontend/.env.example` to
-`.env`. It is inlined into the bundle at build time, so nothing secret belongs in it.
 
 ## Project layout
 
-Everything at the root is project‑level; all code sits under `src/`.
+Everything at the root is project-level; all code sits under `src/`.
 
 | Path | Purpose |
 |---|---|
-| `docker-compose.yml` | The whole stack: app API, Postgres, and the self‑hosted model |
-| `src/backend/` | The .NET API — see its own [README](src/backend/README.md) |
-| `src/frontend/` | The Expo app (paths below are relative to it) |
+| `docker-compose.yml` | The whole stack: API, Postgres, Ollama, model-pull job |
+| `.env.example` | Compose configuration — copy to `.env` |
+| `docs/` | Design spec, README images, and the app-icon generator |
+| `src/backend/` | The .NET API — has its own [README](src/backend/README.md) |
+| `src/frontend/` | The Expo app |
 
-Inside `src/frontend/`:
+<details>
+<summary><b>Inside <code>src/frontend/</code></b></summary>
 
 | Path | Purpose |
 |---|---|
@@ -98,13 +183,73 @@ Inside `src/frontend/`:
 | `src/state/` | `session`, `settings` and `entries` — a pure reducer plus a provider each |
 | `src/storage/` | `KeyValueStore` over AsyncStorage and SecureStore |
 | `src/repositories/` | `EntriesRepository` — the seam the API slots into; demo implementation today |
-| `src/theme/` | Colour tokens, shared styles, per‑theme style caching |
+| `src/theme/` | Colour tokens, shared styles, per-theme style caching |
 | `src/i18n/` | `de` / `en` / `fr`; German defines the type every language must satisfy |
 | `src/components/` | `AppText`, icons, animations, buttons, shared loading/empty/error/offline states |
 | `src/data/cases.ts` | Demo assessments (`CASES`) and chart constants (`HEAT`, `DIST`, `TREND`) |
-| `assets/` | App icon, splash, adaptive‑icon layers, favicon |
+| `assets/` | App icon, splash, adaptive-icon layers, favicon |
 
 Routes that show the bottom nav live in `(tabs)`; `emergency` and `assessment/[id]` sit in
 that group with `href: null`, so the bar stays visible without them being tabs. There is no
 `loading` route — analysing is a state of the screen that triggers it, not a destination you
 can navigate back into.
+
+</details>
+
+<details>
+<summary><b>Inside <code>src/backend/</code></b></summary>
+
+| Path | Purpose |
+|---|---|
+| `src/Symtora.Api/Models/` | EF Core entities: `User`, `SymptomEntry`, `Assessment` |
+| `src/Symtora.Api/Data/` | `SymtoraDbContext` and EF Core migrations |
+| `src/Symtora.Api/Services/Auth/` | Password hashing, JWT issuance, register/login logic |
+| `src/Symtora.Api/Services/Analysis/` | Prompt building, Ollama client, response parsing, the background job queue + worker |
+| `src/Symtora.Api/Controllers/` | `AuthController`, `EntriesController`, `PatternsController`, `MeController` |
+| `tests/Symtora.Api.Tests/` | Unit tests |
+
+</details>
+
+## API
+
+| Endpoint | Auth | Notes |
+|---|---|---|
+| `POST /auth/register` | – | `{ email, password }` → `{ token, expiresAt }` |
+| `POST /auth/login` | – | same shape |
+| `POST /entries` | Bearer | `{ text, bodyRegion? }` → `202` + `{ id, status: "Pending" }` |
+| `GET /entries/:id` | Bearer | Poll until `status` is `"Done"` or `"Failed"` |
+| `GET /entries` | Bearer | Full history for the current user, newest first |
+| `GET /patterns` | Bearer | Body-region breakdown (count, last urgency, last seen) |
+| `DELETE /me/data` | Bearer | Deletes the user's entries and assessments, keeps the account |
+| `GET /health` | – | Liveness check |
+
+Full detail in [`src/backend/README.md`](src/backend/README.md).
+
+## Stack
+
+**App** — Expo SDK 57, React Native 0.86, React 19, TypeScript. expo-router for file-based
+routing (with web URLs and `symtora://` deep links), AsyncStorage for settings and
+expo-secure-store for the session token, `@expo-google-fonts/open-sans`, and
+react-native-svg for every icon and the logo — there is no icon font or image set.
+jest-expo and `@testing-library/react-native` for tests.
+
+**API** — ASP.NET Core on .NET 10, EF Core with Npgsql against PostgreSQL 16, JWT bearer
+auth, Scalar for the browsable reference, and a hosted `BackgroundService` draining an
+in-process analysis queue against Ollama. REST only — a fixed, small set of endpoints
+doesn't need GraphQL or gRPC.
+
+## Brand assets
+
+The mark is the `LogoMark` in
+[`src/frontend/src/components/icons.tsx`](src/frontend/src/components/icons.tsx) — the
+same geometry as [`docs/images/logo.svg`](docs/images/logo.svg). The app icon, adaptive
+Android layers, splash icon and favicon are rasterised from it by
+[`docs/make-icons.js`](docs/make-icons.js):
+
+```bash
+node docs/make-icons.js src/frontend/assets
+```
+
+## License
+
+[MIT](LICENSE).
