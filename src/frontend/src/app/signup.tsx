@@ -15,6 +15,8 @@ import { authStyles } from '@/theme/authStyles';
 import { sharedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function SignupScreen() {
   const router = useRouter();
   const { settings } = useSettings();
@@ -31,13 +33,28 @@ export default function SignupScreen() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [consent, setConsent] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [confirmFocused, setConfirmFocused] = useState(false);
 
   if (session.status === 'authenticated') return <Redirect href="/" />;
 
-  // Confirm and consent are client-side rules; the password length rule lives
+  const emailTrimmed = email.trim();
+  const emailValid = EMAIL_PATTERN.test(emailTrimmed);
+  const showEmailHint = emailTrimmed.length > 0 && !emailFocused && !emailValid;
+
+  const passwordsMatch = password === confirm;
+  const showConfirmHint = confirm.length > 0 && !confirmFocused && !passwordsMatch;
+
+  // Confirm/consent/email-shape are client-side rules; the password length rule lives
   // on the API and comes back as a validation error.
   const disabled =
-    !name.trim() || !email.trim() || !password || password !== confirm || !consent || submitting;
+    !name.trim() ||
+    !emailValid ||
+    !password ||
+    !confirm ||
+    !passwordsMatch ||
+    !consent ||
+    submitting;
 
   return (
     <Screen>
@@ -66,8 +83,11 @@ export default function SignupScreen() {
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
+            onFocus={() => setEmailFocused(true)}
+            onBlur={() => setEmailFocused(false)}
             style={s.input}
           />
+          {showEmailHint ? <AppText style={s.fieldError}>{t.signup.emailInvalid}</AppText> : null}
           <TextInput
             value={password}
             onChangeText={setPassword}
@@ -82,8 +102,13 @@ export default function SignupScreen() {
             placeholder={t.signup.confirmPlaceholder}
             placeholderTextColor={tk.textFaint}
             secureTextEntry
+            onFocus={() => setConfirmFocused(true)}
+            onBlur={() => setConfirmFocused(false)}
             style={s.input}
           />
+          {showConfirmHint ? (
+            <AppText style={s.fieldError}>{t.signup.passwordMismatch}</AppText>
+          ) : null}
 
           <Pressable onPress={() => setConsent((v) => !v)} style={s.consentRow}>
             <View style={[s.checkbox, consent && s.checkboxChecked]}>

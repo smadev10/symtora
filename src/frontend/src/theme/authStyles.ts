@@ -57,6 +57,7 @@ export const authStyles = themedStyles((tk) =>
     },
     checkboxChecked: { backgroundColor: tk.accent, borderColor: tk.accent },
     fieldLabel: { color: tk.textMuted, fontSize: 11.5, fontWeight: '600', marginTop: 4 },
+    fieldError: { color: '#c62828', fontSize: 11.5, fontWeight: '600' },
     photoLink: { color: tk.accent, fontSize: 12.5, fontWeight: '600' },
     savedNote: { textAlign: 'center', color: '#2f8f5b', fontSize: 12.5, fontWeight: '600' },
     error: {
