@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { authApi as defaultAuthApi, type AuthApi } from '@/api/auth';
 import { ERROR_KEYS, isApiError } from '@/api/errors';
 import { useSession } from './Provider';
+import { hashPassword } from './passwordHash';
 
 /**
  * The API stores no display name, so one is derived from the address for
@@ -49,14 +50,23 @@ export function useAuth(authApi: AuthApi = defaultAuthApi): UseAuth {
 
   const login = useCallback(
     (email: string, password: string) =>
-      run(() => authApi.login({ email, password }), email, displayNameFromEmail(email)),
+      // The password is hashed here, not in the screen: every call site gets it for free.
+      run(
+        async () => authApi.login({ email, password: await hashPassword(password) }),
+        email,
+        displayNameFromEmail(email),
+      ),
     [authApi, run],
   );
 
   const register = useCallback(
     (name: string, email: string, password: string) =>
       // `name` is deliberately not sent: RegisterRequest is email + password.
-      run(() => authApi.register({ email, password }), email, name),
+      run(
+        async () => authApi.register({ email, password: await hashPassword(password) }),
+        email,
+        name,
+      ),
     [authApi, run],
   );
 

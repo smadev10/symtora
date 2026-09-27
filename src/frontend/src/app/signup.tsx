@@ -16,6 +16,7 @@ import { sharedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function SignupScreen() {
   const [confirm, setConfirm] = useState('');
   const [consent, setConsent] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmFocused, setConfirmFocused] = useState(false);
 
   if (session.status === 'authenticated') return <Redirect href="/" />;
@@ -42,15 +44,20 @@ export default function SignupScreen() {
   const emailValid = EMAIL_PATTERN.test(emailTrimmed);
   const showEmailHint = emailTrimmed.length > 0 && !emailFocused && !emailValid;
 
+  const passwordLongEnough = password.length >= MIN_PASSWORD_LENGTH;
+  const showPasswordHint = password.length > 0 && !passwordFocused && !passwordLongEnough;
+
   const passwordsMatch = password === confirm;
   const showConfirmHint = confirm.length > 0 && !confirmFocused && !passwordsMatch;
 
-  // Confirm/consent/email-shape are client-side rules; the password length rule lives
-  // on the API and comes back as a validation error.
+  // Confirm/consent/email-shape are client-side rules. Password length used to be
+  // left to the API, but the password is now hashed on-device before it's sent (see
+  // passwordHash.ts), so the API only ever sees a fixed-length hash and can no longer
+  // enforce a minimum length itself — it has to be checked here instead.
   const disabled =
     !name.trim() ||
     !emailValid ||
-    !password ||
+    !passwordLongEnough ||
     !confirm ||
     !passwordsMatch ||
     !consent ||
@@ -94,8 +101,13 @@ export default function SignupScreen() {
             placeholder={t.signup.passwordPlaceholder}
             placeholderTextColor={tk.textFaint}
             secureTextEntry
+            onFocus={() => setPasswordFocused(true)}
+            onBlur={() => setPasswordFocused(false)}
             style={s.input}
           />
+          {showPasswordHint ? (
+            <AppText style={s.fieldError}>{t.signup.passwordTooShort}</AppText>
+          ) : null}
           <TextInput
             value={confirm}
             onChangeText={setConfirm}

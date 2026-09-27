@@ -34,6 +34,7 @@ const de = {
     emailPlaceholder: 'E-Mail',
     emailInvalid: 'Gib eine gültige E-Mail-Adresse ein.',
     passwordPlaceholder: 'Passwort',
+    passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
     confirmPlaceholder: 'Passwort bestätigen',
     passwordMismatch: 'Die Passwörter stimmen nicht überein.',
     consent: 'Ich akzeptiere die Nutzungsbedingungen und Datenschutzhinweise.',

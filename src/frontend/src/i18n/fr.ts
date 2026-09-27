@@ -35,6 +35,7 @@ const fr: Translations = {
     emailPlaceholder: 'E-mail',
     emailInvalid: 'Saisis une adresse e-mail valide.',
     passwordPlaceholder: 'Mot de passe',
+    passwordTooShort: 'Le mot de passe doit contenir au moins 8 caractères.',
     confirmPlaceholder: 'Confirmer le mot de passe',
     passwordMismatch: 'Les mots de passe ne correspondent pas.',
     consent: 'J’accepte les conditions d’utilisation et la politique de confidentialité.',

@@ -34,6 +34,7 @@ const en: Translations = {
     emailPlaceholder: 'Email',
     emailInvalid: 'Enter a valid email address.',
     passwordPlaceholder: 'Password',
+    passwordTooShort: 'Password must be at least 8 characters.',
     confirmPlaceholder: 'Confirm password',
     passwordMismatch: 'Passwords do not match.',
     consent: 'I accept the terms of use and privacy notice.',

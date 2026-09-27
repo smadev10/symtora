@@ -15,6 +15,13 @@ const nullStore: KeyValueStore = {
 
 const ok = { token: 'jwt-abc', expiresAt: new Date(Date.now() + 3_600_000).toISOString() };
 
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 function fakeAuthApi(overrides: Partial<AuthApi> = {}): AuthApi {
   return { login: async () => ok, register: async () => ok, ...overrides };
 }
@@ -62,6 +69,27 @@ describe('login', () => {
       expiresAt: ok.expiresAt,
       user: { email: 'saimon.mahari@example.ch', name: 'Saimon Mahari' },
     });
+  });
+
+  it('sends a hashed password rather than the one the user typed', async () => {
+    const sent: unknown[] = [];
+    const authApi = fakeAuthApi({
+      login: async (request) => {
+        sent.push(request);
+        return ok;
+      },
+    });
+
+    const { result } = await renderHook(hooks(authApi), { wrapper });
+    await waitFor(() => expect(result.current.session.session.status).toBe('anonymous'));
+
+    await act(async () => {
+      await result.current.auth.login('saimon.mahari@example.ch', 'hunter22');
+    });
+
+    expect(sent).toEqual([
+      { email: 'saimon.mahari@example.ch', password: await sha256('hunter22') },
+    ]);
   });
 
   it('surfaces a wrong password as the unauthorized translation key', async () => {
@@ -123,7 +151,7 @@ describe('login', () => {
 });
 
 describe('register', () => {
-  it('sends only email and password but keeps the typed name locally', async () => {
+  it('sends only email and a hashed password but keeps the typed name locally', async () => {
     // RegisterRequest has no name field, so the name never leaves the device.
     const sent: unknown[] = [];
     const authApi = fakeAuthApi({
@@ -140,7 +168,7 @@ describe('register', () => {
       await result.current.auth.register('Saimon Mahari', 'new@example.ch', 'hunter22');
     });
 
-    expect(sent).toEqual([{ email: 'new@example.ch', password: 'hunter22' }]);
+    expect(sent).toEqual([{ email: 'new@example.ch', password: await sha256('hunter22') }]);
     expect(result.current.session.session).toMatchObject({
       user: { email: 'new@example.ch', name: 'Saimon Mahari' },
     });

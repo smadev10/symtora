@@ -94,6 +94,18 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    // Local `dotnet run` exposes both an http (5014) and an https (7135) endpoint via
+    // launchSettings, using the standard `dotnet dev-certs https --trust` dev certificate.
+    // Redirecting here means a password (hashed client-side or not) never leaves the
+    // machine in the clear during local testing. The docker-compose/production stack
+    // still serves plain HTTP on 8080 with no certificate configured at all — enabling
+    // this there needs a real reverse-proxy/TLS setup first, so it's deliberately left
+    // alone rather than redirecting to a port nothing is listening on.
+    app.UseHttpsRedirection();
+}
+
 // On by default while developing; the deployed stack opts in with OpenApi__Enabled=true instead of
 // needing a rebuild (see EXPOSE_API_DOCS in .env.example).
 if (builder.Configuration.GetValue("OpenApi:Enabled", builder.Environment.IsDevelopment()))
