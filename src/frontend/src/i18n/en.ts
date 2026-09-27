@@ -3,7 +3,6 @@ import type { Translations } from './de';
 const en: Translations = {
   frameSub: 'AI diagnosis · Capstone project',
   footer: 'Interactive prototype, capstone project',
-  badgeLocal: 'Processed locally',
   on: {
     headline: 'Understand your symptoms.',
     subtitle: 'Describe what’s wrong by text or voice. The AI sorts your input and shows next steps.',

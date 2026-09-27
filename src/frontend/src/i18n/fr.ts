@@ -3,7 +3,6 @@ import type { Translations } from './de';
 const fr: Translations = {
   frameSub: 'Diagnostic IA · Travail de fin d’études',
   footer: 'Prototype interactif, travail de fin d’études',
-  badgeLocal: 'Traité localement',
   on: {
     headline: 'Comprendre ses symptômes.',
     subtitle:

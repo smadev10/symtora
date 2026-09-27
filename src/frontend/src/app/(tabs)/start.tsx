@@ -94,7 +94,6 @@ export default function StartScreen() {
         <View style={shared.rowBetween}>
           <AppText style={s.kicker}>SYMTORA</AppText>
           <View style={s.headerActions}>
-            <AppText style={shared.badgeDark}>{t.badgeLocal}</AppText>
             {/* The tabs layout redirects to /login as soon as the session is cleared. */}
             <Pressable onPress={signOut} accessibilityRole="button" hitSlop={8}>
               <AppText style={s.signOut}>{t.data.signOut}</AppText>

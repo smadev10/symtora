@@ -4,7 +4,7 @@ import { Spinner } from '@/components/AnimatedBits';
 import AppText from '@/components/AppText';
 import { TR } from '@/i18n/translations';
 import { useSettings } from '@/state/settings/Provider';
-import { sharedStyles, themedStyles } from '@/theme/styles';
+import { themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
 const styles = themedStyles((tk) =>
@@ -26,7 +26,6 @@ export default function Analysing() {
   const { settings } = useSettings();
   const t = TR[settings.lang];
   const s = styles(settings.theme);
-  const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
   return (
@@ -34,7 +33,6 @@ export default function Analysing() {
       <Spinner size={36} color={tk.accent} trackColor={tk.divider} />
       <AppText style={s.text}>{t.loading.text}</AppText>
       <AppText style={s.sub}>{t.loading.subtitle}</AppText>
-      <AppText style={shared.badge}>{t.badgeLocal}</AppText>
     </View>
   );
 }

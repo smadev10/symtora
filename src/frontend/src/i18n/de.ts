@@ -1,7 +1,6 @@
 const de = {
   frameSub: 'KI-Diagnose · Vertiefungsarbeit',
   footer: 'Interaktiver Prototyp, Vertiefungsarbeit',
-  badgeLocal: 'Lokal verarbeitet',
   on: {
     headline: 'Beschwerden verstehen.',
     subtitle:
