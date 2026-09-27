@@ -11,6 +11,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 {
     /// <summary>Registers a new account and returns a token for it.</summary>
     /// <remarks>
+    /// The name is stored for display only (at most 100 characters) and comes back on every login.
     /// The password must be at least 8 characters. Emails are unique — registering one that
     /// already exists returns 409 rather than logging the existing user in.
     /// </remarks>
@@ -19,14 +20,14 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken ct)
     {
-        var result = await authService.RegisterAsync(request.Email, request.Password, ct);
+        var result = await authService.RegisterAsync(request.Name, request.Email, request.Password, ct);
 
         if (!result.Success)
         {
             return Conflict(new ProblemDetails { Title = "Email already registered." });
         }
 
-        return Ok(new AuthResponse(result.Token!, result.ExpiresAt!.Value));
+        return Ok(new AuthResponse(result.Token!, result.ExpiresAt!.Value, result.Name!));
     }
 
     /// <summary>Exchanges email and password for a bearer token.</summary>
@@ -46,6 +47,6 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Unauthorized(new ProblemDetails { Title = "Invalid email or password." });
         }
 
-        return Ok(new AuthResponse(result.Token!, result.ExpiresAt!.Value));
+        return Ok(new AuthResponse(result.Token!, result.ExpiresAt!.Value, result.Name!));
     }
 }

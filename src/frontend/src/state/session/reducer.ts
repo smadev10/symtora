@@ -1,4 +1,4 @@
-/** Client-side profile. `name` is never sent: the API has no field for it. */
+/** Client-side profile. `name` comes from the API at login/registration. */
 export type AuthUser = {
   email: string;
   name: string;

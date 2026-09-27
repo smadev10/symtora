@@ -13,6 +13,8 @@ import { useSettings } from '@/state/settings/Provider';
 import { ls, sharedStyles, themedStyles } from '@/theme/styles';
 
 const ANALYSE_MS = 1500;
+const PULSE_SIZE = 96;
+const BUTTON_SIZE = 76;
 
 /** Deterministic bar shapes, matching the prototype's fake waveform. */
 const WAVE_BARS = Array.from({ length: 20 }, (_, i) => ({
@@ -42,17 +44,32 @@ const styles = themedStyles(() =>
       marginTop: 26,
       maxWidth: 260,
     },
-    bottom: { alignItems: 'center', gap: 10, marginTop: 'auto' },
-    pulseWrap: { width: 92, height: 92, alignItems: 'center', justifyContent: 'center' },
-    button: {
-      width: 64,
-      height: 64,
-      borderRadius: 32,
-      backgroundColor: '#e2001a',
+    bottom: { alignItems: 'center', gap: 12, marginTop: 'auto', paddingBottom: 8 },
+    // The rings grow to 1.6x while fading, so leave room for them around the button.
+    pulseWrap: {
+      width: PULSE_SIZE,
+      height: PULSE_SIZE,
       alignItems: 'center',
       justifyContent: 'center',
+      marginVertical: 18,
     },
-    stopLabel: { color: '#fff', fontSize: 14, fontWeight: '700' },
+    pulseLayer: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, alignItems: 'center', justifyContent: 'center' },
+    button: {
+      width: BUTTON_SIZE,
+      height: BUTTON_SIZE,
+      borderRadius: BUTTON_SIZE / 2,
+      backgroundColor: '#e2001a',
+      borderWidth: 4,
+      borderColor: 'rgba(255,255,255,0.9)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 0.35,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 6 },
+      elevation: 8,
+    },
+    stopLabel: { color: '#fff', fontSize: 15, fontWeight: '700' },
     cancel: { color: 'rgba(255,255,255,.55)', fontSize: 12.5 },
   }),
 );
@@ -106,7 +123,6 @@ export default function RecordScreen() {
       <View style={s.screen}>
         <View style={[shared.rowBetween, { width: '100%' }]}>
           <AppText style={shared.kicker}>{t.record.kicker}</AppText>
-          <AppText style={shared.badgeDark}>{t.badgeLocal}</AppText>
         </View>
 
         <AppText style={s.timer}>
@@ -129,9 +145,17 @@ export default function RecordScreen() {
 
         <View style={s.bottom}>
           <View style={s.pulseWrap}>
-            <PulseRing size={92} />
-            <Pressable onPress={stop} style={s.button} accessibilityRole="button">
-              <IconStop />
+            {/* Layered behind the button, not stacked above it. */}
+            <View style={s.pulseLayer} pointerEvents="none">
+              <PulseRing size={PULSE_SIZE} />
+            </View>
+            <Pressable
+              onPress={stop}
+              style={({ pressed }) => [s.button, pressed && { transform: [{ scale: 0.94 }] }]}
+              accessibilityRole="button"
+              accessibilityLabel={t.record.stopLabel}
+            >
+              <IconStop size={28} />
             </Pressable>
           </View>
           <AppText style={s.stopLabel}>{t.record.stopLabel}</AppText>

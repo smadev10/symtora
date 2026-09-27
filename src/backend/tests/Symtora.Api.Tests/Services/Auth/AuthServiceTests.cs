@@ -23,12 +23,14 @@ public class AuthServiceTests
         using var db = CreateInMemoryDb();
         var service = CreateService(db);
 
-        var result = await service.RegisterAsync("Person@Example.com", "correct-password", CancellationToken.None);
+        var result = await service.RegisterAsync("Person", "Person@Example.com", "correct-password", CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.Equal(FakeTokenGenerator.Token, result.Token);
         var stored = await db.Users.SingleAsync();
         Assert.Equal("person@example.com", stored.Email); // normalized to lowercase
+        Assert.Equal("Person", stored.Name);
+        Assert.Equal("Person", result.Name);
         Assert.NotEqual("correct-password", stored.PasswordHash);
     }
 
@@ -37,9 +39,9 @@ public class AuthServiceTests
     {
         using var db = CreateInMemoryDb();
         var service = CreateService(db);
-        await service.RegisterAsync("person@example.com", "correct-password", CancellationToken.None);
+        await service.RegisterAsync("Person", "person@example.com", "correct-password", CancellationToken.None);
 
-        var result = await service.RegisterAsync("PERSON@example.com", "another-password", CancellationToken.None);
+        var result = await service.RegisterAsync("Person", "PERSON@example.com", "another-password", CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Equal(AuthError.EmailAlreadyRegistered, result.Error);
@@ -51,12 +53,13 @@ public class AuthServiceTests
     {
         using var db = CreateInMemoryDb();
         var service = CreateService(db);
-        await service.RegisterAsync("person@example.com", "correct-password", CancellationToken.None);
+        await service.RegisterAsync("Person", "person@example.com", "correct-password", CancellationToken.None);
 
         var result = await service.LoginAsync("person@example.com", "correct-password", CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.Equal(FakeTokenGenerator.Token, result.Token);
+        Assert.Equal("Person", result.Name); // the name given at registration comes back on login
     }
 
     [Fact]
@@ -64,7 +67,7 @@ public class AuthServiceTests
     {
         using var db = CreateInMemoryDb();
         var service = CreateService(db);
-        await service.RegisterAsync("person@example.com", "correct-password", CancellationToken.None);
+        await service.RegisterAsync("Person", "person@example.com", "correct-password", CancellationToken.None);
 
         var result = await service.LoginAsync("person@example.com", "wrong-password", CancellationToken.None);
 

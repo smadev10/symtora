@@ -8,6 +8,7 @@ import { IconChevron, IconWarning } from '@/components/icons';
 import { DEMO_KPIS, DIST, TREND } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
+import { useSession } from '@/state/session/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { cardShadow, ls, sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
@@ -24,6 +25,8 @@ const styles = themedStyles((tk) =>
       paddingTop: 20,
       paddingBottom: 40,
     },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    signOut: { color: '#fff', fontSize: 12, fontWeight: '700' },
     kicker: { color: 'rgba(255,255,255,.6)', fontSize: 11, fontWeight: '700', letterSpacing: ls(11, 0.12) },
     greeting: { color: '#fff', fontSize: 24, fontWeight: '800', marginTop: 14, marginBottom: 20 },
     trendLabel: { color: 'rgba(255,255,255,.55)', fontSize: 12.5, marginBottom: 10 },
@@ -75,6 +78,7 @@ export default function StartScreen() {
   const router = useRouter();
   const { settings } = useSettings();
   const { entries, reload } = useEntries();
+  const { session, signOut } = useSession();
 
   const t = TR[settings.lang];
   const s = styles(settings.theme);
@@ -89,9 +93,18 @@ export default function StartScreen() {
       <View style={s.header}>
         <View style={shared.rowBetween}>
           <AppText style={s.kicker}>SYMTORA</AppText>
-          <AppText style={shared.badgeDark}>{t.badgeLocal}</AppText>
+          <View style={s.headerActions}>
+            {/* The tabs layout redirects to /login as soon as the session is cleared. */}
+            <Pressable onPress={signOut} accessibilityRole="button" hitSlop={8}>
+              <AppText style={s.signOut}>{t.data.signOut}</AppText>
+            </Pressable>
+          </View>
         </View>
-        <AppText style={s.greeting}>{t.start.greeting}</AppText>
+        <AppText style={s.greeting}>
+          {session.status === 'authenticated' && session.user.name
+            ? `${t.start.greeting}, ${session.user.name}`
+            : t.start.greeting}
+        </AppText>
         <AppText style={s.trendLabel}>{t.start.trendSubtitle}</AppText>
 
         <View style={s.trendRow}>

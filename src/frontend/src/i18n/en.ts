@@ -3,7 +3,6 @@ import type { Translations } from './de';
 const en: Translations = {
   frameSub: 'AI diagnosis · Capstone project',
   footer: 'Interactive prototype, capstone project',
-  badgeLocal: 'Processed locally',
   on: {
     headline: 'Understand your symptoms.',
     subtitle: 'Describe what’s wrong by text or voice. The AI sorts your input and shows next steps.',
@@ -24,16 +23,16 @@ const en: Translations = {
     passwordPlaceholder: 'Password',
     loginCta: 'Log in',
     signupCta: 'Create account',
-    divider: 'or',
-    google: 'Continue with Google',
-    apple: 'Continue with Apple',
   },
   signup: {
     subtitle: 'Create your account.',
     namePlaceholder: 'Name',
     emailPlaceholder: 'Email',
+    emailInvalid: 'Enter a valid email address.',
     passwordPlaceholder: 'Password',
+    passwordTooShort: 'Password must be at least 8 characters.',
     confirmPlaceholder: 'Confirm password',
+    passwordMismatch: 'Passwords do not match.',
     consent: 'I accept the terms of use and privacy notice.',
     cta: 'Create account',
     haveAccount: 'Already have an account? Log in',
@@ -51,7 +50,7 @@ const en: Translations = {
     saved: 'Saved.',
   },
   start: {
-    greeting: 'Good day, Saimon',
+    greeting: 'Good day',
     trendSubtitle: '9 assessments in the last 14 days',
     trendLabel: 'Symptom intensity',
     trendRange: '14 days',

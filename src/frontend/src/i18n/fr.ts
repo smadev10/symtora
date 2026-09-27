@@ -3,7 +3,6 @@ import type { Translations } from './de';
 const fr: Translations = {
   frameSub: 'Diagnostic IA · Travail de fin d’études',
   footer: 'Prototype interactif, travail de fin d’études',
-  badgeLocal: 'Traité localement',
   on: {
     headline: 'Comprendre ses symptômes.',
     subtitle:
@@ -25,16 +24,16 @@ const fr: Translations = {
     passwordPlaceholder: 'Mot de passe',
     loginCta: 'Se connecter',
     signupCta: 'Créer un compte',
-    divider: 'ou',
-    google: 'Continuer avec Google',
-    apple: 'Continuer avec Apple',
   },
   signup: {
     subtitle: 'Crée ton compte.',
     namePlaceholder: 'Nom',
     emailPlaceholder: 'E-mail',
+    emailInvalid: 'Saisis une adresse e-mail valide.',
     passwordPlaceholder: 'Mot de passe',
+    passwordTooShort: 'Le mot de passe doit contenir au moins 8 caractères.',
     confirmPlaceholder: 'Confirmer le mot de passe',
+    passwordMismatch: 'Les mots de passe ne correspondent pas.',
     consent: 'J’accepte les conditions d’utilisation et la politique de confidentialité.',
     cta: 'Créer un compte',
     haveAccount: 'Déjà un compte ? Se connecter',
@@ -52,7 +51,7 @@ const fr: Translations = {
     saved: 'Enregistré.',
   },
   start: {
-    greeting: 'Bonjour, Saimon',
+    greeting: 'Bonjour',
     trendSubtitle: '9 évaluations lors des 14 derniers jours',
     trendLabel: 'Intensité des symptômes',
     trendRange: '14 jours',

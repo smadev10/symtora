@@ -2,11 +2,14 @@ import { useCallback, useState } from 'react';
 
 import { authApi as defaultAuthApi, type AuthApi } from '@/api/auth';
 import { ERROR_KEYS, isApiError } from '@/api/errors';
+import type { AuthResponse } from '@/api/types';
 import { useSession } from './Provider';
+import { hashPassword } from './passwordHash';
 
 /**
- * The API stores no display name, so one is derived from the address for
- * users who sign in on a fresh device. The profile screen can overwrite it.
+ * Fallback display name for accounts registered before the API stored names:
+ * those come back from login with an empty `name`, so one is derived from the
+ * address instead. The profile screen can overwrite it.
  */
 export function displayNameFromEmail(email: string): string {
   const local = email.includes('@') ? email.slice(0, email.indexOf('@')) : email;
@@ -31,13 +34,13 @@ export function useAuth(authApi: AuthApi = defaultAuthApi): UseAuth {
   const [errorKey, setErrorKey] = useState<string | null>(null);
 
   const run = useCallback(
-    async (request: () => Promise<{ token: string; expiresAt: string }>, email: string, name: string) => {
+    async (request: () => Promise<AuthResponse>, email: string) => {
       setSubmitting(true);
       setErrorKey(null);
 
       try {
-        const { token, expiresAt } = await request();
-        signIn({ token, expiresAt, user: { email, name } });
+        const { token, expiresAt, name } = await request();
+        signIn({ token, expiresAt, user: { email, name: name || displayNameFromEmail(email) } });
       } catch (error) {
         setErrorKey(isApiError(error) ? error.messageKey : ERROR_KEYS.unknown);
       } finally {
@@ -49,14 +52,14 @@ export function useAuth(authApi: AuthApi = defaultAuthApi): UseAuth {
 
   const login = useCallback(
     (email: string, password: string) =>
-      run(() => authApi.login({ email, password }), email, displayNameFromEmail(email)),
+      // The password is hashed here, not in the screen: every call site gets it for free.
+      run(async () => authApi.login({ email, password: await hashPassword(password) }), email),
     [authApi, run],
   );
 
   const register = useCallback(
     (name: string, email: string, password: string) =>
-      // `name` is deliberately not sent: RegisterRequest is email + password.
-      run(() => authApi.register({ email, password }), email, name),
+      run(async () => authApi.register({ name, email, password: await hashPassword(password) }), email),
     [authApi, run],
   );
 

@@ -13,7 +13,18 @@ const nullStore: KeyValueStore = {
   remove: async () => {},
 };
 
-const ok = { token: 'jwt-abc', expiresAt: new Date(Date.now() + 3_600_000).toISOString() };
+const ok = {
+  token: 'jwt-abc',
+  expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+  name: 'Saimon Mahari',
+};
+
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 function fakeAuthApi(overrides: Partial<AuthApi> = {}): AuthApi {
   return { login: async () => ok, register: async () => ok, ...overrides };
@@ -48,20 +59,56 @@ describe('displayNameFromEmail', () => {
 });
 
 describe('login', () => {
-  it('signs the session in with the returned token', async () => {
+  it('signs the session in with the returned token and name', async () => {
     const { result } = await renderHook(hooks(fakeAuthApi()), { wrapper });
     await waitFor(() => expect(result.current.session.session.status).toBe('anonymous'));
 
     await act(async () => {
-      await result.current.auth.login('saimon.mahari@example.ch', 'hunter22');
+      await result.current.auth.login('s.m@example.ch', 'hunter22');
     });
 
     expect(result.current.session.session).toEqual({
       status: 'authenticated',
       token: 'jwt-abc',
       expiresAt: ok.expiresAt,
-      user: { email: 'saimon.mahari@example.ch', name: 'Saimon Mahari' },
+      user: { email: 's.m@example.ch', name: 'Saimon Mahari' },
     });
+  });
+
+  it('derives a name from the email when the account has none stored', async () => {
+    // Accounts registered before the API stored names come back with an empty one.
+    const authApi = fakeAuthApi({ login: async () => ({ ...ok, name: '' }) });
+    const { result } = await renderHook(hooks(authApi), { wrapper });
+    await waitFor(() => expect(result.current.session.session.status).toBe('anonymous'));
+
+    await act(async () => {
+      await result.current.auth.login('anna.muster@example.ch', 'hunter22');
+    });
+
+    expect(result.current.session.session).toMatchObject({
+      user: { email: 'anna.muster@example.ch', name: 'Anna Muster' },
+    });
+  });
+
+  it('sends a hashed password rather than the one the user typed', async () => {
+    const sent: unknown[] = [];
+    const authApi = fakeAuthApi({
+      login: async (request) => {
+        sent.push(request);
+        return ok;
+      },
+    });
+
+    const { result } = await renderHook(hooks(authApi), { wrapper });
+    await waitFor(() => expect(result.current.session.session.status).toBe('anonymous'));
+
+    await act(async () => {
+      await result.current.auth.login('saimon.mahari@example.ch', 'hunter22');
+    });
+
+    expect(sent).toEqual([
+      { email: 'saimon.mahari@example.ch', password: await sha256('hunter22') },
+    ]);
   });
 
   it('surfaces a wrong password as the unauthorized translation key', async () => {
@@ -123,8 +170,7 @@ describe('login', () => {
 });
 
 describe('register', () => {
-  it('sends only email and password but keeps the typed name locally', async () => {
-    // RegisterRequest has no name field, so the name never leaves the device.
+  it('sends the name, email and a hashed password', async () => {
     const sent: unknown[] = [];
     const authApi = fakeAuthApi({
       register: async (request) => {
@@ -140,7 +186,9 @@ describe('register', () => {
       await result.current.auth.register('Saimon Mahari', 'new@example.ch', 'hunter22');
     });
 
-    expect(sent).toEqual([{ email: 'new@example.ch', password: 'hunter22' }]);
+    expect(sent).toEqual([
+      { name: 'Saimon Mahari', email: 'new@example.ch', password: await sha256('hunter22') },
+    ]);
     expect(result.current.session.session).toMatchObject({
       user: { email: 'new@example.ch', name: 'Saimon Mahari' },
     });

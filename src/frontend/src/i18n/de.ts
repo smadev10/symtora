@@ -1,7 +1,6 @@
 const de = {
   frameSub: 'KI-Diagnose · Vertiefungsarbeit',
   footer: 'Interaktiver Prototyp, Vertiefungsarbeit',
-  badgeLocal: 'Lokal verarbeitet',
   on: {
     headline: 'Beschwerden verstehen.',
     subtitle:
@@ -24,16 +23,16 @@ const de = {
     passwordPlaceholder: 'Passwort',
     loginCta: 'Anmelden',
     signupCta: 'Konto erstellen',
-    divider: 'oder',
-    google: 'Mit Google fortfahren',
-    apple: 'Mit Apple fortfahren',
   },
   signup: {
     subtitle: 'Erstelle dein Konto.',
     namePlaceholder: 'Name',
     emailPlaceholder: 'E-Mail',
+    emailInvalid: 'Gib eine gültige E-Mail-Adresse ein.',
     passwordPlaceholder: 'Passwort',
+    passwordTooShort: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
     confirmPlaceholder: 'Passwort bestätigen',
+    passwordMismatch: 'Die Passwörter stimmen nicht überein.',
     consent: 'Ich akzeptiere die Nutzungsbedingungen und Datenschutzhinweise.',
     cta: 'Konto erstellen',
     haveAccount: 'Bereits ein Konto? Anmelden',
@@ -51,7 +50,7 @@ const de = {
     saved: 'Gespeichert.',
   },
   start: {
-    greeting: 'Guten Tag, Saimon',
+    greeting: 'Guten Tag',
     trendSubtitle: '9 Einschätzungen in den letzten 14 Tagen',
     trendLabel: 'Beschwerdeintensität',
     trendRange: '14 Tage',

@@ -10,7 +10,7 @@ public class AuthService(
     IPasswordHasher<User> passwordHasher,
     IJwtTokenGenerator tokenGenerator) : IAuthService
 {
-    public async Task<AuthResult> RegisterAsync(string email, string password, CancellationToken ct)
+    public async Task<AuthResult> RegisterAsync(string name, string email, string password, CancellationToken ct)
     {
         var normalizedEmail = email.Trim().ToLowerInvariant();
 
@@ -24,6 +24,7 @@ public class AuthService(
         {
             Id = Guid.NewGuid(),
             Email = normalizedEmail,
+            Name = name.Trim(),
             CreatedAt = DateTimeOffset.UtcNow,
         };
         user.PasswordHash = passwordHasher.HashPassword(user, password);
@@ -31,7 +32,7 @@ public class AuthService(
         db.Users.Add(user);
         await db.SaveChangesAsync(ct);
 
-        return AuthResult.Ok(tokenGenerator.GenerateToken(user.Id, user.Email));
+        return AuthResult.Ok(tokenGenerator.GenerateToken(user.Id, user.Email), user.Name);
     }
 
     public async Task<AuthResult> LoginAsync(string email, string password, CancellationToken ct)
@@ -50,6 +51,6 @@ public class AuthService(
             return AuthResult.Fail(AuthError.InvalidCredentials);
         }
 
-        return AuthResult.Ok(tokenGenerator.GenerateToken(user.Id, user.Email));
+        return AuthResult.Ok(tokenGenerator.GenerateToken(user.Id, user.Email), user.Name);
     }
 }

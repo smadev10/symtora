@@ -3,7 +3,6 @@ import { Pressable, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import { IconChevronLeft, LogoMark } from '@/components/icons';
-import { TR } from '@/i18n/translations';
 import { useSettings } from '@/state/settings/Provider';
 import { sharedStyles, ls } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
@@ -15,17 +14,16 @@ type Props = {
   kicker?: string;
   /** Shows the wordmark and logo instead of a back button or kicker. */
   brand?: boolean;
-  /** Replaces the "processed locally" badge on the right. */
+  /** Optional content on the right of the row. */
   right?: ReactNode;
 };
 
 /**
- * The back-button / kicker plus local-processing badge row that sat inline at
+ * The back-button / kicker row that sat inline at
  * the top of six screens in App.js.
  */
 export default function ScreenHeader({ onBack, kicker, brand, right }: Props) {
   const { settings } = useSettings();
-  const t = TR[settings.lang];
   const s = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
@@ -53,7 +51,7 @@ export default function ScreenHeader({ onBack, kicker, brand, right }: Props) {
         <AppText style={s.kickerLight}>{kicker ?? ''}</AppText>
       )}
 
-      {right ?? <AppText style={s.badge}>{t.badgeLocal}</AppText>}
+      {right}
     </View>
   );
 }

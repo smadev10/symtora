@@ -6,6 +6,17 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+jest.mock('expo-crypto', () => {
+  const { createHash } = require('crypto');
+  return {
+    CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
+    CryptoEncoding: { HEX: 'hex', BASE64: 'base64' },
+    digestStringAsync: jest.fn(async (_algorithm, data) =>
+      createHash('sha256').update(data).digest('hex'),
+    ),
+  };
+});
+
 jest.mock('expo-secure-store', () => {
   const vault = new Map();
   return {

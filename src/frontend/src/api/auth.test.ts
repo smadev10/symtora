@@ -46,16 +46,15 @@ describe('login', () => {
 });
 
 describe('register', () => {
-  it('posts only the fields the API accepts', async () => {
-    // RegisterRequest is { email, password }. The signup screen also collects
-    // a name, which has nowhere to go and stays on the device.
+  it('posts name, email and password', async () => {
     const { client, calls } = recordingClient();
 
-    await createAuthApi(client).register({ email: 'new@example.ch', password: 'hunter22' });
+    await createAuthApi(client).register({ name: 'Anna', email: 'new@example.ch', password: 'hunter22' });
 
     expect(calls[0].path).toBe('/auth/register');
     expect(calls[0].options?.method).toBe('POST');
     expect(calls[0].options?.body).toEqual({
+      name: 'Anna',
       email: 'new@example.ch',
       password: 'hunter22',
     });

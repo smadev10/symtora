@@ -14,6 +14,7 @@ public class SymtoraDbContext(DbContextOptions<SymtoraDbContext> options) : DbCo
         modelBuilder.Entity<User>(b =>
         {
             b.HasIndex(u => u.Email).IsUnique();
+            b.Property(u => u.Name).HasMaxLength(User.NameMaxLength);
         });
 
         modelBuilder.Entity<SymptomEntry>(b =>
