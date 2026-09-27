@@ -5,7 +5,7 @@ import { Pressable, TextInput, View } from 'react-native';
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
-import { IconApple, IconCheck, IconGoogle, LogoMark } from '@/components/icons';
+import { IconCheck, LogoMark } from '@/components/icons';
 import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
 import { useSession } from '@/state/session/Provider';
@@ -136,22 +136,6 @@ export default function SignupScreen() {
             onPress={() => void register(name.trim(), email.trim(), password)}
             disabled={disabled}
           />
-
-          <View style={s.dividerRow}>
-            <View style={s.dividerLine} />
-            <AppText style={shared.textMutedSmall}>{t.login.divider}</AppText>
-            <View style={s.dividerLine} />
-          </View>
-
-          {/* Unimplemented placeholders — see the note in login.tsx. */}
-          <Pressable onPress={() => {}} style={s.oauthButton} accessibilityRole="button">
-            <IconGoogle />
-            <AppText style={s.oauthButtonText}>{t.login.google}</AppText>
-          </Pressable>
-          <Pressable onPress={() => {}} style={s.oauthButton} accessibilityRole="button">
-            <IconApple color={tk.textStrong} />
-            <AppText style={s.oauthButtonText}>{t.login.apple}</AppText>
-          </Pressable>
         </View>
 
         <Pressable onPress={() => router.replace('/login')}>

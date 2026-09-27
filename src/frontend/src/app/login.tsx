@@ -1,18 +1,17 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
-import { IconApple, IconGoogle, LogoMark } from '@/components/icons';
+import { LogoMark } from '@/components/icons';
 import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
 import { useSession } from '@/state/session/Provider';
 import { useAuth } from '@/state/session/useAuth';
 import { useSettings } from '@/state/settings/Provider';
 import { authStyles } from '@/theme/authStyles';
-import { sharedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
 export default function LoginScreen() {
@@ -23,7 +22,6 @@ export default function LoginScreen() {
 
   const t = TR[settings.lang];
   const s = authStyles(settings.theme);
-  const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
   const [email, setEmail] = useState('');
@@ -76,26 +74,6 @@ export default function LoginScreen() {
             variant="secondary"
             onPress={() => router.push('/signup')}
           />
-
-          <View style={s.dividerRow}>
-            <View style={s.dividerLine} />
-            <AppText style={shared.textMutedSmall}>{t.login.divider}</AppText>
-            <View style={s.dividerLine} />
-          </View>
-
-          {/*
-            No backend support for either provider — AuthController exposes
-            password login and registration only. Left in place as the
-            unimplemented placeholders they have always been.
-          */}
-          <Pressable onPress={() => {}} style={s.oauthButton} accessibilityRole="button">
-            <IconGoogle />
-            <AppText style={s.oauthButtonText}>{t.login.google}</AppText>
-          </Pressable>
-          <Pressable onPress={() => {}} style={s.oauthButton} accessibilityRole="button">
-            <IconApple color={tk.textStrong} />
-            <AppText style={s.oauthButtonText}>{t.login.apple}</AppText>
-          </Pressable>
         </View>
 
         <AppText style={s.footnote}>{t.on.emergencyNote}</AppText>

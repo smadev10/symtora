@@ -11,6 +11,7 @@ export type LoginRequest = {
 
 /** The API accepts email and password only; there is no name field. */
 export type RegisterRequest = {
+  name: string;
   email: string;
   password: string;
 };
@@ -18,6 +19,8 @@ export type RegisterRequest = {
 export type AuthResponse = {
   token: string;
   expiresAt: string;
+  /** Display name given at registration; empty for accounts created before names were stored. */
+  name: string;
 };
 
 /** Mirrors the EntryStatus enum, serialised by name. */

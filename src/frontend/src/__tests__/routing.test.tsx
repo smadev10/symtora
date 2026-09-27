@@ -73,7 +73,7 @@ describe('entry redirect', () => {
 
     const view = await open('/');
 
-    await expectVisible(view, TR.de.start.greeting);
+    await expectVisible(view, `${TR.de.start.greeting}, Saimon Mahari`);
   });
 });
 

@@ -24,9 +24,6 @@ const de = {
     passwordPlaceholder: 'Passwort',
     loginCta: 'Anmelden',
     signupCta: 'Konto erstellen',
-    divider: 'oder',
-    google: 'Mit Google fortfahren',
-    apple: 'Mit Apple fortfahren',
   },
   signup: {
     subtitle: 'Erstelle dein Konto.',
@@ -54,7 +51,7 @@ const de = {
     saved: 'Gespeichert.',
   },
   start: {
-    greeting: 'Guten Tag, Saimon',
+    greeting: 'Guten Tag',
     trendSubtitle: '9 Einschätzungen in den letzten 14 Tagen',
     trendLabel: 'Beschwerdeintensität',
     trendRange: '14 Tage',

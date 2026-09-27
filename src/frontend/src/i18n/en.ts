@@ -24,9 +24,6 @@ const en: Translations = {
     passwordPlaceholder: 'Password',
     loginCta: 'Log in',
     signupCta: 'Create account',
-    divider: 'or',
-    google: 'Continue with Google',
-    apple: 'Continue with Apple',
   },
   signup: {
     subtitle: 'Create your account.',
@@ -54,7 +51,7 @@ const en: Translations = {
     saved: 'Saved.',
   },
   start: {
-    greeting: 'Good day, Saimon',
+    greeting: 'Good day',
     trendSubtitle: '9 assessments in the last 14 days',
     trendLabel: 'Symptom intensity',
     trendRange: '14 days',

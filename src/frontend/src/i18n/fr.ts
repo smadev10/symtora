@@ -25,9 +25,6 @@ const fr: Translations = {
     passwordPlaceholder: 'Mot de passe',
     loginCta: 'Se connecter',
     signupCta: 'Créer un compte',
-    divider: 'ou',
-    google: 'Continuer avec Google',
-    apple: 'Continuer avec Apple',
   },
   signup: {
     subtitle: 'Crée ton compte.',
@@ -55,7 +52,7 @@ const fr: Translations = {
     saved: 'Enregistré.',
   },
   start: {
-    greeting: 'Bonjour, Saimon',
+    greeting: 'Bonjour',
     trendSubtitle: '9 évaluations lors des 14 derniers jours',
     trendLabel: 'Intensité des symptômes',
     trendRange: '14 jours',
