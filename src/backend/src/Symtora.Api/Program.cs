@@ -33,6 +33,14 @@ builder.Services.AddHttpClient<IOllamaClient, OllamaClient>((sp, client) =>
     client.Timeout = TimeSpan.FromMinutes(2); // local CPU inference can be slow
 });
 
+// Expo web (`npx expo start --web`) serves the app from localhost:8081, a different origin than
+// the API, so the browser needs CORS headers. Native builds don't do CORS, and the deployed stack
+// has no web client yet, so this stays development-only.
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
+    .WithOrigins("http://localhost:8081")
+    .AllowAnyHeader()
+    .AllowAnyMethod()));
+
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("Jwt:Secret is not configured.");
 
@@ -96,6 +104,10 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // Before the redirect, so the browser's preflight is answered rather than 307'd — a
+    // redirected preflight is rejected outright.
+    app.UseCors();
+
     // Local `dotnet run` exposes both an http (5014) and an https (7135) endpoint via
     // launchSettings, using the standard `dotnet dev-certs https --trust` dev certificate.
     // Redirecting here means a password (hashed client-side or not) never leaves the
