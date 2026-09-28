@@ -48,6 +48,9 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Keep claim names as issued. The default mapping renames `sub` to
+        // ClaimTypes.NameIdentifier, which GetUserId() would then never find.
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

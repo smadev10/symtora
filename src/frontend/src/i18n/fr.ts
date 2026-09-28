@@ -83,13 +83,12 @@ const fr: Translations = {
   assess: {
     title: 'Évaluation',
     urgencyKicker: 'URGENCE',
-    findingsTitle: 'Éléments détectés',
-    findingsFoot: 'Les pourcentages indiquent la fiabilité de la détection, pas la gravité.',
     causesTitle: 'Causes possibles',
-    transcriptTitle: 'Transcription',
-    transcriptMeta: 'Saisie vocale · 0:42',
-    transcriptFoot: 'Surligné : passages déterminants pour l’évaluation.',
+    textTitle: 'Ta description',
     stepsTitle: 'Prochaines étapes',
+    failedTitle: 'Échec de l’analyse',
+    failedBody: 'Ta description n’a pas pu être évaluée. Réessaie avec une nouvelle description.',
+    failedCta: 'Nouvelle description',
     disclaimer: 'Ceci n’est pas un diagnostic médical. Consulte en cas d’aggravation ou de doute.',
     correct: 'Corriger',
     save: 'Enregistrer',
@@ -147,7 +146,7 @@ const fr: Translations = {
     cancel: 'Annuler',
   },
   chips: ['Mal de tête', 'Mal de ventre', 'Toux', 'Blessure'],
-  regions: ['Tête', 'Nuque', 'Ventre', 'Genou', 'Gorge'],
+  regionLabels: { head: 'Tête', stomach: 'Ventre', throat: 'Gorge', knee: 'Genou' },
   patternRegions: ['Tête', 'Ventre', 'Dos', 'Poitrine', 'Peau'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
   errors: {
@@ -167,7 +166,24 @@ const fr: Translations = {
     offlineTitle: 'Hors ligne',
     offlineBody: 'Pas de connexion. Affichage des dernières données chargées.',
   },
-  recentDates: ["Aujourd'hui", 'Hier', 'Il y a 3 jours', 'La semaine dernière'],
+  dates: { today: "Aujourd'hui", yesterday: 'Hier' },
+  urgency: {
+    low: {
+      label: 'Faible',
+      tag: 'pas une urgence',
+      desc: 'Aucun signe d’urgence détecté. Surveille l’évolution sur 24 heures.',
+    },
+    mid: {
+      label: 'Moyenne',
+      tag: 'à surveiller',
+      desc: 'Pas une urgence aiguë, mais consulte si ça s’aggrave.',
+    },
+    high: {
+      label: 'Élevée',
+      tag: 'consulter',
+      desc: 'Signes d’une possible urgence. Consulte immédiatement ou appelle le 144.',
+    },
+  },
   probLabels: { high: 'probable', mid: 'possible', low: 'peu probable' },
   retentionLabels: { d7: '7 jours', d30: '30 jours', d365: '1 an' },
   triggers: [

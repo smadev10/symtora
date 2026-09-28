@@ -82,13 +82,12 @@ const en: Translations = {
   assess: {
     title: 'Assessment',
     urgencyKicker: 'URGENCY',
-    findingsTitle: 'Recognized details',
-    findingsFoot: 'Percentages show detection confidence, not severity.',
     causesTitle: 'Possible causes',
-    transcriptTitle: 'Transcript',
-    transcriptMeta: 'Voice input · 0:42',
-    transcriptFoot: 'Highlighted: the passages that drove this assessment.',
+    textTitle: 'Your description',
     stepsTitle: 'Next steps',
+    failedTitle: 'Analysis failed',
+    failedBody: 'Your description could not be assessed. Please try again with a new description.',
+    failedCta: 'New description',
     disclaimer: 'This is not a medical diagnosis. Seek medical help if symptoms worsen or you’re unsure.',
     correct: 'Correct',
     save: 'Save',
@@ -146,7 +145,7 @@ const en: Translations = {
     cancel: 'Cancel',
   },
   chips: ['Headache', 'Stomach ache', 'Cough', 'Injury'],
-  regions: ['Head', 'Neck', 'Stomach', 'Knee', 'Throat'],
+  regionLabels: { head: 'Head', stomach: 'Stomach', throat: 'Throat', knee: 'Knee' },
   patternRegions: ['Head', 'Stomach', 'Back', 'Chest', 'Skin'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
   errors: {
@@ -166,7 +165,24 @@ const en: Translations = {
     offlineTitle: 'Offline',
     offlineBody: 'No connection. Showing the data loaded last.',
   },
-  recentDates: ['Today', 'Yesterday', '3 days ago', 'Last week'],
+  dates: { today: 'Today', yesterday: 'Yesterday' },
+  urgency: {
+    low: {
+      label: 'Low',
+      tag: 'not an emergency',
+      desc: 'No signs of an emergency detected. Monitor over the next 24 hours.',
+    },
+    mid: {
+      label: 'Medium',
+      tag: 'monitor',
+      desc: 'Not an acute emergency, but see a doctor if it worsens.',
+    },
+    high: {
+      label: 'High',
+      tag: 'seek medical help',
+      desc: 'Signs of a possible emergency. Seek medical help right away or call 144.',
+    },
+  },
   probLabels: { high: 'likely', mid: 'possible', low: 'unlikely' },
   retentionLabels: { d7: '7 days', d30: '30 days', d365: '1 year' },
   triggers: [

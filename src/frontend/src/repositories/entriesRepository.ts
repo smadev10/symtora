@@ -1,39 +1,42 @@
-import { CASES, HISTORY_ORDER, type CaseKey, type DemoCase } from '@/data/cases';
-import { TR, type Lang } from '@/i18n/translations';
+import { entriesApi, type EntriesApi } from '@/api/entries';
+import { isApiError } from '@/api/errors';
+import type { CreateEntryResponse } from '@/api/types';
+import type { Lang } from '@/i18n/translations';
 import type { EntrySummary } from '@/state/entries/reducer';
+import { toAssessmentView, toSummary, type AssessmentView, type BodyRegion } from './entryMapping';
 
 /**
- * The seam between the screens and wherever entries come from.
- *
- * Today that is the bundled demo content. When the API is wired up, an
- * implementation backed by GET /entries replaces `demoEntriesRepository` and
- * nothing above this interface changes.
+ * The seam between the screens and the entries API. Screens only ever see
+ * the app's own shapes; the wire types stop here.
  */
 export interface EntriesRepository {
   list(lang: Lang): Promise<EntrySummary[]>;
-  get(lang: Lang, id: string): Promise<DemoCase | null>;
+  /** Null when the entry does not exist or belongs to someone else. */
+  get(lang: Lang, id: string): Promise<AssessmentView | null>;
+  create(text: string, bodyRegion: BodyRegion | null): Promise<CreateEntryResponse>;
 }
 
-const isCaseKey = (id: string): id is CaseKey => id in CASES.de;
+export function createApiEntriesRepository(api: EntriesApi): EntriesRepository {
+  return {
+    async list(lang) {
+      const entries = await api.list();
+      return entries.map((entry) => toSummary(entry, lang));
+    },
 
-export const demoEntriesRepository: EntriesRepository = {
-  async list(lang) {
-    const t = TR[lang];
+    async get(lang, id) {
+      try {
+        return toAssessmentView(await api.get(id), lang);
+      } catch (error) {
+        // The API answers 404 for unknown ids, which a deep link can produce.
+        if (isApiError(error) && error.kind === 'notFound') return null;
+        throw error;
+      }
+    },
 
-    return HISTORY_ORDER.map((key, i) => {
-      const source = CASES[lang][key];
-      return {
-        id: key,
-        title: source.title,
-        dateLabel: t.recentDates[i],
-        region: t.regions[i],
-        urgency: source.urgency,
-        urgencyLabel: source.urgencyLabel,
-      };
-    });
-  },
+    create(text, bodyRegion) {
+      return api.create({ text: text.trim(), bodyRegion });
+    },
+  };
+}
 
-  async get(lang, id) {
-    return isCaseKey(id) ? CASES[lang][id] : null;
-  },
-};
+export const apiEntriesRepository = createApiEntriesRepository(entriesApi);

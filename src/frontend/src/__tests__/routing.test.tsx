@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { cleanup, renderRouter, waitFor } from 'expo-router/testing-library';
 
-import { CASES } from '@/data/cases';
+import type { EntryResponse } from '@/api/types';
 import { TR } from '@/i18n/translations';
 import { STORAGE_KEYS } from '@/storage/keys';
 
@@ -29,6 +29,40 @@ async function signIn() {
   await SecureStore.setItemAsync(STORAGE_KEYS.session, raw);
 }
 
+const ENTRY_ID = '5f0c6f2e-0000-4000-8000-000000000001';
+
+const doneEntry: EntryResponse = {
+  id: ENTRY_ID,
+  rawText: 'Seit heute Mittag starke Kopfschmerzen',
+  bodyRegion: 'head',
+  status: 'Done',
+  createdAt: new Date().toISOString(),
+  assessment: {
+    causes: [{ label: 'Spannungskopfschmerz', tier: 'high' }],
+    urgency: 'low',
+    nextSteps: ['Wasser trinken.'],
+    generatedAt: new Date().toISOString(),
+  },
+};
+
+/**
+ * Stands in for the API. Only what the client reads from a Response is
+ * provided; unknown entry ids get the API's 404.
+ */
+function fakeFetch(url: string) {
+  const reply = (status: number, body: unknown) =>
+    Promise.resolve({
+      ok: status >= 200 && status < 300,
+      status,
+      text: async () => (body === undefined ? '' : JSON.stringify(body)),
+    });
+
+  const path = new URL(url).pathname;
+  if (path === '/entries') return reply(200, [doneEntry]);
+  if (path === `/entries/${ENTRY_ID}`) return reply(200, doneEntry);
+  return reply(404, undefined);
+}
+
 const persistSettings = (settings: Record<string, unknown>) =>
   AsyncStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
 
@@ -42,6 +76,7 @@ const expectVisible = (view: Awaited<ReturnType<typeof open>>, text: string) =>
   waitFor(() => expect(view.getByText(text)).toBeTruthy());
 
 beforeEach(async () => {
+  jest.spyOn(globalThis, 'fetch').mockImplementation(((url: string) => fakeFetch(url)) as typeof fetch);
   await AsyncStorage.clear();
   await SecureStore.deleteItemAsync(STORAGE_KEYS.session);
 });
@@ -50,6 +85,7 @@ beforeEach(async () => {
 // explicit unmount one test starts on the screen the previous one left.
 afterEach(async () => {
   await cleanup();
+  jest.restoreAllMocks();
 });
 
 describe('entry redirect', () => {
@@ -104,12 +140,13 @@ describe('deep links', () => {
     await signIn();
     await persistSettings({ consentAccepted: true });
 
-    const view = await open('/assessment/headache');
+    const view = await open(`/assessment/${ENTRY_ID}`);
 
     await expectVisible(view, TR.de.assess.title);
-    // A finding unique to the headache case, proving the id was resolved
-    // rather than some default being rendered.
-    await expectVisible(view, CASES.de.headache.findings[0].label);
+    // Content of that specific entry, proving the id was resolved rather
+    // than some default being rendered.
+    await expectVisible(view, 'Spannungskopfschmerz');
+    await expectVisible(view, TR.de.urgency.low.label);
   });
 
   it('shows the empty state for an assessment id that does not exist', async () => {

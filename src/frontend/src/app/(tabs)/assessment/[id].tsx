@@ -2,23 +2,27 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import Analysing from '@/components/Analysing';
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
 import ScreenHeader from '@/components/ScreenHeader';
-import { EmptyState, LoadingState } from '@/components/states';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { IconCheck, IconWarning } from '@/components/icons';
-import type { DemoCase, Probability } from '@/data/cases';
+import { ERROR_KEYS, isApiError } from '@/api/errors';
+import type { Probability } from '@/data/cases';
 import { TR } from '@/i18n/translations';
-import { demoEntriesRepository } from '@/repositories/entriesRepository';
+import { apiEntriesRepository } from '@/repositories/entriesRepository';
+import type { AssessmentView } from '@/repositories/entryMapping';
+import { useEntries } from '@/state/entries/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { lh, sharedStyles, themedStyles } from '@/theme/styles';
-import { tintFor, tokens, type ThemeTokens } from '@/theme/tokens';
+import { tokens, type ThemeTokens } from '@/theme/tokens';
 
-const FINDING_BAR_COLORS = {
-  light: ['#142939', '#285172', '#7fb2d9'],
-  dark: ['#b9dcf7', '#7fb2d9', '#4d7ea3'],
-} as const;
+/** Analysis runs on a self-hosted model; the API asks clients to poll. */
+const POLL_INTERVAL_MS = 2_000;
+/** After this the entry is shown as failed rather than spinning forever. */
+const POLL_LIMIT_MS = 180_000;
 
 const CAUSE_BORDER_COLORS = {
   light: ['#142939', '#e08a2e', '#5aa7d8'],
@@ -58,12 +62,8 @@ const styles = themedStyles((tk) =>
       marginTop: 8,
       lineHeight: lh(12.5, 1.5),
     },
-    findingLabel: { color: tk.textStrong, fontSize: 12.5, fontWeight: '600' },
-    findingPct: { color: tk.textStrong, fontSize: 12.5, fontWeight: '700' },
-    foot: { color: tk.textFaint, fontSize: 10.5, marginTop: 8 },
     causeBox: { borderLeftWidth: 3, backgroundColor: tk.inset, borderRadius: 12, padding: 14 },
-    causeTitle: { color: tk.textStrong, fontSize: 13.5, fontWeight: '700' },
-    causeDesc: { color: tk.textMuted, fontSize: 12, marginTop: 3, lineHeight: lh(12, 1.4) },
+    causeTitle: { color: tk.textStrong, fontSize: 13.5, fontWeight: '700', flexShrink: 1 },
     causePill: {
       fontSize: 11,
       fontWeight: '700',
@@ -72,7 +72,7 @@ const styles = themedStyles((tk) =>
       borderRadius: 20,
       overflow: 'hidden',
     },
-    transcript: { color: tk.textNormal, fontSize: 13, lineHeight: lh(13, 1.9), marginTop: 10 },
+    rawText: { color: tk.textNormal, fontSize: 13, lineHeight: lh(13, 1.6), marginTop: 10 },
     stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 6 },
     disclaimer: {
       flexDirection: 'row',
@@ -91,56 +91,113 @@ const styles = themedStyles((tk) =>
   }),
 );
 
+type LoadState =
+  | { kind: 'loading' }
+  | { kind: 'pending' }
+  | { kind: 'missing' }
+  | { kind: 'error'; errorKey: string }
+  | { kind: 'ready'; view: AssessmentView };
+
 export default function AssessmentScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { settings } = useSettings();
+  const { reload } = useEntries();
 
   const t = TR[settings.lang];
   const s = styles(settings.theme);
   const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
-  const [entry, setEntry] = useState<DemoCase | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<LoadState>({ kind: 'loading' });
+  /** Bumped by the retry button to restart loading. */
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let sawPending = false;
+    const startedAt = Date.now();
+    setState({ kind: 'loading' });
 
-    void demoEntriesRepository.get(settings.lang, id ?? '').then((found) => {
-      if (cancelled) return;
-      setEntry(found);
-      setLoading(false);
-    });
+    const poll = async () => {
+      try {
+        const view = await apiEntriesRepository.get(settings.lang, id ?? '');
+        if (cancelled) return;
+
+        if (!view) {
+          setState({ kind: 'missing' });
+          return;
+        }
+
+        if (view.status === 'Pending') {
+          if (Date.now() - startedAt < POLL_LIMIT_MS) {
+            sawPending = true;
+            setState({ kind: 'pending' });
+            timer = setTimeout(() => void poll(), POLL_INTERVAL_MS);
+            return;
+          }
+          setState({ kind: 'ready', view: { ...view, status: 'Failed' } });
+          return;
+        }
+
+        setState({ kind: 'ready', view });
+        // The home list still shows this entry as pending.
+        if (sawPending) void reload();
+      } catch (error) {
+        if (cancelled) return;
+        setState({
+          kind: 'error',
+          errorKey: isApiError(error) ? error.messageKey : ERROR_KEYS.unknown,
+        });
+      }
+    };
+
+    void poll();
 
     return () => {
       cancelled = true;
+      if (timer) clearTimeout(timer);
     };
-  }, [id, settings.lang]);
+  }, [id, settings.lang, attempt, reload]);
 
   const back = () => router.navigate('/start');
 
-  if (loading) {
+  if (state.kind === 'pending') {
     return (
-      <Screen padded>
-        <ScreenHeader onBack={back} />
-        <LoadingState />
+      <Screen scroll={false}>
+        <Analysing />
       </Screen>
     );
   }
 
-  // Reachable from a deep link such as symtora://assessment/anything.
-  if (!entry) {
+  if (state.kind !== 'ready') {
     return (
       <Screen padded>
         <ScreenHeader onBack={back} />
-        <EmptyState />
+        {state.kind === 'loading' ? <LoadingState /> : null}
+        {/* Reachable from a deep link such as symtora://assessment/anything. */}
+        {state.kind === 'missing' ? <EmptyState /> : null}
+        {state.kind === 'error' ? (
+          <ErrorState errorKey={state.errorKey} onRetry={() => setAttempt((n) => n + 1)} />
+        ) : null}
       </Screen>
     );
   }
 
-  const findingColors = FINDING_BAR_COLORS[settings.theme];
+  const { view } = state;
+
+  if (view.status === 'Failed' || !view.urgency) {
+    return (
+      <Screen padded>
+        <ScreenHeader onBack={back} />
+        <EmptyState title={t.assess.failedTitle} body={t.assess.failedBody} />
+        <Button label={t.assess.failedCta} onPress={() => router.replace('/new')} />
+      </Screen>
+    );
+  }
+
+  const urgency = t.urgency[view.urgency];
   const causeColors = CAUSE_BORDER_COLORS[settings.theme];
 
   return (
@@ -152,97 +209,63 @@ export default function AssessmentScreen() {
       <View style={s.navyCard}>
         <AppText style={s.navyKicker}>{t.assess.urgencyKicker}</AppText>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
-          <AppText style={s.urgencyValue}>{entry.urgencyLabel}</AppText>
-          <AppText style={s.urgencyPill}>{entry.urgencyTag}</AppText>
+          <AppText style={s.urgencyValue}>{urgency.label}</AppText>
+          <AppText style={s.urgencyPill}>{urgency.tag}</AppText>
         </View>
-        <AppText style={s.urgencyDesc}>{entry.urgencyDesc}</AppText>
+        <AppText style={s.urgencyDesc}>{urgency.desc}</AppText>
       </View>
 
-      <AppText style={shared.sectionTitleTop}>{t.assess.findingsTitle}</AppText>
-      <View style={shared.card}>
-        {entry.findings.map((finding, i) => (
-          <View
-            key={finding.label}
-            style={{ marginBottom: i < entry.findings.length - 1 ? 14 : 0 }}
-          >
-            <View style={shared.rowBetween}>
-              <AppText style={s.findingLabel}>{finding.label}</AppText>
-              <AppText style={s.findingPct}>{finding.pct}%</AppText>
-            </View>
-            <View style={[shared.distTrack, { marginTop: 4 }]}>
-              <View
-                style={{
-                  height: '100%',
-                  width: `${finding.pct}%`,
-                  backgroundColor: findingColors[i % 3],
-                  borderRadius: 4,
-                }}
-              />
-            </View>
+      {view.causes.length > 0 ? (
+        <>
+          <AppText style={shared.sectionTitleTop}>{t.assess.causesTitle}</AppText>
+          <View style={shared.card}>
+            {view.causes.map((cause, i) => {
+              const pill = probPill(cause.prob, tk);
+              return (
+                <View
+                  key={`${i}-${cause.label}`}
+                  style={[
+                    s.causeBox,
+                    {
+                      borderLeftColor: causeColors[i % 3],
+                      marginBottom: i < view.causes.length - 1 ? 8 : 0,
+                    },
+                  ]}
+                >
+                  <View style={shared.rowBetween}>
+                    <AppText style={s.causeTitle}>{cause.label}</AppText>
+                    <AppText style={[s.causePill, { color: pill.fg, backgroundColor: pill.bg }]}>
+                      {t.probLabels[cause.prob]}
+                    </AppText>
+                  </View>
+                </View>
+              );
+            })}
           </View>
-        ))}
-        <AppText style={s.foot}>{t.assess.findingsFoot}</AppText>
-      </View>
-
-      <AppText style={shared.sectionTitleTop}>{t.assess.causesTitle}</AppText>
-      <View style={shared.card}>
-        {entry.causes.map((cause, i) => {
-          const pill = probPill(cause.prob, tk);
-          return (
-            <View
-              key={cause.label}
-              style={[
-                s.causeBox,
-                {
-                  borderLeftColor: causeColors[i % 3],
-                  marginBottom: i < entry.causes.length - 1 ? 8 : 0,
-                },
-              ]}
-            >
-              <View style={shared.rowBetween}>
-                <AppText style={s.causeTitle}>{cause.label}</AppText>
-                <AppText style={[s.causePill, { color: pill.fg, backgroundColor: pill.bg }]}>
-                  {t.probLabels[cause.prob]}
-                </AppText>
-              </View>
-              <AppText style={s.causeDesc}>{cause.desc}</AppText>
-            </View>
-          );
-        })}
-      </View>
+        </>
+      ) : null}
 
       <View style={shared.card}>
         <View style={shared.rowBetween}>
-          <AppText style={shared.sectionTitleInCard}>{t.assess.transcriptTitle}</AppText>
-          <AppText style={shared.textMutedSmall}>{t.assess.transcriptMeta}</AppText>
+          <AppText style={shared.sectionTitleInCard}>{t.assess.textTitle}</AppText>
+          <AppText style={shared.textMutedSmall}>{view.createdLabel}</AppText>
         </View>
-        <AppText style={s.transcript}>
-          {entry.segments.map((segment, i) => {
-            const tint = segment.c ? tintFor(tk, segment.c) : null;
-            return (
-              <AppText
-                key={i}
-                style={
-                  tint ? { backgroundColor: tint.bg, color: tint.fg, fontWeight: '600' } : undefined
-                }
-              >
-                {segment.t}
-              </AppText>
-            );
-          })}
-        </AppText>
-        <AppText style={s.foot}>{t.assess.transcriptFoot}</AppText>
+        <AppText style={s.rawText}>{view.rawText}</AppText>
       </View>
 
-      <AppText style={shared.sectionTitleTop}>{t.assess.stepsTitle}</AppText>
-      <View style={shared.card}>
-        {entry.steps.map((step) => (
-          <View key={step} style={s.stepRow}>
-            <IconCheck color={tk.accent} />
-            <AppText style={[shared.textNormal, { flex: 1, fontSize: 13 }]}>{step}</AppText>
+      {view.steps.length > 0 ? (
+        <>
+          <AppText style={shared.sectionTitleTop}>{t.assess.stepsTitle}</AppText>
+          <View style={shared.card}>
+            {view.steps.map((step, i) => (
+              <View key={`${i}-${step}`} style={s.stepRow}>
+                <IconCheck color={tk.accent} />
+                <AppText style={[shared.textNormal, { flex: 1, fontSize: 13 }]}>{step}</AppText>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        </>
+      ) : null}
 
       <View style={s.disclaimer}>
         <IconWarning color="#b9770e" />

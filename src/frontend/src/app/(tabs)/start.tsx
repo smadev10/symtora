@@ -203,13 +203,18 @@ export default function StartScreen() {
                 <View style={shared.rowBetween}>
                   <AppText style={s.histTitle}>{entry.title}</AppText>
                   <AppText
-                    style={[s.urgencyPill, { backgroundColor: URGENCY_COLOR[entry.urgency] }]}
+                    style={[
+                      s.urgencyPill,
+                      {
+                        backgroundColor: entry.urgency ? URGENCY_COLOR[entry.urgency] : tk.textFaint,
+                      },
+                    ]}
                   >
                     {entry.urgencyLabel}
                   </AppText>
                 </View>
                 <AppText style={s.histMeta}>
-                  {entry.dateLabel} · {entry.region}
+                  {entry.region ? `${entry.dateLabel} · ${entry.region}` : entry.dateLabel}
                 </AppText>
               </Pressable>
             ))}

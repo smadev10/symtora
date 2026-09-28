@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 import { ERROR_KEYS, isApiError } from '@/api/errors';
-import { demoEntriesRepository, type EntriesRepository } from '@/repositories/entriesRepository';
+import { apiEntriesRepository, type EntriesRepository } from '@/repositories/entriesRepository';
 import { useSettings } from '@/state/settings/Provider';
 import { INITIAL_ENTRIES, entriesReducer, type EntriesState } from './reducer';
 
@@ -24,7 +24,7 @@ const EntriesContext = createContext<EntriesContextValue | null>(null);
 
 export function EntriesProvider({
   children,
-  repository = demoEntriesRepository,
+  repository = apiEntriesRepository,
 }: {
   children: ReactNode;
   repository?: EntriesRepository;
