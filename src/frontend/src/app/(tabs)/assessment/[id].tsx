@@ -29,6 +29,16 @@ const CAUSE_BORDER_COLORS = {
   dark: ['#b9dcf7', '#e0b060', '#6fcf97'],
 } as const;
 
+/**
+ * Urgency tag on the navy card. It must never look reassuring when the advice is to
+ * seek help, so it follows the urgency rather than a fixed green.
+ */
+const URGENCY_PILL = {
+  low: { color: '#227a44', backgroundColor: '#c9ecd4' },
+  mid: { color: '#8a5a08', backgroundColor: '#fbe3b8' },
+  high: { color: '#c62828', backgroundColor: '#fdeaea' },
+} as const;
+
 function probPill(prob: Probability, tk: ThemeTokens) {
   if (prob === 'high') return { bg: '#c9ecd4', fg: '#227a44' };
   if (prob === 'mid') return { bg: '#fbe3b8', fg: '#8a5a08' };
@@ -47,8 +57,6 @@ const styles = themedStyles((tk) =>
     },
     urgencyValue: { color: '#fff', fontWeight: '800', fontSize: 26 },
     urgencyPill: {
-      color: '#227a44',
-      backgroundColor: '#c9ecd4',
       fontSize: 11,
       fontWeight: '700',
       paddingVertical: 4,
@@ -211,7 +219,7 @@ export default function AssessmentScreen() {
         <AppText style={s.navyKicker}>{t.assess.urgencyKicker}</AppText>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
           <AppText style={s.urgencyValue}>{urgency.label}</AppText>
-          <AppText style={s.urgencyPill}>{urgency.tag}</AppText>
+          <AppText style={[s.urgencyPill, URGENCY_PILL[view.urgency]]}>{urgency.tag}</AppText>
         </View>
         <AppText style={s.urgencyDesc}>{urgency.desc}</AppText>
       </View>

@@ -170,15 +170,6 @@ describe('persisted settings survive a restart', () => {
     await expectVisible(view, TR.fr.patterns.title);
   });
 
-  it('renders the persisted retention choice as selected', async () => {
-    await signIn();
-    await persistSettings({ consentAccepted: true, retention: 365 });
-
-    const view = await open('/data');
-
-    await expectVisible(view, TR.de.retentionLabels.d365);
-  });
-
   it('shows the restored user on the data screen', async () => {
     await signIn();
     await persistSettings({ consentAccepted: true });

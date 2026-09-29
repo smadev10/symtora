@@ -96,17 +96,6 @@ export function IconStop({ size = 22, color = '#ffffff' }: IconProps) {
   );
 }
 
-export function IconStorage({ size = 22, color = '#142939' }: IconProps) {
-  return (
-    <Base size={size} color={color}>
-      <Line x1="22" y1="12" x2="2" y2="12" />
-      <Path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-      <Line x1="6" y1="16" x2="6.01" y2="16" />
-      <Line x1="10" y1="16" x2="10.01" y2="16" />
-    </Base>
-  );
-}
-
 export function IconDownload({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
@@ -153,18 +142,11 @@ export function IconHistory({ size = 22, color = '#142939' }: IconProps) {
   );
 }
 
-export function IconSliders({ size = 22, color = '#142939' }: IconProps) {
+export function IconSettings({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
-      <Line x1="4" y1="21" x2="4" y2="14" />
-      <Line x1="4" y1="10" x2="4" y2="3" />
-      <Line x1="12" y1="21" x2="12" y2="12" />
-      <Line x1="12" y1="8" x2="12" y2="3" />
-      <Line x1="20" y1="21" x2="20" y2="16" />
-      <Line x1="20" y1="12" x2="20" y2="3" />
-      <Line x1="1" y1="14" x2="7" y2="14" />
-      <Line x1="9" y1="8" x2="15" y2="8" />
-      <Line x1="17" y1="16" x2="23" y2="16" />
+      <Circle cx="12" cy="12" r="3" />
+      <Path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </Base>
   );
 }
