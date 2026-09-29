@@ -13,7 +13,8 @@ export interface EntriesRepository {
   list(lang: Lang): Promise<EntrySummary[]>;
   /** Null when the entry does not exist or belongs to someone else. */
   get(lang: Lang, id: string): Promise<AssessmentView | null>;
-  create(text: string, bodyRegion: BodyRegion | null): Promise<CreateEntryResponse>;
+  /** `lang` is the language the model writes the assessment in. */
+  create(lang: Lang, text: string, bodyRegion: BodyRegion | null): Promise<CreateEntryResponse>;
 }
 
 export function createApiEntriesRepository(api: EntriesApi): EntriesRepository {
@@ -33,8 +34,8 @@ export function createApiEntriesRepository(api: EntriesApi): EntriesRepository {
       }
     },
 
-    create(text, bodyRegion) {
-      return api.create({ text: text.trim(), bodyRegion });
+    create(lang, text, bodyRegion) {
+      return api.create({ text: text.trim(), bodyRegion, language: lang });
     },
   };
 }

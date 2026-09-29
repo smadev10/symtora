@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: http://model:11434
-    command: ["pull", "${OLLAMA_MODEL:-llama3.1:8b}"]
+    command: ["pull", "${OLLAMA_MODEL:-llama3.2:3b}"]
 
   api:
     build:
@@ -52,7 +52,7 @@ services:
       ConnectionStrings__Postgres: Host=db;Port=5432;Database=symtora;Username=symtora;Password=${POSTGRES_PASSWORD:-symtora}
       Jwt__Secret: ${JWT_SECRET:?JWT_SECRET must be set in .env}
       Ollama__BaseUrl: http://model:11434
-      Ollama__Model: ${OLLAMA_MODEL:-llama3.1:8b}
+      Ollama__Model: ${OLLAMA_MODEL:-llama3.2:3b}
       OpenApi__Enabled: ${EXPOSE_API_DOCS:-false}
     ports:
       - "8080:8080"

@@ -23,4 +23,10 @@ public class Assessment
     public DateTimeOffset GeneratedAt { get; set; }
 }
 
-public record AssessmentCause(string Label, string Tier);
+/// <param name="Label">Name of the possible cause.</param>
+/// <param name="Tier">"low" | "mid" | "high" likelihood.</param>
+/// <param name="Reason">
+/// One sentence on why it fits. Null for assessments stored before reasons were asked for —
+/// they live in the same JSON column, so no migration was needed.
+/// </param>
+public record AssessmentCause(string Label, string Tier, string? Reason = null);

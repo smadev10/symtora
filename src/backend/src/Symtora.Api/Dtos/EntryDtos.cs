@@ -5,7 +5,8 @@ namespace Symtora.Api.Dtos;
 
 public record CreateEntryRequest(
     [Required, MinLength(1)] string Text,
-    string? BodyRegion);
+    string? BodyRegion,
+    [RegularExpression("^(de|en|fr)$", ErrorMessage = "Language must be de, en or fr.")] string? Language = null);
 
 public record CreateEntryResponse(Guid Id, string Status);
 

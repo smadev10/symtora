@@ -20,7 +20,7 @@ function entry(overrides: Partial<EntryResponse> = {}): EntryResponse {
     createdAt: new Date(2026, 8, 28, 9, 30).toISOString(),
     assessment: {
       causes: [
-        { label: 'Spannungskopfschmerz', tier: 'high' },
+        { label: 'Spannungskopfschmerz', tier: 'high', reason: ' Passt zur Nackensteifigkeit. ' },
         { label: 'Migräne', tier: 'MID' },
       ],
       urgency: 'low',
@@ -100,8 +100,9 @@ describe('toAssessmentView', () => {
 
     expect(view.urgency).toBe('low');
     expect(view.causes).toEqual([
-      { label: 'Spannungskopfschmerz', prob: 'high' },
-      { label: 'Migräne', prob: 'mid' },
+      { label: 'Spannungskopfschmerz', prob: 'high', desc: 'Passt zur Nackensteifigkeit.' },
+      // Assessments from before reasons existed have none.
+      { label: 'Migräne', prob: 'mid', desc: null },
     ]);
     expect(view.steps).toEqual(['Wasser trinken.']);
     expect(view.rawText).toBe(entry().rawText);

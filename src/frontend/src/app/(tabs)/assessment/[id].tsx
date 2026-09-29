@@ -64,6 +64,7 @@ const styles = themedStyles((tk) =>
     },
     causeBox: { borderLeftWidth: 3, backgroundColor: tk.inset, borderRadius: 12, padding: 14 },
     causeTitle: { color: tk.textStrong, fontSize: 13.5, fontWeight: '700', flexShrink: 1 },
+    causeDesc: { color: tk.textMuted, fontSize: 12, marginTop: 3, lineHeight: lh(12, 1.4) },
     causePill: {
       fontSize: 11,
       fontWeight: '700',
@@ -238,6 +239,7 @@ export default function AssessmentScreen() {
                       {t.probLabels[cause.prob]}
                     </AppText>
                   </View>
+                  {cause.desc ? <AppText style={s.causeDesc}>{cause.desc}</AppText> : null}
                 </View>
               );
             })}

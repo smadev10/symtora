@@ -17,12 +17,16 @@ describe('entries api', () => {
     const { client, calls } = recordingClient({ id: 'abc', status: 'Pending' });
 
     await expect(
-      createEntriesApi(client).create({ text: 'Kopfweh seit heute', bodyRegion: 'head' }),
+      createEntriesApi(client).create({ text: 'Kopfweh seit heute', bodyRegion: 'head', language: 'de' }),
     ).resolves.toEqual({ id: 'abc', status: 'Pending' });
 
     expect(calls[0].path).toBe('/entries');
     expect(calls[0].options?.method).toBe('POST');
-    expect(calls[0].options?.body).toEqual({ text: 'Kopfweh seit heute', bodyRegion: 'head' });
+    expect(calls[0].options?.body).toEqual({
+      text: 'Kopfweh seit heute',
+      bodyRegion: 'head',
+      language: 'de',
+    });
   });
 
   it('fetches one entry by id', async () => {

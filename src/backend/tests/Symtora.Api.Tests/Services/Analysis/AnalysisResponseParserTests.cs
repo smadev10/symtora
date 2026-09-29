@@ -76,6 +76,52 @@ public class AnalysisResponseParserTests
     }
 
     [Fact]
+    public void Reads_and_trims_the_reason_per_cause()
+    {
+        const string raw = """
+            { "urgency": "low", "causes": [{ "label": "Migraine", "tier": "mid", "reason": "  Light hurts.  " }], "nextSteps": [] }
+            """;
+
+        AnalysisResponseParser.TryParse(raw, out var result);
+
+        Assert.Equal("Light hurts.", result!.Causes[0].Reason);
+    }
+
+    [Theory]
+    [InlineData("""{ "label": "Migraine", "tier": "mid" }""")]
+    [InlineData("""{ "label": "Migraine", "tier": "mid", "reason": "   " }""")]
+    public void A_missing_or_blank_reason_becomes_null(string cause)
+    {
+        var raw = $$"""{ "urgency": "low", "causes": [{{cause}}], "nextSteps": [] }""";
+
+        AnalysisResponseParser.TryParse(raw, out var result);
+
+        Assert.Null(result!.Causes[0].Reason);
+    }
+
+    [Fact]
+    public void Orders_causes_most_likely_first_keeping_model_order_within_a_tier()
+    {
+        // Seen live from llama3.2:3b: the prompt asked for most-likely-first, it answered the reverse.
+        const string raw = """
+            {
+              "urgency": "low",
+              "causes": [
+                { "label": "A", "tier": "low" },
+                { "label": "B", "tier": "low" },
+                { "label": "C", "tier": "mid" },
+                { "label": "D", "tier": "high" }
+              ],
+              "nextSteps": []
+            }
+            """;
+
+        AnalysisResponseParser.TryParse(raw, out var result);
+
+        Assert.Equal(["D", "C", "A", "B"], result!.Causes.Select(c => c.Label));
+    }
+
+    [Fact]
     public void Drops_causes_with_blank_labels()
     {
         const string raw = """

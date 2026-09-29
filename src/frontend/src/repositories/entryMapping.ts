@@ -19,7 +19,7 @@ export type AssessmentView = {
   createdLabel: string;
   /** Null until the analysis is done. */
   urgency: Urgency | null;
-  causes: { label: string; prob: Probability }[];
+  causes: { label: string; prob: Probability; desc: string | null }[];
   steps: string[];
 };
 
@@ -87,6 +87,7 @@ export function toAssessmentView(entry: EntryResponse, lang: Lang, now?: Date): 
     causes: (assessment?.causes ?? []).map((cause) => ({
       label: cause.label,
       prob: toProbability(cause.tier),
+      desc: cause.reason?.trim() || null,
     })),
     steps: assessment?.nextSteps ?? [],
   };

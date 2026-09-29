@@ -20,6 +20,9 @@ public class SymtoraDbContext(DbContextOptions<SymtoraDbContext> options) : DbCo
         modelBuilder.Entity<SymptomEntry>(b =>
         {
             b.Property(e => e.Status).HasConversion<string>();
+            b.Property(e => e.Language)
+                .HasMaxLength(SymptomEntry.LanguageMaxLength)
+                .HasDefaultValue(SymptomEntry.DefaultLanguage);
             b.HasOne(e => e.User)
                 .WithMany(u => u.Entries)
                 .HasForeignKey(e => e.UserId)

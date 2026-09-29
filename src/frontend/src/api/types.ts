@@ -29,6 +29,8 @@ export type EntryStatusDto = 'Pending' | 'Done' | 'Failed';
 export type AssessmentCauseDto = {
   label: string;
   tier: string;
+  /** One sentence on why it fits. Null for assessments made before reasons existed. */
+  reason?: string | null;
 };
 
 export type AssessmentResponse = {
@@ -51,6 +53,8 @@ export type EntryResponse = {
 export type CreateEntryRequest = {
   text: string;
   bodyRegion?: string | null;
+  /** Language the assessment is written in; the API defaults to "de". */
+  language?: 'de' | 'en' | 'fr';
 };
 
 export type CreateEntryResponse = {

@@ -22,7 +22,10 @@ public class EntriesController(SymtoraDbContext db, IEntryAnalysisQueue queue) :
     /// `GET /entries/{id}` until the status is `Done` or `Failed` rather than holding a request
     /// open on a mobile connection.
     /// </remarks>
-    /// <param name="request">The symptom text, plus an optional body region such as `head` or `knee`.</param>
+    /// <param name="request">
+    /// The symptom text, an optional body region such as `head` or `knee`, and the app language
+    /// (`de`, `en` or `fr`, default `de`) the assessment should be written in.
+    /// </param>
     /// <response code="202">Queued. The `Location` header points at the entry to poll.</response>
     [HttpPost]
     public async Task<ActionResult<CreateEntryResponse>> Create(CreateEntryRequest request, CancellationToken ct)
@@ -33,6 +36,7 @@ public class EntriesController(SymtoraDbContext db, IEntryAnalysisQueue queue) :
             UserId = User.GetUserId(),
             RawText = request.Text.Trim(),
             BodyRegion = string.IsNullOrWhiteSpace(request.BodyRegion) ? null : request.BodyRegion.Trim(),
+            Language = request.Language ?? SymptomEntry.DefaultLanguage,
             Status = EntryStatus.Pending,
             CreatedAt = DateTimeOffset.UtcNow,
         };

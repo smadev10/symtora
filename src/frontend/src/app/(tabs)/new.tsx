@@ -80,7 +80,7 @@ export default function NewEntryScreen() {
 
     try {
       // Returns as soon as the entry is queued; the assessment screen polls for the result.
-      const { id } = await apiEntriesRepository.create(description, region);
+      const { id } = await apiEntriesRepository.create(settings.lang, description, region);
       if (!mounted.current) return;
       void reload();
       setDescription('');
