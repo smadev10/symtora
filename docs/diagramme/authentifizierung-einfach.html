@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<title>Symtora Anmeldung</title>
+<link rel="stylesheet" href="diagramm.css">
+</head>
+<body>
+<div class="canvas simple">
+
+  <h1>Authentifizierung <span class="q">– Wer bist du?</span></h1>
+  <p class="lead">Nach der Anmeldung erhält die Person einen digitalen Ausweis (Token), mit dem sie sich danach ausweist.</p>
+
+  <div class="lanes">
+    <div class="lane-head app">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      App
+    </div>
+    <div class="lane-head srv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></svg>
+      Server
+    </div>
+    <div class="lane-head db">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+      Datenbank
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="lifeline app"></div>
+    <div class="lifeline srv"></div>
+    <div class="lifeline db"></div>
+
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">1</span>Anmelden</div>
+        <p class="desc">E-Mail und Passwort eingeben. Das Passwort wird vor dem Senden unkenntlich gemacht.</p>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-srv">
+        <div class="label">
+          <div class="title"><span class="num app">2</span>Anmeldedaten senden</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg srv-db">
+        <div class="label">
+          <div class="title"><span class="num srv">3</span>Konto und Passwort prüfen</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-srv rtl reply err">
+        <div class="label">
+          <div class="title"><span class="num err">✕</span>Falsch: abgelehnt</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-srv rtl reply ok">
+        <div class="label">
+          <div class="title"><span class="num srv">4</span>Richtig: Ausweis (Token)</div>
+          <div class="sub">7 Tage gültig</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">5</span>Ausweis sicher speichern</div>
+        <p class="desc">Im geschützten Speicher des Handys. Beim Abmelden wird er gelöscht.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="ln"></i>Anfrage</span>
+    <span><i class="ln dash"></i>Antwort</span>
+    <span><i class="ln dash red"></i>Ablehnung</span>
+  </div>
+
+</div>
+</body>
+</html>

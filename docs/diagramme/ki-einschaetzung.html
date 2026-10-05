@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<title>Symtora KI-Einschätzung</title>
+<link rel="stylesheet" href="diagramm.css">
+</head>
+<body>
+<div class="canvas four">
+
+  <div class="eyebrow">Symtora · Funktionsweise</div>
+  <h1>KI-Einschätzung <span class="q">– vom Symptom zur Empfehlung</span></h1>
+  <p class="lead">So wird aus einer Symptombeschreibung eine Ersteinschätzung mit Dringlichkeit, möglichen Ursachen und nächsten Schritten. Die KI arbeitet im Hintergrund, die App bleibt währenddessen bedienbar.</p>
+
+  <div class="analogy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    <p><b>Wichtig: keine Diagnose.</b> Symtora gibt nur eine Ersteinschätzung, wie dringend etwas sein könnte, und ersetzt keine ärztliche Abklärung. Die KI läuft auf dem <b>eigenen Server</b>. Symptombeschreibungen werden nie an externe Anbieter geschickt.</p>
+  </div>
+
+  <div class="lanes">
+    <div class="lane-head app">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      App <small>Smartphone</small>
+    </div>
+    <div class="lane-head srv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></svg>
+      Server <small>Symtora API</small>
+    </div>
+    <div class="lane-head ai">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/><path d="M19 3v4M17 5h4"/></svg>
+      KI-Modell <small>Ollama, selbst gehostet</small>
+    </div>
+    <div class="lane-head db">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+      Datenbank <small>Einträge</small>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="lifeline app"></div>
+    <div class="lifeline srv"></div>
+    <div class="lifeline ai"></div>
+    <div class="lifeline db"></div>
+
+    <!-- 1 -->
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">1</span>Symptome beschreiben</div>
+        <p class="desc">In eigenen Worten oder per Schnellauswahl, optional mit Körperregion.</p>
+        <span class="tech">Sprache de · en · fr</span>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="row msg-row">
+      <div class="msg app-srv">
+        <div class="label">
+          <div class="title"><span class="num app">2</span>Eintrag senden</div>
+          <span class="tech">POST /entries</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="row msg-row">
+      <div class="msg srv-db">
+        <div class="label">
+          <div class="title"><span class="num srv">3</span>Speichern: «In Bearbeitung»</div>
+          <span class="tech">Status Pending</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="row msg-row">
+      <div class="msg app-srv rtl reply">
+        <div class="label">
+          <div class="title"><span class="num srv">4</span>Sofort bestätigt</div>
+          <span class="tech">202 Accepted</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="row">
+      <div class="card srv">
+        <div class="title"><span class="num">5</span>Warteschlange</div>
+        <p class="desc">Ein Hintergrundprozess arbeitet die Einträge der Reihe nach ab.</p>
+        <span class="tech">Queue · Worker</span>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="row msg-row">
+      <div class="msg srv-ai">
+        <div class="label">
+          <div class="title"><span class="num srv">6</span>Auftrag an die KI</div>
+          <span class="tech">Prompt + JSON-Schema</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 7 + Warten -->
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">⟳</span>Warten</div>
+        <p class="desc">Die App zeigt eine Ladeanzeige und fragt alle 2&nbsp;Sekunden nach (max. 3&nbsp;Min.).</p>
+        <span class="tech">GET /entries/{id}</span>
+      </div>
+      <div class="card ai">
+        <div class="title"><span class="num">7</span>KI schätzt ein</div>
+        <p class="desc">Dringlichkeit, 2–4 mögliche Ursachen mit Begründung und 1–4 nächste Schritte, in der App-Sprache.</p>
+        <span class="tech">llama3.2:3b · Temp. 0.2</span>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="row msg-row">
+      <div class="msg srv-ai rtl reply">
+        <div class="label">
+          <div class="title"><span class="num ai">8</span>Antwort der KI</div>
+          <span class="tech">JSON</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="row">
+      <div class="card srv">
+        <div class="title"><span class="num">9</span>Antwort prüfen</div>
+        <p class="desc">Format kontrollieren, Werte bereinigen, Ursachen nach Wahrscheinlichkeit sortieren. Im Zweifel gilt «mittel».</p>
+        <span class="tech">AnalysisResponseParser</span>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="row msg-row">
+      <div class="msg srv-db">
+        <div class="label">
+          <div class="title"><span class="num srv">10</span>Ergebnis speichern: «Fertig»</div>
+          <span class="tech">Assessment · Status Done</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- Fehler -->
+    <div class="row msg-row">
+      <div class="msg app-srv rtl reply err">
+        <div class="label">
+          <div class="title"><span class="num err">✕</span>Fehler oder zu langsam</div>
+          <span class="tech">Status Failed</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="row msg-row">
+      <div class="msg app-srv rtl reply ok">
+        <div class="label">
+          <div class="title"><span class="num srv">11</span>Einschätzung anzeigen</div>
+          <span class="tech">200 OK · Status Done</span>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Was die Person am Ende sieht</div>
+  <div class="tiles">
+    <div class="tile ok">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Ergebnis</h3>
+      <div class="traffic">
+        <span><i style="background:#16a34a"></i>niedrig</span>
+        <span><i style="background:#f59e0b"></i>mittel</span>
+        <span><i style="background:#dc2626"></i>hoch</span>
+      </div>
+      <p>Dringlichkeit als Ampel, mögliche Ursachen mit Begründung und konkrete nächste Schritte.</p>
+    </div>
+    <div class="tile ai">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Sicherheitsnetz</h3>
+      <p>Bei Hinweisen auf einen Notfall setzt die KI die Dringlichkeit auf «hoch» und sagt das im ersten Schritt deutlich.</p>
+    </div>
+    <div class="tile err">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>Fehlgeschlagen</h3>
+      <p>Die App meldet «Analyse fehlgeschlagen» und bietet an, eine neue Beschreibung einzugeben.</p>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:var(--app)"></i>App</span>
+    <span><i class="sw" style="background:var(--srv)"></i>Server</span>
+    <span><i class="sw" style="background:var(--ai)"></i>KI-Modell</span>
+    <span><i class="sw" style="background:var(--db)"></i>Datenbank</span>
+    <span><i class="ln"></i>Anfrage</span>
+    <span><i class="ln dash"></i>Antwort</span>
+    <span><i class="ln dash red"></i>Fehler</span>
+    <span class="src">Grau hinterlegt: technischer Begriff</span>
+  </div>
+
+</div>
+</body>
+</html>
