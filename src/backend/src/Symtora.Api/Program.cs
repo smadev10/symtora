@@ -1,11 +1,10 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
+using Symtora.Api.Auth;
 using Symtora.Api.Data;
 using Symtora.Api.Models;
 using Symtora.Api.Options;
@@ -30,12 +29,13 @@ builder.Services.AddHttpClient<IOllamaClient, OllamaClient>((sp, client) =>
 {
     var ollama = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OllamaOptions>>().Value;
     client.BaseAddress = new Uri(ollama.BaseUrl);
-    client.Timeout = TimeSpan.FromMinutes(2); // local CPU inference can be slow
+    client.Timeout = TimeSpan.FromSeconds(ollama.TimeoutSeconds); // local CPU inference can be slow
 });
 
 // Expo web (`npx expo start --web`) serves the app from localhost:8081, a different origin than
-// the API, so the browser needs CORS headers. Native builds don't do CORS, and the deployed stack
-// has no web client yet, so this stays development-only.
+// the API, so the browser needs CORS headers — against `dotnet run` and the docker-compose stack
+// (which runs as Production) alike. Only that one origin is allowed, which no deployed web client
+// would ever send; native builds don't do CORS at all.
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
     .WithOrigins("http://localhost:8081")
     .AllowAnyHeader()
@@ -46,19 +46,11 @@ var jwtSecret = builder.Configuration["Jwt:Secret"]
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-        };
-    });
+    .AddJwtBearer(options => JwtBearerSetup.Configure(
+        options,
+        jwtSecret,
+        builder.Configuration["Jwt:Issuer"],
+        builder.Configuration["Jwt:Audience"]));
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
@@ -102,12 +94,12 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+// Before the redirect below, so the browser's preflight is answered rather than 307'd — a
+// redirected preflight is rejected outright.
+app.UseCors();
+
 if (app.Environment.IsDevelopment())
 {
-    // Before the redirect, so the browser's preflight is answered rather than 307'd — a
-    // redirected preflight is rejected outright.
-    app.UseCors();
-
     // Local `dotnet run` exposes both an http (5014) and an https (7135) endpoint via
     // launchSettings, using the standard `dotnet dev-certs https --trust` dev certificate.
     // Redirecting here means a password (hashed client-side or not) never leaves the

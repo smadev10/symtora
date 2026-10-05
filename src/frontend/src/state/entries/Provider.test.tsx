@@ -26,6 +26,7 @@ function fakeRepository(overrides: Partial<EntriesRepository> = {}): EntriesRepo
       },
     ],
     get: async () => null,
+    create: async () => ({ id: 'new-entry', status: 'Pending' }),
     ...overrides,
   };
 }
@@ -53,7 +54,7 @@ describe('EntriesProvider loading', () => {
   });
 
   it('reloads in the new language when the setting changes', async () => {
-    // Entry titles come from the demo content, which is per-language, so a
+    // Titles, region and date labels are localised while mapping, so a
     // language switch has to refetch rather than just re-render.
     const { result } = await renderHook(bothHooks, { wrapper: wrapperFor(fakeRepository()) });
     await waitFor(() => expect(result.current.entries.entries.status).toBe('ready'));

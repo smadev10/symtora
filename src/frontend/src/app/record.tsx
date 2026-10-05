@@ -7,7 +7,6 @@ import { PulseRing, WaveBar } from '@/components/AnimatedBits';
 import AppText from '@/components/AppText';
 import Screen from '@/components/Screen';
 import { IconStop } from '@/components/icons';
-import { CASE_ORDER } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useSettings } from '@/state/settings/Provider';
 import { ls, sharedStyles, themedStyles } from '@/theme/styles';
@@ -104,9 +103,6 @@ export default function RecordScreen() {
   const stop = () => {
     setAnalysing(true);
     analyseTimer.current = setTimeout(() => {
-      // Transcription is still unimplemented, so the demo lands on the
-      // default case exactly as the prototype did.
-      router.replace(`/assessment/${CASE_ORDER[0]}`);
     }, ANALYSE_MS);
   };
 

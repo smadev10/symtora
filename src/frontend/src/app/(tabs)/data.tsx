@@ -6,18 +6,15 @@ import AppText from '@/components/AppText';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
 import ScreenHeader from '@/components/ScreenHeader';
-import { Avatar, IconChevron, IconDownload, IconMoon, IconStorage, IconSun } from '@/components/icons';
+import { Avatar, IconChevron, IconDownload, IconMoon, IconSun } from '@/components/icons';
 import { LANGS, TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
 import { useSession } from '@/state/session/Provider';
-import { RETENTIONS, type Retention } from '@/state/settings/reducer';
 import { useSettings } from '@/state/settings/Provider';
 import { sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
 const LANG_NAMES = { de: 'Deutsch', en: 'English', fr: 'Français' } as const;
-
-const RETENTION_KEYS = { 7: 'd7', 30: 'd30', 365: 'd365' } as const;
 
 const styles = themedStyles((tk) =>
   StyleSheet.create({
@@ -32,10 +29,7 @@ const styles = themedStyles((tk) =>
       justifyContent: 'center',
       gap: 8,
     },
-    storageValue: { color: tk.textStrong, fontSize: 20, fontWeight: '700' },
     dangerText: { color: '#c62828', fontSize: 14, fontWeight: '700' },
-    toggleTrack: { width: 46, height: 26, borderRadius: 13, justifyContent: 'center' },
-    toggleKnob: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff' },
     sheetOverlay: {
       flex: 1,
       backgroundColor: 'rgba(0,0,0,.45)',
@@ -65,7 +59,7 @@ const styles = themedStyles((tk) =>
 
 export default function DataScreen() {
   const router = useRouter();
-  const { settings, setLang, setTheme, setRetention, toggleLocalOnly } = useSettings();
+  const { settings, setLang, setTheme } = useSettings();
   const { session, signOut } = useSession();
   const { clear } = useEntries();
 
@@ -92,21 +86,6 @@ export default function DataScreen() {
     <Screen padded>
       <ScreenHeader kicker={t.data.kicker} />
       <AppText style={shared.pageTitle}>{t.data.title}</AppText>
-
-      <View style={shared.card}>
-        <View style={shared.rowBetween}>
-          <View style={shared.rowStart}>
-            <View style={shared.iconBoxLight}>
-              <IconStorage color={tk.textNormal} />
-            </View>
-            <View>
-              <AppText style={shared.textStrong}>{t.data.storageCard}</AppText>
-              <AppText style={shared.rowSubtitle}>{t.data.storageSubtitle}</AppText>
-            </View>
-          </View>
-          <AppText style={s.storageValue}>{t.data.storageSize}</AppText>
-        </View>
-      </View>
 
       <Pressable onPress={() => router.push('/profile')} style={shared.card}>
         <View style={shared.rowBetween}>
@@ -167,49 +146,6 @@ export default function DataScreen() {
                 style={[{ fontSize: 13, fontWeight: '700' }, selectedText(settings.lang === code)]}
               >
                 {code.toUpperCase()} · {LANG_NAMES[code]}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-
-      <View style={shared.card}>
-        <View style={shared.rowBetween}>
-          <View style={{ flex: 1 }}>
-            <AppText style={shared.textStrong}>{t.data.localOnlyToggle}</AppText>
-            <AppText style={shared.rowSubtitle}>{t.data.localOnlySubtitle}</AppText>
-          </View>
-          <Pressable
-            onPress={toggleLocalOnly}
-            accessibilityRole="switch"
-            accessibilityState={{ checked: settings.localOnly }}
-            style={[
-              s.toggleTrack,
-              { backgroundColor: settings.localOnly ? tk.accent : tk.divider },
-            ]}
-          >
-            <View style={[s.toggleKnob, { marginLeft: settings.localOnly ? 23 : 3 }]} />
-          </Pressable>
-        </View>
-      </View>
-
-      <View style={shared.card}>
-        <AppText style={shared.textStrong}>{t.data.retentionCard}</AppText>
-        <AppText style={shared.rowSubtitle}>{t.data.retentionSubtitle}</AppText>
-        <View style={s.optionRow}>
-          {RETENTIONS.map((value: Retention) => (
-            <Pressable
-              key={value}
-              onPress={() => setRetention(value)}
-              style={[s.optionCell, selectedStyle(settings.retention === value)]}
-            >
-              <AppText
-                style={[
-                  { fontSize: 12.5, fontWeight: '700' },
-                  selectedText(settings.retention === value),
-                ]}
-              >
-                {t.retentionLabels[RETENTION_KEYS[value]]}
               </AppText>
             </Pressable>
           ))}

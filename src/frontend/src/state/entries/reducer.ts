@@ -5,8 +5,10 @@ export type EntrySummary = {
   id: string;
   title: string;
   dateLabel: string;
+  /** Localised body region, or an empty string when none was given. */
   region: string;
-  urgency: Urgency;
+  /** Null while the entry is still being analysed, or when analysis failed. */
+  urgency: Urgency | null;
   urgencyLabel: string;
 };
 

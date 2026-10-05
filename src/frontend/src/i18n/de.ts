@@ -16,7 +16,7 @@ const de = {
     cta: 'Starten',
     emergencyNote: 'Im Notfall: 144',
   },
-  nav: { start: 'Start', history: 'Verlauf', speak: 'Sprechen', data: 'Daten' },
+  nav: { start: 'Start', history: 'Verlauf', speak: 'Sprechen', settings: 'Einstellungen' },
   login: {
     subtitle: 'Melde dich an, um fortzufahren.',
     emailPlaceholder: 'E-Mail',
@@ -82,13 +82,12 @@ const de = {
   assess: {
     title: 'Einschätzung',
     urgencyKicker: 'DRINGLICHKEIT',
-    findingsTitle: 'Erkannte Angaben',
-    findingsFoot: 'Prozentwerte zeigen die Sicherheit der Erkennung, nicht die Schwere.',
     causesTitle: 'Mögliche Ursachen',
-    transcriptTitle: 'Transkript',
-    transcriptMeta: 'Spracheingabe · 0:42',
-    transcriptFoot: 'Farbig markiert: ausschlaggebende Stellen für die Einschätzung.',
+    textTitle: 'Deine Beschreibung',
     stepsTitle: 'Nächste Schritte',
+    failedTitle: 'Analyse fehlgeschlagen',
+    failedBody: 'Die Beschreibung konnte nicht ausgewertet werden. Versuche es mit einer neuen Beschreibung erneut.',
+    failedCta: 'Neue Beschreibung',
     disclaimer:
       'Dies ist keine ärztliche Diagnose. Bei Verschlechterung oder Unsicherheit medizinische Hilfe beiziehen.',
     correct: 'Korrigieren',
@@ -131,13 +130,6 @@ const de = {
     appearanceSubtitle: 'Wirkt sich auf die gesamte App aus.',
     light: 'Hell',
     dark: 'Dunkel',
-    storageCard: 'Speicherort',
-    storageSubtitle: 'Gerätespeicher · verschlüsselt',
-    storageSize: '1,8 MB',
-    localOnlyToggle: 'Analyse nur auf dem Gerät',
-    localOnlySubtitle: 'Keine Übermittlung an externe KI-Dienste. Ohne Netz nutzbar.',
-    retentionCard: 'Aufbewahrung',
-    retentionSubtitle: 'Ältere Einträge werden automatisch gelöscht.',
     export: 'Daten exportieren',
     exportSubtitle: 'JSON, lokal gespeichert',
     delete: 'Alle Einträge löschen',
@@ -148,7 +140,8 @@ const de = {
     cancel: 'Abbrechen',
   },
   chips: ['Kopfschmerz', 'Bauchschmerz', 'Husten', 'Verletzung'],
-  regions: ['Kopf', 'Nacken', 'Bauch', 'Knie', 'Hals'],
+  /** Keyed by the `bodyRegion` values the new-entry chips send to the API. */
+  regionLabels: { head: 'Kopf', stomach: 'Bauch', throat: 'Hals', knee: 'Knie' },
   patternRegions: ['Kopf', 'Bauch', 'Rücken', 'Brust', 'Haut'],
   weeks: ['22', '23', '24', '25', '26', '27', '28', '29'],
   errors: {
@@ -168,9 +161,25 @@ const de = {
     offlineTitle: 'Offline',
     offlineBody: 'Keine Verbindung. Angezeigt werden die zuletzt geladenen Daten.',
   },
-  recentDates: ['Heute', 'Gestern', 'Vor 3 Tagen', 'Letzte Woche'],
+  dates: { today: 'Heute', yesterday: 'Gestern' },
+  urgency: {
+    low: {
+      label: 'Niedrig',
+      tag: 'kein Notfall',
+      desc: 'Keine Anzeichen für einen Notfall erkannt. Beobachte den Verlauf über 24 Stunden.',
+    },
+    mid: {
+      label: 'Mittel',
+      tag: 'Beobachten',
+      desc: 'Kein akuter Notfall, aber bei Verschlechterung ärztlich abklären lassen.',
+    },
+    high: {
+      label: 'Hoch',
+      tag: 'ärztliche Hilfe',
+      desc: 'Hinweise auf einen möglichen Notfall. Suche umgehend ärztliche Hilfe oder ruf 144 an.',
+    },
+  },
   probLabels: { high: 'wahrscheinlich', mid: 'möglich', low: 'gering' },
-  retentionLabels: { d7: '7 Tage', d30: '30 Tage', d365: '1 Jahr' },
   triggers: [
     { label: 'Bildschirmzeit', sub: 'Kopfschmerz am Abend' },
     { label: 'Training', sub: 'Knie und Rücken' },

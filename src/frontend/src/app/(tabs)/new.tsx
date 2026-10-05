@@ -2,21 +2,25 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import Analysing from '@/components/Analysing';
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
 import ScreenHeader from '@/components/ScreenHeader';
 import { IconChevron, IconMic } from '@/components/icons';
-import { CASE_ORDER, type CaseKey } from '@/data/cases';
+import { ERROR_KEYS, isApiError } from '@/api/errors';
+import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
+import { apiEntriesRepository } from '@/repositories/entriesRepository';
+import type { BodyRegion } from '@/repositories/entryMapping';
+import { useEntries } from '@/state/entries/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { lh, sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
-/** Matches the placeholder delay the prototype used for the fake analysis. */
-const ANALYSE_MS = 1500;
 const MAX_CHARS = 600;
+
+/** Body region each suggestion chip sends, index-aligned with `TR.chips`. */
+const CHIP_REGIONS: readonly BodyRegion[] = ['head', 'stomach', 'throat', 'knee'];
 
 const styles = themedStyles((tk) =>
   StyleSheet.create({
@@ -36,6 +40,7 @@ const styles = themedStyles((tk) =>
     footText: { color: tk.textFaint, fontSize: 11 },
     chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12, marginBottom: 18 },
     chip: { paddingVertical: 9, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1.5 },
+    error: { color: '#c62828', fontSize: 12.5, marginBottom: 10 },
   }),
 );
 
@@ -48,39 +53,46 @@ export default function NewEntryScreen() {
   const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
+  const { reload } = useEntries();
+
   const [description, setDescription] = useState('');
-  const [selectedCase, setSelectedCase] = useState<CaseKey>('headache');
-  const [analysing, setAnalysing] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [region, setRegion] = useState<BodyRegion | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+  const mounted = useRef(true);
 
   useEffect(
     () => () => {
-      if (timer.current) clearTimeout(timer.current);
+      mounted.current = false;
     },
     [],
   );
 
   const pickChip = (index: number) => {
-    setSelectedCase(CASE_ORDER[index]);
+    setRegion(CHIP_REGIONS[index]);
     setDescription(t.chips[index]);
   };
 
-  const analyse = () => {
-    if (!description.trim()) return;
-    setAnalysing(true);
-    timer.current = setTimeout(() => {
-      setAnalysing(false);
-      router.push(`/assessment/${selectedCase}`);
-    }, ANALYSE_MS);
-  };
+  const analyse = async () => {
+    if (!description.trim() || submitting) return;
+    setSubmitting(true);
+    setErrorKey(null);
 
-  if (analysing) {
-    return (
-      <Screen scroll={false}>
-        <Analysing />
-      </Screen>
-    );
-  }
+    try {
+      // Returns as soon as the entry is queued; the assessment screen polls for the result.
+      const { id } = await apiEntriesRepository.create(settings.lang, description, region);
+      if (!mounted.current) return;
+      void reload();
+      setDescription('');
+      setRegion(null);
+      router.push(`/assessment/${id}`);
+    } catch (error) {
+      if (!mounted.current) return;
+      setErrorKey(isApiError(error) ? error.messageKey : ERROR_KEYS.unknown);
+    } finally {
+      if (mounted.current) setSubmitting(false);
+    }
+  };
 
   return (
     <Screen padded>
@@ -123,7 +135,7 @@ export default function NewEntryScreen() {
 
       <View style={s.chipsWrap}>
         {t.chips.map((label, i) => {
-          const active = selectedCase === CASE_ORDER[i];
+          const active = region === CHIP_REGIONS[i];
           return (
             <Pressable
               key={label}
@@ -154,7 +166,13 @@ export default function NewEntryScreen() {
         })}
       </View>
 
-      <Button label={t.newDesc.analyze} onPress={analyse} disabled={!description.trim()} />
+      {errorKey ? <AppText style={s.error}>{translate(settings.lang, errorKey)}</AppText> : null}
+
+      <Button
+        label={t.newDesc.analyze}
+        onPress={() => void analyse()}
+        disabled={!description.trim() || submitting}
+      />
     </Screen>
   );
 }

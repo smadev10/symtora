@@ -7,7 +7,7 @@ import {
   IconHome,
   IconMic,
   IconPlus,
-  IconSliders,
+  IconSettings,
 } from '@/components/icons';
 import { TR } from '@/i18n/translations';
 import { useSettings } from '@/state/settings/Provider';
@@ -84,8 +84,8 @@ export default function BottomNav() {
       </Pressable>
 
       <Pressable onPress={() => router.navigate('/data')} style={s.item} accessibilityRole="button">
-        <IconSliders color={colorFor('/data')} />
-        <AppText style={[s.label, { color: colorFor('/data') }]}>{t.nav.data}</AppText>
+        <IconSettings color={colorFor('/data')} />
+        <AppText style={[s.label, { color: colorFor('/data') }]}>{t.nav.settings}</AppText>
       </Pressable>
     </View>
   );

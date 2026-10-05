@@ -66,6 +66,13 @@ namespace Symtora.Api.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasDefaultValue("de");
+
                     b.Property<string>("RawText")
                         .IsRequired()
                         .HasColumnType("text");

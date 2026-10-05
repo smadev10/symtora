@@ -53,7 +53,13 @@ public static class AnalysisResponseParser
 
         var causes = (dto.Causes ?? [])
             .Where(c => !string.IsNullOrWhiteSpace(c.Label))
-            .Select(c => new AssessmentCause(c.Label.Trim(), NormalizeLevel(c.Tier, fallback: "mid")))
+            .Select(c => new AssessmentCause(
+                c.Label.Trim(),
+                NormalizeLevel(c.Tier, fallback: "mid"),
+                string.IsNullOrWhiteSpace(c.Reason) ? null : c.Reason.Trim()))
+            // The prompt asks for most-likely-first, but small models often ignore it. OrderBy
+            // is stable, so the model's own order still decides within a tier.
+            .OrderBy(c => TierRank(c.Tier))
             .ToList();
 
         var nextSteps = (dto.NextSteps ?? [])
@@ -64,6 +70,13 @@ public static class AnalysisResponseParser
         result = new AnalysisResult(urgency, causes, nextSteps);
         return true;
     }
+
+    private static int TierRank(string tier) => tier switch
+    {
+        "high" => 0,
+        "mid" => 1,
+        _ => 2,
+    };
 
     private static string NormalizeLevel(string? value, string fallback) =>
         value is not null && ValidLevels.Contains(value) ? value.ToLowerInvariant() : fallback;
@@ -99,5 +112,8 @@ public static class AnalysisResponseParser
 
         [JsonPropertyName("tier")]
         public string? Tier { get; set; }
+
+        [JsonPropertyName("reason")]
+        public string? Reason { get; set; }
     }
 }
