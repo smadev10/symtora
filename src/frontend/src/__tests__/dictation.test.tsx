@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import * as Audio from 'expo-audio';
 import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
 import { act, cleanup, fireEvent, renderRouter, waitFor } from 'expo-router/testing-library';
 
@@ -18,6 +19,9 @@ type SpeechMock = typeof ExpoSpeechRecognitionModule & {
 const speech = ExpoSpeechRecognitionModule as SpeechMock;
 
 const t = TR.de;
+
+const audioMock = () =>
+  Audio as unknown as { __reset: () => void; __recorder: { record: jest.Mock } };
 
 async function signInWithConsent() {
   const raw = JSON.stringify({
@@ -48,6 +52,7 @@ async function stopWhenListening(view: View) {
 }
 
 beforeEach(async () => {
+  audioMock().__reset();
   speech.__reset();
   jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, status: 200, text: async () => '[]' } as Response);
   await AsyncStorage.clear();
@@ -125,15 +130,48 @@ describe('dictating a description', () => {
 });
 
 describe('when dictation cannot run', () => {
-  it('shows the unavailable screen in Expo Go, where the native module is missing', async () => {
+  it('falls back to server transcription in Expo Go and hands the text over', async () => {
     const modules = (globalThis as { expo: { modules: Record<string, unknown> } }).expo.modules;
     const stub = modules.ExpoSpeechRecognition;
     delete modules.ExpoSpeechRecognition;
+    // The fake API: entries list for the home screen, a transcript for the upload.
+    (globalThis.fetch as jest.Mock).mockImplementation(async (url: string) => ({
+      ok: true,
+      status: 200,
+      text: async () => (url.endsWith('/transcriptions') ? JSON.stringify({ text: 'Seit heute Bauchweh.' }) : '[]'),
+    }));
+    try {
+      const view = await open('/new');
+      await fireEvent.press(await view.findByText(t.newDesc.speakInstead));
+
+      expect(await view.findByText(t.record.serverNote)).toBeTruthy();
+      // The stop button is disabled until recording has actually started.
+      await waitFor(() => expect(audioMock().__recorder.record).toHaveBeenCalled());
+      await fireEvent.press(view.getByLabelText(t.record.stopLabel));
+
+      expect(await view.findByDisplayValue('Seit heute Bauchweh.')).toBeTruthy();
+      expect(speech.start).not.toHaveBeenCalled();
+    } finally {
+      modules.ExpoSpeechRecognition = stub;
+    }
+  });
+
+  it('explains when the server cannot transcribe', async () => {
+    const modules = (globalThis as { expo: { modules: Record<string, unknown> } }).expo.modules;
+    const stub = modules.ExpoSpeechRecognition;
+    delete modules.ExpoSpeechRecognition;
+    (globalThis.fetch as jest.Mock).mockImplementation(async (url: string) =>
+      url.endsWith('/transcriptions')
+        ? { ok: false, status: 503, text: async () => '' }
+        : { ok: true, status: 200, text: async () => '[]' },
+    );
     try {
       const view = await open('/record');
+      await waitFor(() => expect(audioMock().__recorder.record).toHaveBeenCalled());
+      await fireEvent.press(view.getByLabelText(t.record.stopLabel));
 
-      expect(await view.findByText(t.record.errors.unsupported.title)).toBeTruthy();
-      expect(speech.start).not.toHaveBeenCalled();
+      expect(await view.findByText(t.record.errors.serverUnavailable.title)).toBeTruthy();
+      expect(view.getByText(t.record.retry)).toBeTruthy();
     } finally {
       modules.ExpoSpeechRecognition = stub;
     }

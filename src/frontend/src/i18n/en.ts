@@ -73,7 +73,7 @@ const en: Translations = {
     placeholder: 'What’s wrong? Since when? Where exactly?',
     helperNote: 'Don’t enter names or addresses.',
     speakInstead: 'Speak instead',
-    speakSubtitle: 'Dictate your symptoms, the transcript stays on the device.',
+    speakSubtitle: 'Dictate your symptoms instead of typing.',
     analyze: 'Analyze',
   },
   record: {
@@ -84,6 +84,8 @@ const en: Translations = {
     starting: 'Getting the microphone ready …',
     listening: 'Start speaking – your words appear here.',
     onDeviceNote: 'Recognition runs on this device, without the internet.',
+    serverNote: 'The recording is turned into text on the Symtora server and not stored.',
+    transcribing: 'Turning your recording into text …',
     retry: 'Try again',
     openSettings: 'Open settings',
     typeInstead: 'Type instead',

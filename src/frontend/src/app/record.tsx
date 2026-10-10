@@ -99,7 +99,7 @@ export default function RecordScreen() {
   const s = styles(settings.theme);
   const shared = sharedStyles(settings.theme);
 
-  const { state, level, start, stop, abort } = useDictation();
+  const { state, level, start, stop, abort, engine } = useDictation();
   const [seconds, setSeconds] = useState(0);
   const listening = state.status === 'listening';
 
@@ -134,7 +134,7 @@ export default function RecordScreen() {
 
   if (state.status === 'error' && state.error) {
     const copy = t.record.errors[state.error];
-    const canRetry = state.error === 'noSpeech' || state.error === 'unknown';
+    const canRetry = state.error === 'noSpeech' || state.error === 'unknown' || state.error === 'serverUnavailable';
 
     return (
       <Screen scroll={false} darkHeader style={{ backgroundColor: '#0f2230' }}>
@@ -200,7 +200,11 @@ export default function RecordScreen() {
           <>
             <AppText style={s.hint}>{t.record.hint}</AppText>
             <AppText style={[s.transcript, s.placeholder]}>
-              {listening ? t.record.listening : t.record.starting}
+              {state.status === 'stopping' && engine === 'server'
+                ? t.record.transcribing
+                : listening
+                  ? t.record.listening
+                  : t.record.starting}
             </AppText>
           </>
         )}
@@ -229,7 +233,7 @@ export default function RecordScreen() {
             </Pressable>
           </View>
           <AppText style={s.stopLabel}>{t.record.stopLabel}</AppText>
-          <AppText style={s.note}>{t.record.onDeviceNote}</AppText>
+          <AppText style={s.note}>{engine === 'device' ? t.record.onDeviceNote : t.record.serverNote}</AppText>
           <Pressable onPress={cancel} accessibilityRole="button">
             <AppText style={s.cancel}>{t.record.cancel}</AppText>
           </Pressable>

@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
@@ -18,9 +18,6 @@ import { useEntries } from '@/state/entries/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { lh, sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
-
-/** Dictation is on-device only, and the browser's speech API is not. */
-const CAN_DICTATE = Platform.OS !== 'web';
 
 /** Body region each suggestion chip sends, index-aligned with `TR.chips`. */
 const CHIP_REGIONS: readonly BodyRegion[] = ['head', 'stomach', 'throat', 'knee'];
@@ -129,22 +126,20 @@ export default function NewEntryScreen() {
         </AppText>
       </View>
 
-      {CAN_DICTATE ? (
-        <Pressable onPress={() => router.push('/record')} style={shared.card}>
-          <View style={shared.rowBetween}>
-            <View style={shared.rowStart}>
-              <View style={shared.iconBoxDark}>
-                <IconMic color="#fff" size={20} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <AppText style={shared.textStrong}>{t.newDesc.speakInstead}</AppText>
-                <AppText style={shared.rowSubtitle}>{t.newDesc.speakSubtitle}</AppText>
-              </View>
+      <Pressable onPress={() => router.push('/record')} style={shared.card}>
+        <View style={shared.rowBetween}>
+          <View style={shared.rowStart}>
+            <View style={shared.iconBoxDark}>
+              <IconMic color="#fff" size={20} />
             </View>
-            <IconChevron color={tk.textFaint} />
+            <View style={{ flex: 1 }}>
+              <AppText style={shared.textStrong}>{t.newDesc.speakInstead}</AppText>
+              <AppText style={shared.rowSubtitle}>{t.newDesc.speakSubtitle}</AppText>
+            </View>
           </View>
-        </Pressable>
-      ) : null}
+          <IconChevron color={tk.textFaint} />
+        </View>
+      </Pressable>
 
       <View style={s.chipsWrap}>
         {t.chips.map((label, i) => {

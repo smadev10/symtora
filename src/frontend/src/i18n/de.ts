@@ -73,7 +73,7 @@ const de = {
     placeholder: 'Was fehlt dir? Seit wann? Wo genau?',
     helperNote: 'Keine Namen oder Adressen eingeben.',
     speakInstead: 'Stattdessen sprechen',
-    speakSubtitle: 'Beschwerden diktieren, das Transkript bleibt auf dem Gerät.',
+    speakSubtitle: 'Beschwerden diktieren statt tippen.',
     analyze: 'Analysieren',
   },
   record: {
@@ -84,6 +84,8 @@ const de = {
     starting: 'Mikrofon wird vorbereitet …',
     listening: 'Sprich jetzt – der Text erscheint hier.',
     onDeviceNote: 'Die Erkennung läuft auf dem Gerät, ohne Internet.',
+    serverNote: 'Die Aufnahme wird auf dem Symtora-Server in Text umgewandelt und nicht gespeichert.',
+    transcribing: 'Wird in Text umgewandelt …',
     retry: 'Erneut versuchen',
     openSettings: 'Einstellungen öffnen',
     typeInstead: 'Stattdessen tippen',

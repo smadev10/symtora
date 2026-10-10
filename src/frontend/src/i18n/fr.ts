@@ -74,7 +74,7 @@ const fr: Translations = {
     placeholder: 'Que ressens-tu ? Depuis quand ? Où exactement ?',
     helperNote: 'Ne saisis ni nom ni adresse.',
     speakInstead: 'Parler à la place',
-    speakSubtitle: 'Dicte tes symptômes, la transcription reste sur l’appareil.',
+    speakSubtitle: 'Dicte tes symptômes au lieu de les taper.',
     analyze: 'Analyser',
   },
   record: {
@@ -85,6 +85,8 @@ const fr: Translations = {
     starting: 'Préparation du micro …',
     listening: 'Parle maintenant – le texte s’affiche ici.',
     onDeviceNote: 'La reconnaissance se fait sur l’appareil, sans internet.',
+    serverNote: 'L’enregistrement est transcrit sur le serveur Symtora et n’est pas conservé.',
+    transcribing: 'Transcription en cours …',
     retry: 'Réessayer',
     openSettings: 'Ouvrir les réglages',
     typeInstead: 'Saisir plutôt',

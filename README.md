@@ -64,7 +64,7 @@ This is a working prototype, not a finished product. Being precise about what is
 | Entries, assessments, patterns | **Demo data** from `src/frontend/src/data/cases.ts`, behind the `EntriesRepository` seam the API implementation will replace |
 | Backend analysis pipeline | **Built** — `POST /entries` enqueues a job, a worker runs it through Ollama, `GET /entries/:id` is polled until it is `Done` |
 | Google / Apple sign-in | **Placeholders** — the buttons render, the API has password auth only |
-| Voice transcription | **On-device** — the OS recogniser runs offline (`requiresOnDeviceRecognition`); the transcript lands in the text box for review. Needs a development build, not Expo Go; unavailable on web |
+| Voice transcription | **Works everywhere** — development builds recognise on-device (offline); Expo Go and web record and transcribe on the self-hosted Whisper container. The transcript lands in the text box for review |
 
 The client and the analysis pipeline are not joined up yet: the backend's assessment shape
 doesn't carry the findings, transcript segments and probabilities the result screen renders.
@@ -77,6 +77,7 @@ flowchart LR
   A["<b>Expo app</b><br/>iOS · Android · Web"] -->|"REST + JWT"| B["<b>ASP.NET Core API</b><br/>:8080"]
   B --> C[("<b>PostgreSQL 16</b><br/>users · entries · assessments")]
   B -->|"analysis job"| D["<b>Ollama</b><br/>self-hosted model"]
+  B -->|"voice input"| E["<b>Whisper</b><br/>self-hosted speech-to-text"]
 ```
 
 Two decisions shape the rest:
@@ -114,11 +115,10 @@ npm start                    # press a / i / w, or scan the QR in Expo Go
 ```
 
 > [!NOTE]
-> Voice input uses a native module (`expo-speech-recognition`) that Expo Go doesn't
-> ship. To dictate, build the app once with `npx expo run:android` (or `run:ios` on a
-> Mac); everything else still works in Expo Go, where the record screen says dictation
-> is unavailable. Recognition is forced on-device, so the phone needs the offline speech
-> model for the app language (de-CH/de-DE, en, fr-CH/fr-FR).
+> Voice input works in Expo Go: the app records and the API transcribes on the `whisper`
+> container (`docker compose up` starts it; the first transcription downloads the model).
+> A development build (`npx expo run:android` / `run:ios`) uses on-device recognition instead,
+> which needs the phone's offline speech model for the app language.
 
 ### Option B — local dev loop, without Docker
 
@@ -228,6 +228,7 @@ can navigate back into.
 | `GET /entries` | Bearer | Full history for the current user, newest first |
 | `GET /patterns` | Bearer | Body-region breakdown (count, last urgency, last seen) |
 | `DELETE /me/data` | Bearer | Deletes the user's entries and assessments, keeps the account |
+| `POST /transcriptions` | Bearer | multipart `audio` → `{ text }`; audio is not stored |
 | `GET /health` | – | Liveness check |
 
 Full detail in [`src/backend/README.md`](src/backend/README.md).
