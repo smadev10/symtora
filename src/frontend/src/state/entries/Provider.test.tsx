@@ -24,6 +24,7 @@ function fakeRepository(overrides: Partial<EntriesRepository> = {}): EntriesRepo
         urgency: 'low',
         urgencyLabel: 'Low',
         createdAt: '2026-10-10T09:00:00.000Z',
+        bodyRegion: null,
       },
     ],
     get: async () => null,
@@ -115,6 +116,7 @@ describe('EntriesProvider failure', () => {
             urgency: 'low' as const,
             urgencyLabel: 'Low',
             createdAt: '2026-10-10T09:00:00.000Z',
+            bodyRegion: null,
           },
         ];
       },
@@ -143,6 +145,7 @@ describe('EntriesProvider automatic retries', () => {
       urgency: 'low' as const,
       urgencyLabel: 'Low',
       createdAt: '2026-10-10T09:00:00.000Z',
+      bodyRegion: null,
     },
   ];
 

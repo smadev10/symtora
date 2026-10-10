@@ -64,6 +64,8 @@ const fr: Translations = {
     emergencyPromoSub: 'Vérifier les signes, appeler directement',
     distributionTitle: 'Répartition par région du corps',
     distributionRange: '30 jours',
+    distributionEmpty: 'Aucune entrée lors des 30 derniers jours.',
+    regionNone: 'Non précisé',
     recentTitle: 'Dernières évaluations',
   },
   newDesc: {

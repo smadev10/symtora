@@ -63,6 +63,8 @@ const en: Translations = {
     emergencyPromoSub: 'Check warning signs, call directly',
     distributionTitle: 'Distribution by body region',
     distributionRange: '30 days',
+    distributionEmpty: 'No entries in the last 30 days yet.',
+    regionNone: 'Not specified',
     recentTitle: 'Recent assessments',
   },
   newDesc: {

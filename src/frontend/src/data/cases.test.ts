@@ -1,7 +1,6 @@
 import {
   CASES,
   CASE_ORDER,
-  DIST,
   EMERGENCY_NUMBERS,
   HEAT,
   HISTORY_ORDER,
@@ -73,12 +72,6 @@ describe('chart constants', () => {
       for (const row of HEAT) {
         expect(row).toHaveLength(TR[lang].weeks.length);
       }
-    }
-  });
-
-  it('gives the distribution one percentage per pattern region', () => {
-    for (const lang of LANGS) {
-      expect(DIST).toHaveLength(TR[lang].patternRegions.length);
     }
   });
 });

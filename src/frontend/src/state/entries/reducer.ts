@@ -1,4 +1,5 @@
 import type { Urgency } from '@/data/cases';
+import type { BodyRegion } from '@/repositories/entryMapping';
 
 /** One row in the home screen's "recent" list. */
 export type EntrySummary = {
@@ -12,6 +13,8 @@ export type EntrySummary = {
   urgencyLabel: string;
   /** ISO timestamp from the API; drives the home screen's 14-day trend. */
   createdAt: string;
+  /** Unlocalised region key for statistics; null when none was given. */
+  bodyRegion: BodyRegion | null;
 };
 
 export type EntriesStatus = 'idle' | 'loading' | 'ready' | 'error';

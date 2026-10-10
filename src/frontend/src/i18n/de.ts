@@ -63,6 +63,8 @@ const de = {
     emergencyPromoSub: 'Warnzeichen prüfen, direkt anrufen',
     distributionTitle: 'Verteilung nach Körperregion',
     distributionRange: '30 Tage',
+    distributionEmpty: 'Noch keine Einträge in den letzten 30 Tagen.',
+    regionNone: 'Ohne Angabe',
     recentTitle: 'Letzte Einschätzungen',
   },
   newDesc: {

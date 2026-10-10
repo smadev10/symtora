@@ -6,9 +6,10 @@ import AppText from '@/components/AppText';
 import Screen from '@/components/Screen';
 import { AsyncBoundary } from '@/components/states';
 import { IconChevron, IconWarning } from '@/components/icons';
-import { DEMO_KPIS, DIST } from '@/data/cases';
+import { DEMO_KPIS } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
+import { regionDistribution } from '@/state/entries/distribution';
 import { assessmentsPerDay } from '@/state/entries/trend';
 import { useSession } from '@/state/session/Provider';
 import { useSettings } from '@/state/settings/Provider';
@@ -58,8 +59,9 @@ const styles = themedStyles((tk) =>
     },
     promoTitle: { color: tk.textStrong, fontWeight: '700', fontSize: 14 },
     distRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
-    distLabel: { color: tk.textNormal, fontSize: 12.5, width: 62 },
-    distCount: { color: tk.textStrong, fontSize: 13, fontWeight: '700', minWidth: 32, textAlign: 'right' },
+    distLabel: { color: tk.textNormal, fontSize: 12.5, width: 86 },
+    distCount: { color: tk.textStrong, fontSize: 13, fontWeight: '700', minWidth: 38, textAlign: 'right' },
+    distEmpty: { color: tk.textMuted, fontSize: 12.5 },
     histTitle: { color: tk.textStrong, fontWeight: '700', fontSize: 13.5 },
     histMeta: { color: tk.textMuted, fontSize: 11.5, marginTop: 4 },
     urgencyPill: {
@@ -95,7 +97,9 @@ export default function StartScreen() {
       : trendTotal === 1
         ? t.start.trendOne
         : t.start.trendMany.replace('{n}', String(trendTotal));
-  const distMax = Math.max(...DIST);
+  const distribution = useMemo(() => regionDistribution(entries.items, new Date()), [entries.items]);
+  // Bars are scaled to the largest share, so the leading region fills the track.
+  const distMax = Math.max(1, ...distribution.map((row) => row.percent));
 
   return (
     <Screen darkHeader>
@@ -167,22 +171,28 @@ export default function StartScreen() {
             <AppText style={shared.textMutedSmall}>{t.start.distributionRange}</AppText>
           </View>
           <View style={{ marginTop: 12 }}>
-            {t.patternRegions.map((label, i) => (
-              <View key={label} style={s.distRow}>
-                <AppText style={s.distLabel}>{label}</AppText>
-                <View style={shared.distTrack}>
-                  <View
-                    style={{
-                      height: '100%',
-                      width: `${(DIST[i] / distMax) * 100}%`,
-                      backgroundColor: tk.accent,
-                      borderRadius: 4,
-                    }}
-                  />
+            {distribution.length === 0 ? (
+              <AppText style={s.distEmpty}>{t.start.distributionEmpty}</AppText>
+            ) : (
+              distribution.map((row) => (
+                <View key={row.region ?? 'none'} style={s.distRow}>
+                  <AppText style={s.distLabel}>
+                    {row.region ? t.regionLabels[row.region] : t.start.regionNone}
+                  </AppText>
+                  <View style={shared.distTrack}>
+                    <View
+                      style={{
+                        height: '100%',
+                        width: `${(row.percent / distMax) * 100}%`,
+                        backgroundColor: tk.accent,
+                        borderRadius: 4,
+                      }}
+                    />
+                  </View>
+                  <AppText style={s.distCount}>{row.percent}%</AppText>
                 </View>
-                <AppText style={s.distCount}>{DIST[i]}%</AppText>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         </View>
 

@@ -417,5 +417,3 @@ export const HEAT: number[][] = [
   [0, 0, 1, 0, 0, 1, 0, 0],
   [1, 0, 1, 0, 1, 0, 1, 0],
 ];
-/** Share of entries per pattern region, in percent. */
-export const DIST: number[] = [42, 24, 18, 9, 7];

@@ -13,6 +13,7 @@ const entry = (createdAt: string, overrides: Partial<EntrySummary> = {}): EntryS
   urgency: 'low',
   urgencyLabel: '',
   createdAt,
+  bodyRegion: null,
   ...overrides,
 });
 

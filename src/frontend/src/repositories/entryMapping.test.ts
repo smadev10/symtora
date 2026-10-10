@@ -82,6 +82,7 @@ describe('toSummary', () => {
       urgency: 'low',
       urgencyLabel: TR.en.urgency.low.label,
       createdAt: entry().createdAt,
+      bodyRegion: 'head',
     });
   });
 
