@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
@@ -12,12 +12,15 @@ import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
 import { apiEntriesRepository } from '@/repositories/entriesRepository';
 import type { BodyRegion } from '@/repositories/entryMapping';
+import { takeTranscript } from '@/state/dictation/handoff';
+import { joinText, MAX_DESCRIPTION_CHARS } from '@/state/dictation/reducer';
 import { useEntries } from '@/state/entries/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { lh, sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
-const MAX_CHARS = 600;
+/** Dictation is on-device only, and the browser's speech API is not. */
+const CAN_DICTATE = Platform.OS !== 'web';
 
 /** Body region each suggestion chip sends, index-aligned with `TR.chips`. */
 const CHIP_REGIONS: readonly BodyRegion[] = ['head', 'stomach', 'throat', 'knee'];
@@ -68,6 +71,14 @@ export default function NewEntryScreen() {
     [],
   );
 
+  // A finished dictation lands here for review; it is appended, never sent on its own.
+  useFocusEffect(
+    useCallback(() => {
+      const transcript = takeTranscript();
+      if (transcript) setDescription((current) => joinText(current, transcript));
+    }, []),
+  );
+
   const pickChip = (index: number) => {
     setRegion(CHIP_REGIONS[index]);
     setDescription(t.chips[index]);
@@ -107,31 +118,33 @@ export default function NewEntryScreen() {
         placeholder={t.newDesc.placeholder}
         placeholderTextColor={tk.textFaint}
         multiline
-        maxLength={MAX_CHARS}
+        maxLength={MAX_DESCRIPTION_CHARS}
         style={s.textarea}
       />
 
       <View style={s.footRow}>
         <AppText style={s.footText}>{t.newDesc.helperNote}</AppText>
         <AppText style={s.footText}>
-          {description.length} / {MAX_CHARS}
+          {description.length} / {MAX_DESCRIPTION_CHARS}
         </AppText>
       </View>
 
-      <Pressable onPress={() => router.push('/record')} style={shared.card}>
-        <View style={shared.rowBetween}>
-          <View style={shared.rowStart}>
-            <View style={shared.iconBoxDark}>
-              <IconMic color="#fff" size={20} />
+      {CAN_DICTATE ? (
+        <Pressable onPress={() => router.push('/record')} style={shared.card}>
+          <View style={shared.rowBetween}>
+            <View style={shared.rowStart}>
+              <View style={shared.iconBoxDark}>
+                <IconMic color="#fff" size={20} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <AppText style={shared.textStrong}>{t.newDesc.speakInstead}</AppText>
+                <AppText style={shared.rowSubtitle}>{t.newDesc.speakSubtitle}</AppText>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <AppText style={shared.textStrong}>{t.newDesc.speakInstead}</AppText>
-              <AppText style={shared.rowSubtitle}>{t.newDesc.speakSubtitle}</AppText>
-            </View>
+            <IconChevron color={tk.textFaint} />
           </View>
-          <IconChevron color={tk.textFaint} />
-        </View>
-      </Pressable>
+        </Pressable>
+      ) : null}
 
       <View style={s.chipsWrap}>
         {t.chips.map((label, i) => {

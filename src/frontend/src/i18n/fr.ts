@@ -78,6 +78,34 @@ const fr: Translations = {
     hint: 'Parle calmement, près du micro. Indique le lieu, la durée et l’intensité.',
     stopLabel: 'Arrêter l’enregistrement',
     cancel: 'Annuler',
+    starting: 'Préparation du micro …',
+    listening: 'Parle maintenant – le texte s’affiche ici.',
+    onDeviceNote: 'La reconnaissance se fait sur l’appareil, sans internet.',
+    retry: 'Réessayer',
+    openSettings: 'Ouvrir les réglages',
+    typeInstead: 'Saisir plutôt',
+    errors: {
+      permissionDenied: {
+        title: 'Pas d’accès au micro',
+        body: 'Autorise Symtora à utiliser le micro dans les réglages pour dicter tes symptômes.',
+      },
+      onDeviceUnavailable: {
+        title: 'Reconnaissance vocale indisponible',
+        body: 'Aucun modèle vocal hors ligne n’est installé pour cette langue. Symtora n’envoie jamais d’audio sur internet.',
+      },
+      noSpeech: {
+        title: 'Rien entendu',
+        body: 'Aucune parole n’a été reconnue. Parle un peu plus fort et plus près du micro.',
+      },
+      unsupported: {
+        title: 'Dictée impossible ici',
+        body: 'La saisie vocale n’est pas disponible dans cette version (p. ex. Expo Go ou web). Saisis plutôt tes symptômes.',
+      },
+      unknown: {
+        title: 'Échec de l’enregistrement',
+        body: 'La reconnaissance vocale s’est arrêtée de façon inattendue. Réessaie.',
+      },
+    },
   },
   loading: { text: 'Analyse de la description …', subtitle: 'Traitement sur l’appareil' },
   assess: {

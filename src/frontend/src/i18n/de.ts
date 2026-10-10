@@ -77,6 +77,34 @@ const de = {
     hint: 'Sprich ruhig und nah am Mikrofon. Nenne Ort, Dauer und Stärke der Beschwerden.',
     stopLabel: 'Aufnahme beenden',
     cancel: 'Abbrechen',
+    starting: 'Mikrofon wird vorbereitet …',
+    listening: 'Sprich jetzt – der Text erscheint hier.',
+    onDeviceNote: 'Die Erkennung läuft auf dem Gerät, ohne Internet.',
+    retry: 'Erneut versuchen',
+    openSettings: 'Einstellungen öffnen',
+    typeInstead: 'Stattdessen tippen',
+    errors: {
+      permissionDenied: {
+        title: 'Kein Zugriff auf das Mikrofon',
+        body: 'Erlaube Symtora den Mikrofonzugriff in den Einstellungen, um Beschwerden zu diktieren.',
+      },
+      onDeviceUnavailable: {
+        title: 'Spracherkennung nicht verfügbar',
+        body: 'Für diese Sprache ist auf dem Gerät kein Offline-Sprachmodell installiert. Symtora sendet keine Audioaufnahmen ins Internet.',
+      },
+      noSpeech: {
+        title: 'Nichts verstanden',
+        body: 'Es wurde keine Sprache erkannt. Sprich etwas lauter und näher am Mikrofon.',
+      },
+      unsupported: {
+        title: 'Diktieren hier nicht möglich',
+        body: 'Die Spracheingabe ist in dieser Version nicht verfügbar (z. B. Expo Go oder Web). Tippe deine Beschwerden stattdessen ein.',
+      },
+      unknown: {
+        title: 'Aufnahme fehlgeschlagen',
+        body: 'Die Spracherkennung wurde unerwartet beendet. Versuche es erneut.',
+      },
+    },
   },
   loading: { text: 'Beschreibung wird analysiert …', subtitle: 'Verarbeitung auf dem Gerät' },
   assess: {

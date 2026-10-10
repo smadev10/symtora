@@ -77,6 +77,34 @@ const en: Translations = {
     hint: 'Speak calmly and close to the mic. Mention location, duration and intensity.',
     stopLabel: 'Stop recording',
     cancel: 'Cancel',
+    starting: 'Getting the microphone ready …',
+    listening: 'Start speaking – your words appear here.',
+    onDeviceNote: 'Recognition runs on this device, without the internet.',
+    retry: 'Try again',
+    openSettings: 'Open settings',
+    typeInstead: 'Type instead',
+    errors: {
+      permissionDenied: {
+        title: 'No microphone access',
+        body: 'Allow Symtora to use the microphone in your settings to dictate symptoms.',
+      },
+      onDeviceUnavailable: {
+        title: 'Speech recognition unavailable',
+        body: 'No offline speech model is installed for this language. Symtora never sends audio to the internet.',
+      },
+      noSpeech: {
+        title: 'Nothing heard',
+        body: 'No speech was recognised. Speak a little louder and closer to the mic.',
+      },
+      unsupported: {
+        title: 'Dictation not available here',
+        body: 'Voice input isn’t available in this version (e.g. Expo Go or web). Type your symptoms instead.',
+      },
+      unknown: {
+        title: 'Recording failed',
+        body: 'Speech recognition stopped unexpectedly. Please try again.',
+      },
+    },
   },
   loading: { text: 'Analyzing your description …', subtitle: 'Processing on this device' },
   assess: {

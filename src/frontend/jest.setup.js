@@ -31,3 +31,44 @@ jest.mock('expo-secure-store', () => {
     __vault: vault,
   };
 });
+
+// On-device speech recognition. Tests drive it by emitting the native events
+// through `__emit`; `__reset` restores the defaults between tests.
+// The app probes for the native module before loading the package (it is
+// missing in Expo Go), so register it the way a development build would.
+globalThis.expo = globalThis.expo ?? {};
+globalThis.expo.modules = { ...globalThis.expo.modules, ExpoSpeechRecognition: {} };
+
+jest.mock('expo-speech-recognition', () => {
+  const listeners = new Map();
+  const module = {
+    // A plain function, so jest.restoreAllMocks() in a test can't strip it.
+    addListener: (event, listener) => {
+      if (!listeners.has(event)) listeners.set(event, new Set());
+      listeners.get(event).add(listener);
+      return { remove: () => listeners.get(event).delete(listener) };
+    },
+    isRecognitionAvailable: jest.fn(),
+    supportsOnDeviceRecognition: jest.fn(),
+    requestMicrophonePermissionsAsync: jest.fn(),
+    getSupportedLocales: jest.fn(),
+    start: jest.fn(),
+    stop: jest.fn(),
+    abort: jest.fn(),
+    __emit: (event, payload) => listeners.get(event)?.forEach((listener) => listener(payload)),
+    /** A device that has everything: permission, an offline model, a recogniser that starts. */
+    __reset: () => {
+      module.isRecognitionAvailable.mockReset().mockReturnValue(true);
+      module.supportsOnDeviceRecognition.mockReset().mockReturnValue(true);
+      module.requestMicrophonePermissionsAsync
+        .mockReset()
+        .mockResolvedValue({ granted: true, canAskAgain: true, status: 'granted', expires: 'never' });
+      module.getSupportedLocales.mockReset().mockResolvedValue({ locales: [], installedLocales: [] });
+      module.start.mockReset().mockImplementation(() => module.__emit('start', null));
+      module.stop.mockReset().mockImplementation(() => module.__emit('end', null));
+      module.abort.mockReset();
+    },
+  };
+  module.__reset();
+  return { ExpoSpeechRecognitionModule: module };
+});

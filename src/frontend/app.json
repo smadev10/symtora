@@ -7,7 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Symtora turns your dictation into text on this device.",
+        "NSMicrophoneUsageDescription": "Symtora uses the microphone so you can dictate your symptoms. Recognition runs on this device."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -15,7 +19,11 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.mcnomias.symtoramobile"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -24,7 +32,14 @@
     "plugins": [
       "expo-font",
       "expo-secure-store",
-      "expo-router"
+      "expo-router",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Symtora uses the microphone so you can dictate your symptoms. Recognition runs on this device.",
+          "speechRecognitionPermission": "Symtora turns your dictation into text on this device."
+        }
+      ]
     ],
     "scheme": "symtora",
     "experiments": {

@@ -32,7 +32,7 @@ third party.
 
 ## What it is
 
-You describe a complaint in your own words — by text, or (planned) by voice. The app
+You describe a complaint in your own words — by text, or by voice. The app
 sorts that description into an **urgency level**, a list of **detected findings**,
 **possible causes** with a confidence label, and **concrete next steps**. Over time it
 builds a picture of your history: a 14-day intensity trend, a breakdown by body region,
@@ -64,7 +64,7 @@ This is a working prototype, not a finished product. Being precise about what is
 | Entries, assessments, patterns | **Demo data** from `src/frontend/src/data/cases.ts`, behind the `EntriesRepository` seam the API implementation will replace |
 | Backend analysis pipeline | **Built** — `POST /entries` enqueues a job, a worker runs it through Ollama, `GET /entries/:id` is polled until it is `Done` |
 | Google / Apple sign-in | **Placeholders** — the buttons render, the API has password auth only |
-| Voice transcription | **Not implemented** — the recording screen exists, there is no speech-to-text service |
+| Voice transcription | **On-device** — the OS recogniser runs offline (`requiresOnDeviceRecognition`); the transcript lands in the text box for review. Needs a development build, not Expo Go; unavailable on web |
 
 The client and the analysis pipeline are not joined up yet: the backend's assessment shape
 doesn't carry the findings, transcript segments and probabilities the result screen renders.
@@ -112,6 +112,13 @@ npm install
 cp .env.example .env         # EXPO_PUBLIC_API_URL=http://localhost:8080
 npm start                    # press a / i / w, or scan the QR in Expo Go
 ```
+
+> [!NOTE]
+> Voice input uses a native module (`expo-speech-recognition`) that Expo Go doesn't
+> ship. To dictate, build the app once with `npx expo run:android` (or `run:ios` on a
+> Mac); everything else still works in Expo Go, where the record screen says dictation
+> is unavailable. Recognition is forced on-device, so the phone needs the offline speech
+> model for the app language (de-CH/de-DE, en, fr-CH/fr-FR).
 
 ### Option B — local dev loop, without Docker
 
