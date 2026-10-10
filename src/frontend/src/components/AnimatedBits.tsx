@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -168,5 +168,53 @@ export function WaveBar({
         transform: [{ scaleY: t.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }) }],
       }}
     />
+  );
+}
+
+// Indeterminate progress bar: a segment sweeping left to right across a track.
+export function LoadingBar({
+  color = '#285172',
+  trackColor = '#e4e8eb',
+  testID,
+}: {
+  color?: string;
+  trackColor?: string;
+  testID?: string;
+}) {
+  const [width, setWidth] = useState(0);
+  const t = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.timing(t, {
+        toValue: 1,
+        duration: 1300,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: USE_NATIVE,
+      }),
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [t]);
+
+  const segment = width * 0.35;
+
+  return (
+    <View
+      testID={testID}
+      accessibilityRole="progressbar"
+      onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
+      style={{ width: '100%', height: 4, borderRadius: 2, backgroundColor: trackColor, overflow: 'hidden' }}
+    >
+      <Animated.View
+        style={{
+          width: segment,
+          height: '100%',
+          borderRadius: 2,
+          backgroundColor: color,
+          transform: [{ translateX: t.interpolate({ inputRange: [0, 1], outputRange: [-segment, width] }) }],
+        }}
+      />
+    </View>
   );
 }

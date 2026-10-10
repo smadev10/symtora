@@ -187,6 +187,13 @@ const en: Translations = {
     emptyBody: 'Describe your symptoms to get started.',
     offlineTitle: 'Offline',
     offlineBody: 'No connection. Showing the data loaded last.',
+    listLoading: 'Loading your assessments …',
+    listRetrying: 'The server isn’t responding right now. Trying again …',
+    listFailedTitle: 'Your assessments can’t be loaded right now',
+    autoRetryNote: 'Symtora keeps trying automatically – you don’t need to do anything.',
+    sessionExpiredTitle: 'Signed out',
+    sessionExpiredBody: 'Your session has expired. Sign in again to see your assessments.',
+    signInAgain: 'Sign in again',
   },
   dates: { today: 'Today', yesterday: 'Yesterday' },
   urgency: {

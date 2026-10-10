@@ -188,6 +188,13 @@ const fr: Translations = {
     emptyBody: 'Décris tes symptômes pour commencer.',
     offlineTitle: 'Hors ligne',
     offlineBody: 'Pas de connexion. Affichage des dernières données chargées.',
+    listLoading: 'Chargement de tes évaluations …',
+    listRetrying: 'Le serveur ne répond pas pour le moment. Nouvel essai en cours …',
+    listFailedTitle: 'Impossible de charger tes évaluations pour le moment',
+    autoRetryNote: 'Symtora réessaie automatiquement – tu n’as rien à faire.',
+    sessionExpiredTitle: 'Session expirée',
+    sessionExpiredBody: 'Reconnecte-toi pour voir tes évaluations.',
+    signInAgain: 'Se reconnecter',
   },
   dates: { today: "Aujourd'hui", yesterday: 'Hier' },
   urgency: {

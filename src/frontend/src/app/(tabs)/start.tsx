@@ -78,7 +78,7 @@ export default function StartScreen() {
   const router = useRouter();
   const { settings } = useSettings();
   const { entries, reload } = useEntries();
-  const { session } = useSession();
+  const { session, signOut } = useSession();
 
   const t = TR[settings.lang];
   const s = styles(settings.theme);
@@ -192,7 +192,9 @@ export default function StartScreen() {
           status={entries.status}
           errorKey={entries.errorKey}
           hasContent={entries.items.length > 0}
+          attempt={entries.attempt}
           onRetry={() => void reload()}
+          onSignIn={signOut}
         >
           <View>
             {entries.items.map((entry) => (

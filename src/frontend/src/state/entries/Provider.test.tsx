@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { ApiError, ERROR_KEYS } from '@/api/errors';
 import type { EntriesRepository } from '@/repositories/entriesRepository';
-import { EntriesProvider, useEntries } from '@/state/entries/Provider';
+import { EntriesProvider, useEntries, type RetryPolicy } from '@/state/entries/Provider';
 import { SettingsProvider, useSettings } from '@/state/settings/Provider';
 import type { KeyValueStore } from '@/storage/kv';
 
@@ -32,11 +32,16 @@ function fakeRepository(overrides: Partial<EntriesRepository> = {}): EntriesRepo
   };
 }
 
-function wrapperFor(repository: EntriesRepository) {
+/** No waiting between attempts, and background retries far beyond any test. */
+const NO_QUICK_RETRIES: RetryPolicy = { quick: [], background: 60_000 };
+
+function wrapperFor(repository: EntriesRepository, retryPolicy: RetryPolicy = NO_QUICK_RETRIES) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <SettingsProvider store={nullStore}>
-        <EntriesProvider repository={repository}>{children}</EntriesProvider>
+        <EntriesProvider repository={repository} retryPolicy={retryPolicy}>
+          {children}
+        </EntriesProvider>
       </SettingsProvider>
     );
   };
@@ -125,6 +130,150 @@ describe('EntriesProvider failure', () => {
 
     await waitFor(() => expect(result.current.entries.status).toBe('ready'));
     expect(result.current.entries.errorKey).toBeNull();
+  });
+});
+
+describe('EntriesProvider automatic retries', () => {
+  const recovered = (lang: string) => [
+    {
+      id: `entry-${lang}`,
+      title: 'Recovered',
+      dateLabel: 'Today',
+      region: 'Head',
+      urgency: 'low' as const,
+      urgencyLabel: 'Low',
+      createdAt: '2026-10-10T09:00:00.000Z',
+    },
+  ];
+
+  it('retries a failed load by itself and never shows the error when a retry works', async () => {
+    let calls = 0;
+    const statuses: string[] = [];
+    const repository = fakeRepository({
+      list: async (lang) => {
+        calls += 1;
+        if (calls < 3) throw new ApiError('network');
+        return recovered(lang);
+      },
+    });
+
+    const { result } = await renderHook(
+      () => {
+        const value = useEntries();
+        statuses.push(value.entries.status);
+        return value;
+      },
+      { wrapper: wrapperFor(repository, { quick: [0, 0, 0], background: 60_000 }) },
+    );
+
+    await waitFor(() => expect(result.current.entries.status).toBe('ready'));
+    expect(calls).toBe(3);
+    expect(statuses).not.toContain('error');
+  });
+
+  it('counts the attempts while retrying', async () => {
+    const repository = fakeRepository({
+      list: async () => {
+        throw new ApiError('timeout');
+      },
+    });
+
+    const { result } = await renderHook(() => useEntries(), {
+      wrapper: wrapperFor(repository, { quick: [0, 60_000], background: 60_000 }),
+    });
+
+    await waitFor(() => expect(result.current.entries.attempt).toBe(1));
+    expect(result.current.entries.status).toBe('loading');
+  });
+
+  it('keeps retrying in the background after showing the error, and recovers without a tap', async () => {
+    let shouldFail = true;
+    const repository = fakeRepository({
+      list: async (lang) => {
+        if (shouldFail) throw new ApiError('server');
+        return recovered(lang);
+      },
+    });
+
+    const { result } = await renderHook(() => useEntries(), {
+      wrapper: wrapperFor(repository, { quick: [], background: 20 }),
+    });
+    await waitFor(() => expect(result.current.entries.status).toBe('error'));
+
+    shouldFail = false;
+
+    await waitFor(() => expect(result.current.entries.status).toBe('ready'));
+  });
+
+  it('does not retry a rejected session, which fails the same way every time', async () => {
+    let calls = 0;
+    const repository = fakeRepository({
+      list: async () => {
+        calls += 1;
+        throw new ApiError('unauthorized');
+      },
+    });
+
+    const { result } = await renderHook(() => useEntries(), {
+      wrapper: wrapperFor(repository, { quick: [0, 0], background: 0 }),
+    });
+
+    await waitFor(() => expect(result.current.entries.status).toBe('error'));
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    expect(calls).toBe(1);
+    expect(result.current.entries.errorKey).toBe(ERROR_KEYS.unauthorized);
+  });
+});
+
+describe('EntriesProvider session', () => {
+  /** Mutable so `rerender` can sign in and out without remounting the tree. */
+  let sessionKey: string | null = null;
+
+  function sessionWrapper(repository: EntriesRepository) {
+    return function Wrapper({ children }: { children: ReactNode }) {
+      return (
+        <SettingsProvider store={nullStore}>
+          <EntriesProvider repository={repository} retryPolicy={NO_QUICK_RETRIES} sessionKey={sessionKey}>
+            {children}
+          </EntriesProvider>
+        </SettingsProvider>
+      );
+    };
+  }
+
+  beforeEach(() => {
+    sessionKey = null;
+  });
+
+  it('loads nothing while signed out, then loads on sign-in', async () => {
+    const list = jest.fn(fakeRepository().list);
+    const { result, rerender } = await renderHook(() => useEntries(), {
+      wrapper: sessionWrapper(fakeRepository({ list })),
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(list).not.toHaveBeenCalled();
+    expect(result.current.entries.status).toBe('idle');
+
+    sessionKey = 'token-a';
+    await rerender({});
+
+    await waitFor(() => expect(result.current.entries.status).toBe('ready'));
+    expect(list).toHaveBeenCalledTimes(1);
+  });
+
+  it('empties the list on sign-out, so the next person sees nothing of it', async () => {
+    sessionKey = 'token-a';
+    const { result, rerender } = await renderHook(() => useEntries(), {
+      wrapper: sessionWrapper(fakeRepository()),
+    });
+    await waitFor(() => expect(result.current.entries.items).toHaveLength(1));
+
+    sessionKey = null;
+    await rerender({});
+
+    await waitFor(() => expect(result.current.entries.items).toEqual([]));
+    expect(result.current.entries.status).toBe('idle');
   });
 });
 

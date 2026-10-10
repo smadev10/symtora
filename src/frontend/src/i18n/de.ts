@@ -190,6 +190,13 @@ const de = {
     emptyBody: 'Beschreibe deine Beschwerden, um zu starten.',
     offlineTitle: 'Offline',
     offlineBody: 'Keine Verbindung. Angezeigt werden die zuletzt geladenen Daten.',
+    listLoading: 'Deine Einschätzungen werden geladen …',
+    listRetrying: 'Der Server antwortet gerade nicht. Neuer Versuch läuft …',
+    listFailedTitle: 'Einschätzungen können gerade nicht geladen werden',
+    autoRetryNote: 'Symtora versucht es automatisch weiter – du musst nichts tun.',
+    sessionExpiredTitle: 'Anmeldung abgelaufen',
+    sessionExpiredBody: 'Melde dich erneut an, um deine Einschätzungen zu sehen.',
+    signInAgain: 'Neu anmelden',
   },
   dates: { today: 'Heute', yesterday: 'Gestern' },
   urgency: {
