@@ -12,6 +12,7 @@ const items: EntrySummary[] = [
     region: 'Kopf',
     urgency: 'low',
     urgencyLabel: 'Niedrig',
+    createdAt: '2026-10-10T09:00:00.000Z',
   },
   {
     id: 'knee',
@@ -20,6 +21,7 @@ const items: EntrySummary[] = [
     region: 'Nacken',
     urgency: 'mid',
     urgencyLabel: 'Mittel',
+    createdAt: '2026-10-10T09:00:00.000Z',
   },
 ];
 

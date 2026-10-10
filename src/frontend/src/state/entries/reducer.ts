@@ -10,6 +10,8 @@ export type EntrySummary = {
   /** Null while the entry is still being analysed, or when analysis failed. */
   urgency: Urgency | null;
   urgencyLabel: string;
+  /** ISO timestamp from the API; drives the home screen's 14-day trend. */
+  createdAt: string;
 };
 
 export type EntriesStatus = 'idle' | 'loading' | 'ready' | 'error';

@@ -7,7 +7,6 @@ import {
   HISTORY_ORDER,
   PROBABILITIES,
   SEGMENT_TINTS,
-  TREND,
   TRIGGER_COUNTS,
   URGENCIES,
 } from '@/data/cases';
@@ -81,10 +80,6 @@ describe('chart constants', () => {
     for (const lang of LANGS) {
       expect(DIST).toHaveLength(TR[lang].patternRegions.length);
     }
-  });
-
-  it('covers a 14-day trend', () => {
-    expect(TREND).toHaveLength(14);
   });
 });
 

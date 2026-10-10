@@ -1,13 +1,15 @@
 import { useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import Screen from '@/components/Screen';
 import { AsyncBoundary } from '@/components/states';
 import { IconChevron, IconWarning } from '@/components/icons';
-import { DEMO_KPIS, DIST, TREND } from '@/data/cases';
+import { DEMO_KPIS, DIST } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
+import { assessmentsPerDay } from '@/state/entries/trend';
 import { useSession } from '@/state/session/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { cardShadow, ls, sharedStyles, themedStyles } from '@/theme/styles';
@@ -83,7 +85,16 @@ export default function StartScreen() {
   const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
-  const trendMax = Math.max(...TREND);
+  const trend = useMemo(() => assessmentsPerDay(entries.items, new Date()), [entries.items]);
+  const trendTotal = trend.reduce((sum, n) => sum + n, 0);
+  // At least 1, so an empty fortnight draws flat stubs instead of dividing by zero.
+  const trendMax = Math.max(1, ...trend);
+  const trendSubtitle =
+    trendTotal === 0
+      ? t.start.trendNone
+      : trendTotal === 1
+        ? t.start.trendOne
+        : t.start.trendMany.replace('{n}', String(trendTotal));
   const distMax = Math.max(...DIST);
 
   return (
@@ -95,10 +106,10 @@ export default function StartScreen() {
             ? `${t.start.greeting}, ${session.user.name}`
             : t.start.greeting}
         </AppText>
-        <AppText style={s.trendLabel}>{t.start.trendSubtitle}</AppText>
+        <AppText style={s.trendLabel}>{trendSubtitle}</AppText>
 
         <View style={s.trendRow}>
-          {TREND.map((value, i) => (
+          {trend.map((value, i) => (
             <View key={i} style={{ flex: 1, height: '100%', justifyContent: 'flex-end' }}>
               <View
                 style={{

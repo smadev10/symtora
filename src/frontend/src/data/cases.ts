@@ -419,5 +419,3 @@ export const HEAT: number[][] = [
 ];
 /** Share of entries per pattern region, in percent. */
 export const DIST: number[] = [42, 24, 18, 9, 7];
-/** Daily entry intensity over the last 14 days. */
-export const TREND: number[] = [1, 2, 1, 3, 2, 2, 1, 0, 2, 3, 4, 2, 1, 2];

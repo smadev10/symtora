@@ -52,8 +52,10 @@ const fr: Translations = {
   },
   start: {
     greeting: 'Bonjour',
-    trendSubtitle: '9 évaluations lors des 14 derniers jours',
-    trendLabel: 'Intensité des symptômes',
+    trendNone: 'Aucune évaluation lors des 14 derniers jours',
+    trendOne: '1 évaluation lors des 14 derniers jours',
+    trendMany: '{n} évaluations lors des 14 derniers jours',
+    trendLabel: 'Évaluations par jour',
     trendRange: '14 jours',
     kpiEntries: 'Entrées 14 j',
     kpiRegions: 'Régions',

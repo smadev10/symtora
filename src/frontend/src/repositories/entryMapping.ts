@@ -71,6 +71,7 @@ export function toSummary(entry: EntryResponse, lang: Lang, now?: Date): EntrySu
     region: entry.bodyRegion && isBodyRegion(entry.bodyRegion) ? t.regionLabels[entry.bodyRegion] : '',
     urgency,
     urgencyLabel: urgency ? t.urgency[urgency].label : '…',
+    createdAt: entry.createdAt,
   };
 }
 

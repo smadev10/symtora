@@ -51,8 +51,10 @@ const de = {
   },
   start: {
     greeting: 'Guten Tag',
-    trendSubtitle: '9 Einschätzungen in den letzten 14 Tagen',
-    trendLabel: 'Beschwerdeintensität',
+    trendNone: 'Keine Einschätzungen in den letzten 14 Tagen',
+    trendOne: '1 Einschätzung in den letzten 14 Tagen',
+    trendMany: '{n} Einschätzungen in den letzten 14 Tagen',
+    trendLabel: 'Einschätzungen pro Tag',
     trendRange: '14 Tage',
     kpiEntries: 'Einträge 14 T',
     kpiRegions: 'Regionen',
