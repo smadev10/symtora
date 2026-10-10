@@ -10,11 +10,13 @@ using Symtora.Api.Models;
 using Symtora.Api.Options;
 using Symtora.Api.Services.Analysis;
 using Symtora.Api.Services.Auth;
+using Symtora.Api.Services.Transcription;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<OllamaOptions>(builder.Configuration.GetSection(OllamaOptions.SectionName));
+builder.Services.Configure<WhisperOptions>(builder.Configuration.GetSection(WhisperOptions.SectionName));
 
 builder.Services.AddDbContext<SymtoraDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
@@ -30,6 +32,12 @@ builder.Services.AddHttpClient<IOllamaClient, OllamaClient>((sp, client) =>
     var ollama = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OllamaOptions>>().Value;
     client.BaseAddress = new Uri(ollama.BaseUrl);
     client.Timeout = TimeSpan.FromSeconds(ollama.TimeoutSeconds); // local CPU inference can be slow
+});
+builder.Services.AddHttpClient<IWhisperClient, WhisperClient>((sp, client) =>
+{
+    var whisper = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<WhisperOptions>>().Value;
+    client.BaseAddress = new Uri(whisper.BaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(whisper.TimeoutSeconds); // CPU transcription and first-run model load
 });
 
 // Expo web (`npx expo start --web`) serves the app from localhost:8081, a different origin than
