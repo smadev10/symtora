@@ -3,9 +3,13 @@ import { ApiError, kindForStatus } from './errors';
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: unknown;
+  /** Multipart upload; sent as-is so fetch sets the boundary. Mutually exclusive with `body`. */
+  form?: FormData;
   /** Attach the bearer token, when one is available. */
   auth?: boolean;
   signal?: AbortSignal;
+  /** Overrides the client-wide timeout, e.g. for an upload the server needs a while to process. */
+  timeoutMs?: number;
 };
 
 export type ClientOptions = {
@@ -55,10 +59,10 @@ export function createClient({
   const doFetch: typeof fetch = fetchImpl ?? ((...args) => fetch(...args));
 
   async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const { method = 'GET', body, auth = false, signal } = options;
+    const { method = 'GET', body, form, auth = false, signal, timeoutMs: requestTimeoutMs } = options;
 
     const headers = new Headers({ Accept: 'application/json' });
-    if (body !== undefined) headers.set('Content-Type', 'application/json');
+    if (body !== undefined && form === undefined) headers.set('Content-Type', 'application/json');
 
     if (auth) {
       const token = getToken();
@@ -66,7 +70,7 @@ export function createClient({
     }
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timer = setTimeout(() => controller.abort(), requestTimeoutMs ?? timeoutMs);
     if (signal) signal.addEventListener('abort', () => controller.abort(), { once: true });
 
     let response: Response;
@@ -74,7 +78,7 @@ export function createClient({
       response = await doFetch(`${root}${path}`, {
         method,
         headers,
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body: form ?? (body === undefined ? undefined : JSON.stringify(body)),
         signal: controller.signal,
       });
     } catch (cause) {

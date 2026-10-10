@@ -184,3 +184,34 @@ describe('error mapping', () => {
     expect(Object.values(ERROR_KEYS)).toContain((error as ApiError).messageKey);
   });
 });
+
+describe('form uploads', () => {
+  it('sends FormData as-is and leaves the multipart content type to fetch', async () => {
+    const { client, calls } = clientWith(() => json({ text: 'ok' }));
+    const form = new FormData();
+    form.append('language', 'de');
+
+    await client.request('/transcriptions', { method: 'POST', form });
+
+    expect(calls[0].init.body).toBe(form);
+    expect(new Headers(calls[0].init.headers).get('Content-Type')).toBeNull();
+  });
+
+  it('lets one request wait longer than the client default', async () => {
+    // Answers after 80 ms unless the request is aborted first, like a real slow server.
+    const client = createClient({
+      baseUrl: 'https://api.test',
+      timeoutMs: 50,
+      fetchImpl: ((_url: string, init: RequestInit = {}) =>
+        new Promise((resolve, reject) => {
+          const timer = setTimeout(() => resolve(json({ ok: true })), 80);
+          init.signal?.addEventListener('abort', () => {
+            clearTimeout(timer);
+            reject(Object.assign(new Error('Aborted'), { name: 'AbortError' }));
+          });
+        })) as unknown as typeof fetch,
+    });
+
+    await expect(client.request('/slow', { timeoutMs: 500 })).resolves.toEqual({ ok: true });
+  });
+});
