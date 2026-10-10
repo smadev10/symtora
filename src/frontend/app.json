@@ -39,7 +39,8 @@
           "microphonePermission": "Symtora uses the microphone so you can dictate your symptoms. Recognition runs on this device.",
           "speechRecognitionPermission": "Symtora turns your dictation into text on this device."
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "scheme": "symtora",
     "experiments": {

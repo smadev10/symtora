@@ -72,3 +72,37 @@ jest.mock('expo-speech-recognition', () => {
   module.__reset();
   return { ExpoSpeechRecognitionModule: module };
 });
+
+// expo-audio. The recorder is one shared fake so tests can read `uri`, drive
+// `__state` (what useAudioRecorderState returns) and assert on calls.
+jest.mock('expo-audio', () => {
+  const recorder = {
+    uri: null,
+    prepareToRecordAsync: jest.fn(),
+    record: jest.fn(),
+    stop: jest.fn(),
+  };
+  const audio = {
+    __recorder: recorder,
+    __state: { isRecording: false, durationMillis: 0, metering: undefined, canRecord: true, url: null, mediaServicesDidReset: false },
+    RecordingPresets: { HIGH_QUALITY: { extension: '.m4a' } },
+    AudioModule: { requestRecordingPermissionsAsync: jest.fn() },
+    setAudioModeAsync: jest.fn(),
+    useAudioRecorder: () => recorder,
+    useAudioRecorderState: () => audio.__state,
+    __reset: () => {
+      recorder.uri = 'file:///cache/recording.m4a';
+      recorder.prepareToRecordAsync.mockReset().mockResolvedValue(undefined);
+      recorder.record.mockReset();
+      recorder.stop.mockReset().mockResolvedValue(undefined);
+      audio.AudioModule.requestRecordingPermissionsAsync
+        .mockReset()
+        .mockResolvedValue({ granted: true, canAskAgain: true, status: 'granted', expires: 'never' });
+      audio.setAudioModeAsync.mockReset().mockResolvedValue(undefined);
+      // Mutated in place: `import * as` in a test copies the namespace, so a reassignment wouldn't reach it.
+      Object.assign(audio.__state, { isRecording: false, durationMillis: 0, metering: undefined, canRecord: true, url: null, mediaServicesDidReset: false });
+    },
+  };
+  audio.__reset();
+  return audio;
+});

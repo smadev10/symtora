@@ -104,6 +104,10 @@ const en: Translations = {
         title: 'Dictation not available here',
         body: 'Voice input isn’t available in this version (e.g. Expo Go or web). Type your symptoms instead.',
       },
+      serverUnavailable: {
+        title: 'Can’t transcribe right now',
+        body: 'The Symtora server can’t be reached. Check your connection and try again.',
+      },
       unknown: {
         title: 'Recording failed',
         body: 'Speech recognition stopped unexpectedly. Please try again.',

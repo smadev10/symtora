@@ -10,6 +10,8 @@ export type DictationError =
   | 'noSpeech'
   /** Web, Expo Go, or a device without a recogniser. */
   | 'unsupported'
+  /** Server transcription only: the API or Whisper could not be reached. */
+  | 'serverUnavailable'
   | 'unknown';
 
 export type DictationStatus = 'idle' | 'requesting' | 'listening' | 'stopping' | 'done' | 'error';

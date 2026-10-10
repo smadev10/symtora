@@ -7,7 +7,7 @@ import {
   type DictationAction,
   type DictationState,
 } from '@/state/dictation/reducer';
-import { toDictationError } from '@/state/dictation/useDictation';
+import { toDictationError } from '@/state/dictation/useOnDeviceDictation';
 
 const run = (...actions: DictationAction[]): DictationState =>
   actions.reduce(dictationReducer, INITIAL_DICTATION);

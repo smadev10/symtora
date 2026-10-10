@@ -104,6 +104,10 @@ const de = {
         title: 'Diktieren hier nicht möglich',
         body: 'Die Spracheingabe ist in dieser Version nicht verfügbar (z. B. Expo Go oder Web). Tippe deine Beschwerden stattdessen ein.',
       },
+      serverUnavailable: {
+        title: 'Umwandlung gerade nicht möglich',
+        body: 'Der Symtora-Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.',
+      },
       unknown: {
         title: 'Aufnahme fehlgeschlagen',
         body: 'Die Spracherkennung wurde unerwartet beendet. Versuche es erneut.',

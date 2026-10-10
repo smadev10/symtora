@@ -105,6 +105,10 @@ const fr: Translations = {
         title: 'Dictée impossible ici',
         body: 'La saisie vocale n’est pas disponible dans cette version (p. ex. Expo Go ou web). Saisis plutôt tes symptômes.',
       },
+      serverUnavailable: {
+        title: 'Transcription impossible pour le moment',
+        body: 'Le serveur Symtora est injoignable. Vérifie ta connexion et réessaie.',
+      },
       unknown: {
         title: 'Échec de l’enregistrement',
         body: 'La reconnaissance vocale s’est arrêtée de façon inattendue. Réessaie.',
