@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<title>Symtora Spracheingabe</title>
+<link rel="stylesheet" href="diagramm.css">
+<style>
+  /* Spalten: App · Spracherkennung (Gerät) · Server. Grün = bleibt auf dem Gerät. */
+  .speech .lane-head.sr { background: var(--db-soft); color: var(--db); }
+  .speech .flow::before {
+    background:
+      linear-gradient(to right,
+        transparent 0 10px, var(--app-bg) 10px calc(33.333% - 10px), transparent calc(33.333% - 10px) calc(33.333% + 10px),
+        var(--db-bg) calc(33.333% + 10px) calc(66.666% - 10px), transparent calc(66.666% - 10px) calc(66.666% + 10px),
+        var(--srv-bg) calc(66.666% + 10px) calc(100% - 10px), transparent calc(100% - 10px));
+  }
+  .speech .lifeline.sr  { left: 50%;     border-color: var(--db); }
+  .speech .lifeline.srv { left: 83.333%; border-color: var(--srv); }
+  .speech .card.sr  { --c: var(--db); grid-column: 2; }
+  .speech .num.sr   { --c: var(--db); }
+  .speech .msg { z-index: 2; }
+  .speech .msg.app-sr  { left: 16.666%; width: 33.333%; }
+  .speech .msg.app-srv { left: 16.666%; width: 66.666%; }
+  .num svg { width: 15px; height: 15px; }
+</style>
+</head>
+<body>
+<div class="canvas simple speech">
+
+  <h1>Spracheingabe <span class="q">– so funktioniert's</span></h1>
+  <p class="lead">Gesprochene Symptome werden auf dem Smartphone zu Text, den man vor dem Senden prüfen kann.</p>
+
+  <div class="lanes">
+    <div class="lane-head app">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      App
+    </div>
+    <div class="lane-head sr">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4M8 22h8"/></svg>
+      Spracherkennung
+    </div>
+    <div class="lane-head srv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></svg>
+      Server
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="lifeline app"></div>
+    <div class="lifeline sr"></div>
+    <div class="lifeline srv"></div>
+
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">1</span>Aufnahme starten</div>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-sr">
+        <div class="label">
+          <div class="title"><span class="num app">2</span>Erkennung starten</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg></span>Sprechen</div>
+        <p class="desc">Der erkannte Text erscheint live.</p>
+      </div>
+      <div class="card sr">
+        <div class="title"><span class="num">3</span>Sprache erkennen</div>
+        <p class="desc">Offline, direkt auf dem Gerät.</p>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-sr rtl reply err">
+        <div class="label">
+          <div class="title"><span class="num err">✕</span>Fehler</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-sr rtl reply ok">
+        <div class="label">
+          <div class="title"><span class="num sr">4</span>Fertiger Text</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card app">
+        <div class="title"><span class="num">5</span>Text prüfen</div>
+        <p class="desc">Im Eingabefeld korrigieren oder ergänzen.</p>
+      </div>
+    </div>
+
+    <div class="row msg-row">
+      <div class="msg app-srv">
+        <div class="label">
+          <div class="title"><span class="num app">6</span>Analysieren: nur der Text</div>
+        </div>
+        <div class="arrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+    <span><b>Tonaufnahme und Transkript bleiben auf dem Gerät.</b> Erst beim Analysieren geht der Text an den eigenen Server.</span>
+  </div>
+
+  <div class="legend">
+    <span><i class="ln"></i>Anfrage</span>
+    <span><i class="ln dash"></i>Antwort</span>
+    <span><i class="ln dash red"></i>Fehler</span>
+  </div>
+
+</div>
+</body>
+</html>
