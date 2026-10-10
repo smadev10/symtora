@@ -1,4 +1,5 @@
 import * as Audio from 'expo-audio';
+import * as FileSystem from 'expo-file-system';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 
 import { ApiError } from '@/api/errors';
@@ -11,7 +12,12 @@ type AudioMock = typeof Audio & {
 };
 const audio = Audio as AudioMock;
 
-beforeEach(() => audio.__reset());
+const deletedFiles = (FileSystem as unknown as { __deleted: string[] }).__deleted;
+
+beforeEach(() => {
+  audio.__reset();
+  deletedFiles.length = 0;
+});
 
 async function recording(transcribe: jest.Mock) {
   const hook = await renderHook(() => useServerDictation(true, transcribe));
@@ -102,5 +108,54 @@ describe('useServerDictation', () => {
 
     expect(audio.__recorder.record).not.toHaveBeenCalled();
     expect(result.current.state.status).toBe('idle');
+  });
+});
+
+describe('useServerDictation cleanup', () => {
+  it('never starts the microphone when cancelled while it is still preparing', async () => {
+    let prepared: () => void = () => {};
+    audio.__recorder.prepareToRecordAsync.mockImplementation(
+      () => new Promise<void>((resolve) => (prepared = resolve)),
+    );
+    const { result } = await renderHook(() => useServerDictation(true, jest.fn()));
+
+    let starting: Promise<void> = Promise.resolve();
+    await act(async () => {
+      starting = result.current.start('de');
+    });
+    await act(async () => result.current.abort());
+    await act(async () => {
+      prepared();
+      await starting;
+    });
+
+    expect(audio.__recorder.record).not.toHaveBeenCalled();
+    expect(result.current.state.status).not.toBe('listening');
+  });
+
+  it('deletes the recording from the phone once it has been transcribed', async () => {
+    const { result } = await recording(jest.fn().mockResolvedValue('Kopfweh.'));
+
+    await act(async () => result.current.stop());
+
+    await waitFor(() => expect(result.current.state.status).toBe('done'));
+    expect(deletedFiles).toEqual(['file:///cache/recording.m4a']);
+  });
+
+  it('deletes the recording when transcription fails too', async () => {
+    const { result } = await recording(jest.fn().mockRejectedValue(new ApiError('network')));
+
+    await act(async () => result.current.stop());
+
+    await waitFor(() => expect(result.current.state.status).toBe('error'));
+    expect(deletedFiles).toEqual(['file:///cache/recording.m4a']);
+  });
+
+  it('deletes the recording when the user cancels while recording', async () => {
+    const { result } = await recording(jest.fn());
+
+    await act(async () => result.current.abort());
+
+    await waitFor(() => expect(deletedFiles).toEqual(['file:///cache/recording.m4a']));
   });
 });

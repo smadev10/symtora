@@ -5,7 +5,9 @@ import {
   useAudioRecorder,
   useAudioRecorderState,
 } from 'expo-audio';
+import { File } from 'expo-file-system';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { isApiError } from '@/api/errors';
 import { transcriptionsApi, type TranscriptionsApi } from '@/api/transcriptions';
@@ -19,6 +21,20 @@ const RECORDING_OPTIONS = { ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled:
 
 /** Metering is dBFS (≈ -60 quiet … 0 loud); the waveform wants 0…1. */
 const toLevel = (db: number | undefined) => (db === undefined ? 0 : Math.max(0, Math.min(1, (db + 60) / 60)));
+
+/**
+ * The recorder leaves each recording in the app cache. It is health data and
+ * the screen promises it isn't kept, so it is deleted as soon as it is used
+ * up. On the web the "file" is an in-memory blob URL with nothing to delete.
+ */
+function discardRecording(uri: string | null): void {
+  if (!uri || Platform.OS === 'web') return;
+  try {
+    new File(uri).delete();
+  } catch {
+    // Already gone, or never written; nothing left to protect.
+  }
+}
 
 function toError(error: unknown): DictationError {
   if (isApiError(error) && (error.kind === 'network' || error.kind === 'timeout' || error.kind === 'server')) {
@@ -59,12 +75,13 @@ export function useServerDictation(enabled: boolean, transcribe: TranscriptionsA
       try {
         await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
         await recorder.prepareToRecordAsync();
-        recorder.record();
       } catch {
-        dispatch({ type: 'failed', error: 'unknown' });
+        if (run === runRef.current) dispatch({ type: 'failed', error: 'unknown' });
         return;
       }
+      // Cancelled while the microphone was being prepared: never start it.
       if (run !== runRef.current) return;
+      recorder.record();
       recordingRef.current = true;
       dispatch({ type: 'started' });
     },
@@ -77,9 +94,10 @@ export function useServerDictation(enabled: boolean, transcribe: TranscriptionsA
     const run = runRef.current;
     dispatch({ type: 'stopRequested' });
 
+    let uri: string | null = null;
     try {
       await recorder.stop();
-      const uri = recorder.uri;
+      uri = recorder.uri;
       if (!uri) throw new Error('No recording file');
       const text = await transcribe(uri, langRef.current);
       if (run !== runRef.current) return;
@@ -88,12 +106,19 @@ export function useServerDictation(enabled: boolean, transcribe: TranscriptionsA
     } catch (error) {
       if (run !== runRef.current) return;
       dispatch({ type: 'failed', error: toError(error) });
+    } finally {
+      discardRecording(uri);
     }
   }, [recorder, transcribe]);
 
   const abort = useCallback(() => {
     runRef.current += 1;
-    if (recordingRef.current) void recorder.stop().catch(() => {});
+    if (recordingRef.current) {
+      void recorder
+        .stop()
+        .then(() => discardRecording(recorder.uri))
+        .catch(() => {});
+    }
     recordingRef.current = false;
   }, [recorder]);
 

@@ -106,3 +106,17 @@ jest.mock('expo-audio', () => {
   audio.__reset();
   return audio;
 });
+
+// expo-file-system: records which files were deleted, without touching a disk.
+jest.mock('expo-file-system', () => {
+  const deleted = [];
+  class File {
+    constructor(uri) {
+      this.uri = uri;
+    }
+    delete() {
+      deleted.push(this.uri);
+    }
+  }
+  return { File, __deleted: deleted };
+});
