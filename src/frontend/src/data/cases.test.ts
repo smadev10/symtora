@@ -1,13 +1,11 @@
 import {
   CASES,
   CASE_ORDER,
-  DIST,
   EMERGENCY_NUMBERS,
   HEAT,
   HISTORY_ORDER,
   PROBABILITIES,
   SEGMENT_TINTS,
-  TREND,
   TRIGGER_COUNTS,
   URGENCIES,
 } from '@/data/cases';
@@ -75,16 +73,6 @@ describe('chart constants', () => {
         expect(row).toHaveLength(TR[lang].weeks.length);
       }
     }
-  });
-
-  it('gives the distribution one percentage per pattern region', () => {
-    for (const lang of LANGS) {
-      expect(DIST).toHaveLength(TR[lang].patternRegions.length);
-    }
-  });
-
-  it('covers a 14-day trend', () => {
-    expect(TREND).toHaveLength(14);
   });
 });
 

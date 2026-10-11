@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import AppText from '@/components/AppText';
@@ -12,12 +12,12 @@ import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
 import { apiEntriesRepository } from '@/repositories/entriesRepository';
 import type { BodyRegion } from '@/repositories/entryMapping';
+import { takeTranscript } from '@/state/dictation/handoff';
+import { joinText, MAX_DESCRIPTION_CHARS } from '@/state/dictation/reducer';
 import { useEntries } from '@/state/entries/Provider';
 import { useSettings } from '@/state/settings/Provider';
 import { lh, sharedStyles, themedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
-
-const MAX_CHARS = 600;
 
 /** Body region each suggestion chip sends, index-aligned with `TR.chips`. */
 const CHIP_REGIONS: readonly BodyRegion[] = ['head', 'stomach', 'throat', 'knee'];
@@ -68,6 +68,14 @@ export default function NewEntryScreen() {
     [],
   );
 
+  // A finished dictation lands here for review; it is appended, never sent on its own.
+  useFocusEffect(
+    useCallback(() => {
+      const transcript = takeTranscript();
+      if (transcript) setDescription((current) => joinText(current, transcript));
+    }, []),
+  );
+
   const pickChip = (index: number) => {
     setRegion(CHIP_REGIONS[index]);
     setDescription(t.chips[index]);
@@ -107,14 +115,14 @@ export default function NewEntryScreen() {
         placeholder={t.newDesc.placeholder}
         placeholderTextColor={tk.textFaint}
         multiline
-        maxLength={MAX_CHARS}
+        maxLength={MAX_DESCRIPTION_CHARS}
         style={s.textarea}
       />
 
       <View style={s.footRow}>
         <AppText style={s.footText}>{t.newDesc.helperNote}</AppText>
         <AppText style={s.footText}>
-          {description.length} / {MAX_CHARS}
+          {description.length} / {MAX_DESCRIPTION_CHARS}
         </AppText>
       </View>
 

@@ -12,6 +12,8 @@ const items: EntrySummary[] = [
     region: 'Kopf',
     urgency: 'low',
     urgencyLabel: 'Niedrig',
+    createdAt: '2026-10-10T09:00:00.000Z',
+    bodyRegion: null,
   },
   {
     id: 'knee',
@@ -20,12 +22,14 @@ const items: EntrySummary[] = [
     region: 'Nacken',
     urgency: 'mid',
     urgencyLabel: 'Mittel',
+    createdAt: '2026-10-10T09:00:00.000Z',
+    bodyRegion: null,
   },
 ];
 
 describe('initial entries state', () => {
   it('starts idle with nothing loaded and no error', () => {
-    expect(INITIAL_ENTRIES).toEqual({ status: 'idle', items: [], errorKey: null });
+    expect(INITIAL_ENTRIES).toEqual({ status: 'idle', items: [], errorKey: null, attempt: 0 });
   });
 });
 
@@ -35,7 +39,7 @@ describe('loading', () => {
 
     const next = entriesReducer(failed, { type: 'loadStarted' });
 
-    expect(next).toEqual({ status: 'loading', items: [], errorKey: null });
+    expect(next).toEqual({ status: 'loading', items: [], errorKey: null, attempt: 0 });
   });
 
   it('keeps the entries already on screen while refreshing', () => {
@@ -50,11 +54,25 @@ describe('loading', () => {
   });
 });
 
+describe('automatic retries', () => {
+  it('records which attempt is running', () => {
+    const next = entriesReducer(INITIAL_ENTRIES, { type: 'loadStarted', attempt: 2 });
+
+    expect(next).toMatchObject({ status: 'loading', attempt: 2 });
+  });
+
+  it('resets the attempt once a load succeeds', () => {
+    const retrying = entriesReducer(INITIAL_ENTRIES, { type: 'loadStarted', attempt: 3 });
+
+    expect(entriesReducer(retrying, { type: 'loadSucceeded', items }).attempt).toBe(0);
+  });
+});
+
 describe('success', () => {
   it('stores the loaded entries and marks the list ready', () => {
     const next = entriesReducer(INITIAL_ENTRIES, { type: 'loadSucceeded', items });
 
-    expect(next).toEqual({ status: 'ready', items, errorKey: null });
+    expect(next).toEqual({ status: 'ready', items, errorKey: null, attempt: 0 });
   });
 
   it('replaces rather than appends on a reload', () => {
@@ -69,7 +87,7 @@ describe('success', () => {
     // Distinct from `idle`: the screen shows the empty state, not a spinner.
     const next = entriesReducer(INITIAL_ENTRIES, { type: 'loadSucceeded', items: [] });
 
-    expect(next).toEqual({ status: 'ready', items: [], errorKey: null });
+    expect(next).toEqual({ status: 'ready', items: [], errorKey: null, attempt: 0 });
   });
 });
 
@@ -81,7 +99,7 @@ describe('failure', () => {
       errorKey: 'error.network',
     });
 
-    expect(next).toEqual({ status: 'error', items: [], errorKey: 'error.network' });
+    expect(next).toEqual({ status: 'error', items: [], errorKey: 'error.network', attempt: 0 });
   });
 
   it('keeps previously loaded entries visible behind the error', () => {

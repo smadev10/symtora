@@ -58,6 +58,7 @@ container has them off — set `EXPOSE_API_DOCS=true` in `.env` to publish them 
 | `src/Symtora.Api/Data/` | `SymtoraDbContext` and EF Core migrations |
 | `src/Symtora.Api/Services/Auth/` | Password hashing, JWT issuance, register/login logic |
 | `src/Symtora.Api/Services/Analysis/` | Prompt building, Ollama client, response parsing, the background job queue + worker |
+| `src/Symtora.Api/Services/Transcription/` | Whisper client for voice input |
 | `src/Symtora.Api/Controllers/` | `AuthController`, `EntriesController`, `PatternsController`, `MeController` |
 | `tests/Symtora.Api.Tests/` | Unit tests — run with `dotnet test` from `src/backend/` |
 
@@ -72,6 +73,7 @@ container has them off — set `EXPOSE_API_DOCS=true` in `.env` to publish them 
 | `GET /entries` | Bearer | Full history for the current user, newest first |
 | `GET /patterns` | Bearer | Body-region breakdown (count, last urgency, last seen) |
 | `DELETE /me/data` | Bearer | Deletes all of the current user's entries/assessments (keeps the account) |
+| `POST /transcriptions` | Bearer | multipart `audio` (+ `language`) → `{ text }`; audio is not stored. `413` over 10 MB, `503` if Whisper is down |
 | `GET /health` | – | Liveness check |
 | `GET /scalar` | – | Browsable API reference (see below); `GET /openapi/v1.json` for the raw document |
 

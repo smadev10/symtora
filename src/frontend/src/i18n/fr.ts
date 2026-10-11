@@ -52,8 +52,10 @@ const fr: Translations = {
   },
   start: {
     greeting: 'Bonjour',
-    trendSubtitle: '9 évaluations lors des 14 derniers jours',
-    trendLabel: 'Intensité des symptômes',
+    trendNone: 'Aucune évaluation lors des 14 derniers jours',
+    trendOne: '1 évaluation lors des 14 derniers jours',
+    trendMany: '{n} évaluations lors des 14 derniers jours',
+    trendLabel: 'Évaluations par jour',
     trendRange: '14 jours',
     kpiEntries: 'Entrées 14 j',
     kpiRegions: 'Régions',
@@ -62,6 +64,8 @@ const fr: Translations = {
     emergencyPromoSub: 'Vérifier les signes, appeler directement',
     distributionTitle: 'Répartition par région du corps',
     distributionRange: '30 jours',
+    distributionEmpty: 'Aucune entrée lors des 30 derniers jours.',
+    regionNone: 'Non précisé',
     recentTitle: 'Dernières évaluations',
   },
   newDesc: {
@@ -70,7 +74,7 @@ const fr: Translations = {
     placeholder: 'Que ressens-tu ? Depuis quand ? Où exactement ?',
     helperNote: 'Ne saisis ni nom ni adresse.',
     speakInstead: 'Parler à la place',
-    speakSubtitle: 'Dicte tes symptômes, la transcription reste sur l’appareil.',
+    speakSubtitle: 'Dicte tes symptômes au lieu de les taper.',
     analyze: 'Analyser',
   },
   record: {
@@ -78,6 +82,40 @@ const fr: Translations = {
     hint: 'Parle calmement, près du micro. Indique le lieu, la durée et l’intensité.',
     stopLabel: 'Arrêter l’enregistrement',
     cancel: 'Annuler',
+    starting: 'Préparation du micro …',
+    listening: 'Parle maintenant – le texte s’affiche ici.',
+    onDeviceNote: 'La reconnaissance se fait sur l’appareil, sans internet.',
+    serverNote: 'L’enregistrement est transcrit sur le serveur Symtora et n’est pas conservé.',
+    transcribing: 'Transcription en cours …',
+    retry: 'Réessayer',
+    openSettings: 'Ouvrir les réglages',
+    typeInstead: 'Saisir plutôt',
+    errors: {
+      permissionDenied: {
+        title: 'Pas d’accès au micro',
+        body: 'Autorise Symtora à utiliser le micro dans les réglages pour dicter tes symptômes.',
+      },
+      onDeviceUnavailable: {
+        title: 'Reconnaissance vocale indisponible',
+        body: 'Aucun modèle vocal hors ligne n’est installé pour cette langue. Symtora n’envoie jamais d’audio sur internet.',
+      },
+      noSpeech: {
+        title: 'Rien entendu',
+        body: 'Aucune parole n’a été reconnue. Parle un peu plus fort et plus près du micro.',
+      },
+      unsupported: {
+        title: 'Dictée impossible ici',
+        body: 'La saisie vocale n’est pas disponible dans cette version (p. ex. Expo Go ou web). Saisis plutôt tes symptômes.',
+      },
+      serverUnavailable: {
+        title: 'Transcription impossible pour le moment',
+        body: 'Le serveur Symtora est injoignable. Vérifie ta connexion et réessaie.',
+      },
+      unknown: {
+        title: 'Échec de l’enregistrement',
+        body: 'La reconnaissance vocale s’est arrêtée de façon inattendue. Réessaie.',
+      },
+    },
   },
   loading: { text: 'Analyse de la description …', subtitle: 'Traitement sur l’appareil' },
   assess: {
@@ -158,6 +196,13 @@ const fr: Translations = {
     emptyBody: 'Décris tes symptômes pour commencer.',
     offlineTitle: 'Hors ligne',
     offlineBody: 'Pas de connexion. Affichage des dernières données chargées.',
+    listLoading: 'Chargement de tes évaluations …',
+    listRetrying: 'Le serveur ne répond pas pour le moment. Nouvel essai en cours …',
+    listFailedTitle: 'Impossible de charger tes évaluations pour le moment',
+    autoRetryNote: 'Symtora réessaie automatiquement – tu n’as rien à faire.',
+    sessionExpiredTitle: 'Session expirée',
+    sessionExpiredBody: 'Reconnecte-toi pour voir tes évaluations.',
+    signInAgain: 'Se reconnecter',
   },
   dates: { today: "Aujourd'hui", yesterday: 'Hier' },
   urgency: {

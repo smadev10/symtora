@@ -3,33 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1200">
-<title>Symtora Autorisierung</title>
+<title>Symtora Zugriffsprüfung</title>
 <link rel="stylesheet" href="diagramm.css">
 </head>
 <body>
-<div class="canvas">
+<div class="canvas simple">
 
-  <div class="eyebrow">Symtora · Sicherheitskonzept · Teil 2 von 2</div>
   <h1>Autorisierung <span class="q">– Was darfst du?</span></h1>
-  <p class="lead">So stellt Symtora bei jeder Anfrage sicher, dass nur angemeldete Personen Zugriff haben und jede Person ausschliesslich ihre eigenen Gesundheitsdaten sieht.</p>
-
-  <div class="analogy">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-    <p><b>Vergleich aus dem Alltag:</b> Der Besucherausweis aus Teil&nbsp;1 wird an <b>jeder Tür</b> geprüft. Und er öffnet nur das <b>eigene Schliessfach</b>: Auch wer drin ist, kommt nie an die Fächer anderer Personen.</p>
-  </div>
+  <p class="lead">Bei jeder Anfrage zeigt die App den Ausweis vor. Der Server prüft ihn und gibt nur die eigenen Daten heraus.</p>
 
   <div class="lanes">
     <div class="lane-head app">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
-      App <small>Smartphone der Person</small>
+      App
     </div>
     <div class="lane-head srv">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></svg>
-      Server <small>Symtora API</small>
+      Server
     </div>
     <div class="lane-head db">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
-      Datenbank <small>Symptom-Einträge</small>
+      Datenbank
     </div>
   </div>
 
@@ -38,136 +32,59 @@
     <div class="lifeline srv"></div>
     <div class="lifeline db"></div>
 
-    <!-- 1 -->
-    <div class="row">
-      <div class="card app">
-        <div class="title"><span class="num">1</span>Türsteher in der App</div>
-        <p class="desc">Nicht angemeldet → Anmeldeseite.<br>Keine Einwilligung zum Datenschutz → Einwilligungsseite.<br>Sonst → Startseite.</p>
-        <span class="tech">expo-router · Redirect</span>
-      </div>
-    </div>
-
-    <!-- 2 -->
     <div class="row msg-row">
       <div class="msg app-srv">
         <div class="label">
-          <div class="title"><span class="num app">2</span>Anfrage mit Ausweis</div>
-          <span class="tech">Authorization: Bearer &lt;Token&gt;</span>
+          <div class="title"><span class="num app">1</span>Anfrage mit Ausweis</div>
         </div>
         <div class="arrow"></div>
       </div>
     </div>
 
-    <!-- 3 -->
     <div class="row">
       <div class="card srv">
-        <div class="title"><span class="num">3</span>Ausweis kontrollieren</div>
-        <p class="desc">✓ echt und unverändert (Unterschrift)<br>✓ von Symtora ausgestellt<br>✓ für diese App bestimmt<br>✓ noch nicht abgelaufen</p>
-        <span class="tech">JwtBearer · Signatur, Issuer, Audience, Ablauf</span>
+        <div class="title"><span class="num">2</span>Ausweis prüfen</div>
+        <p class="desc">Echt? Noch gültig? Wer ist die Person?</p>
       </div>
     </div>
 
-    <!-- 3 Fehlerfall -->
     <div class="row msg-row">
       <div class="msg app-srv rtl reply err">
         <div class="label">
-          <div class="title"><span class="num err">✕</span>Kein gültiger Ausweis? Abgelehnt</div>
-          <span class="tech">401 Unauthorized</span>
+          <div class="title"><span class="num err">✕</span>Ungültig: abgelehnt</div>
         </div>
         <div class="arrow"></div>
       </div>
     </div>
 
-    <!-- 4 -->
-    <div class="row">
-      <div class="card srv">
-        <div class="title"><span class="num">4</span>Person erkennen</div>
-        <p class="desc">Der Server liest die Benutzer-ID aus dem Ausweis. Sie kommt nie aus der Anfrage selbst und lässt sich daher nicht vortäuschen.</p>
-        <span class="tech">[Authorize] · sub-Claim → GetUserId()</span>
-      </div>
-    </div>
-
-    <!-- 5 -->
     <div class="row msg-row">
       <div class="msg srv-db">
         <div class="label">
-          <div class="title"><span class="num srv">5</span>Nur eigene Daten abfragen</div>
-          <span class="tech">WHERE UserId = eigene ID</span>
+          <div class="title"><span class="num srv">3</span>Nur eigene Daten abfragen</div>
         </div>
         <div class="arrow"></div>
       </div>
     </div>
 
-    <!-- 6 -->
-    <div class="row">
-      <div class="card db">
-        <div class="title"><span class="num">6</span>Eigenes Schliessfach</div>
-        <p class="desc">Die Datenbank liefert ausschliesslich Einträge dieser Person. Einträge anderer bleiben unsichtbar.</p>
-        <span class="tech">OwnedEntryQuery()</span>
-      </div>
-    </div>
-
-    <!-- 6 Antwort -->
-    <div class="row msg-row">
-      <div class="msg srv-db rtl reply">
-        <div class="label">
-          <div class="title">Eigene Einträge</div>
-          <span class="tech">gefiltertes Ergebnis</span>
-        </div>
-        <div class="arrow"></div>
-      </div>
-    </div>
-
-    <!-- 6 Fehlerfall -->
-    <div class="row msg-row">
-      <div class="msg app-srv rtl reply err">
-        <div class="label">
-          <div class="title"><span class="num err">✕</span>Fremder Eintrag? «Nicht gefunden»</div>
-          <span class="tech">404 · verrät nicht einmal, dass er existiert</span>
-        </div>
-        <div class="arrow"></div>
-      </div>
-    </div>
-
-    <!-- 7 -->
     <div class="row msg-row">
       <div class="msg app-srv rtl reply ok">
         <div class="label">
-          <div class="title"><span class="num srv">7</span>Antwort mit den eigenen Daten</div>
-          <span class="tech">200 OK</span>
+          <div class="title"><span class="num srv">4</span>Antwort mit eigenen Daten</div>
         </div>
         <div class="arrow"></div>
       </div>
     </div>
   </div>
 
-  <div class="section-title">Welche Bereiche sind geschützt?</div>
-  <div class="tiles">
-    <div class="tile ok">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>Öffentlich</h3>
-      <p>Nur Anmelden und Registrieren. Dafür braucht es noch keinen Ausweis.</p>
-      <span class="tech">/auth/login · /auth/register</span>
-    </div>
-    <div class="tile neutral">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Nur mit Ausweis</h3>
-      <p>Symptome erfassen und ansehen, Muster auswerten, eigene Daten löschen.</p>
-      <span class="tech">/entries · /patterns · /me</span>
-    </div>
-    <div class="tile err">
-      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>Nie erreichbar</h3>
-      <p>Daten anderer Personen. Auch ein gültiger Ausweis öffnet nur das eigene Schliessfach.</p>
-      <span class="tech">Filter auf UserId</span>
-    </div>
+  <div class="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+    <span><b>Daten anderer Personen sind nie sichtbar</b>, auch nicht mit einem gültigen Ausweis.</span>
   </div>
 
   <div class="legend">
-    <span><i class="sw" style="background:var(--app)"></i>App</span>
-    <span><i class="sw" style="background:var(--srv)"></i>Server</span>
-    <span><i class="sw" style="background:var(--db)"></i>Datenbank</span>
     <span><i class="ln"></i>Anfrage</span>
     <span><i class="ln dash"></i>Antwort</span>
     <span><i class="ln dash red"></i>Ablehnung</span>
-    <span class="src">Grau hinterlegt: technischer Begriff</span>
   </div>
 
 </div>

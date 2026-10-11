@@ -50,3 +50,17 @@ export function kindForStatus(status: number): ApiErrorKind {
 }
 
 export const isApiError = (value: unknown): value is ApiError => value instanceof ApiError;
+
+/**
+ * Failures that can clear up by themselves — a dropped connection, a slow or
+ * briefly broken server — and are worth trying again without the user. An
+ * expired login or a bad request will fail the same way every time.
+ */
+const RETRYABLE_KEYS: ReadonlySet<string> = new Set([
+  ERROR_KEYS.network,
+  ERROR_KEYS.timeout,
+  ERROR_KEYS.server,
+  ERROR_KEYS.unknown,
+]);
+
+export const isRetryableKey = (key: string | null): boolean => key !== null && RETRYABLE_KEYS.has(key);

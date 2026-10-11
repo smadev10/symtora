@@ -51,8 +51,10 @@ const de = {
   },
   start: {
     greeting: 'Guten Tag',
-    trendSubtitle: '9 Einschätzungen in den letzten 14 Tagen',
-    trendLabel: 'Beschwerdeintensität',
+    trendNone: 'Keine Einschätzungen in den letzten 14 Tagen',
+    trendOne: '1 Einschätzung in den letzten 14 Tagen',
+    trendMany: '{n} Einschätzungen in den letzten 14 Tagen',
+    trendLabel: 'Einschätzungen pro Tag',
     trendRange: '14 Tage',
     kpiEntries: 'Einträge 14 T',
     kpiRegions: 'Regionen',
@@ -61,6 +63,8 @@ const de = {
     emergencyPromoSub: 'Warnzeichen prüfen, direkt anrufen',
     distributionTitle: 'Verteilung nach Körperregion',
     distributionRange: '30 Tage',
+    distributionEmpty: 'Noch keine Einträge in den letzten 30 Tagen.',
+    regionNone: 'Ohne Angabe',
     recentTitle: 'Letzte Einschätzungen',
   },
   newDesc: {
@@ -69,7 +73,7 @@ const de = {
     placeholder: 'Was fehlt dir? Seit wann? Wo genau?',
     helperNote: 'Keine Namen oder Adressen eingeben.',
     speakInstead: 'Stattdessen sprechen',
-    speakSubtitle: 'Beschwerden diktieren, das Transkript bleibt auf dem Gerät.',
+    speakSubtitle: 'Beschwerden diktieren statt tippen.',
     analyze: 'Analysieren',
   },
   record: {
@@ -77,6 +81,40 @@ const de = {
     hint: 'Sprich ruhig und nah am Mikrofon. Nenne Ort, Dauer und Stärke der Beschwerden.',
     stopLabel: 'Aufnahme beenden',
     cancel: 'Abbrechen',
+    starting: 'Mikrofon wird vorbereitet …',
+    listening: 'Sprich jetzt – der Text erscheint hier.',
+    onDeviceNote: 'Die Erkennung läuft auf dem Gerät, ohne Internet.',
+    serverNote: 'Die Aufnahme wird auf dem Symtora-Server in Text umgewandelt und nicht gespeichert.',
+    transcribing: 'Wird in Text umgewandelt …',
+    retry: 'Erneut versuchen',
+    openSettings: 'Einstellungen öffnen',
+    typeInstead: 'Stattdessen tippen',
+    errors: {
+      permissionDenied: {
+        title: 'Kein Zugriff auf das Mikrofon',
+        body: 'Erlaube Symtora den Mikrofonzugriff in den Einstellungen, um Beschwerden zu diktieren.',
+      },
+      onDeviceUnavailable: {
+        title: 'Spracherkennung nicht verfügbar',
+        body: 'Für diese Sprache ist auf dem Gerät kein Offline-Sprachmodell installiert. Symtora sendet keine Audioaufnahmen ins Internet.',
+      },
+      noSpeech: {
+        title: 'Nichts verstanden',
+        body: 'Es wurde keine Sprache erkannt. Sprich etwas lauter und näher am Mikrofon.',
+      },
+      unsupported: {
+        title: 'Diktieren hier nicht möglich',
+        body: 'Die Spracheingabe ist in dieser Version nicht verfügbar (z. B. Expo Go oder Web). Tippe deine Beschwerden stattdessen ein.',
+      },
+      serverUnavailable: {
+        title: 'Umwandlung gerade nicht möglich',
+        body: 'Der Symtora-Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.',
+      },
+      unknown: {
+        title: 'Aufnahme fehlgeschlagen',
+        body: 'Die Spracherkennung wurde unerwartet beendet. Versuche es erneut.',
+      },
+    },
   },
   loading: { text: 'Beschreibung wird analysiert …', subtitle: 'Verarbeitung auf dem Gerät' },
   assess: {
@@ -160,6 +198,13 @@ const de = {
     emptyBody: 'Beschreibe deine Beschwerden, um zu starten.',
     offlineTitle: 'Offline',
     offlineBody: 'Keine Verbindung. Angezeigt werden die zuletzt geladenen Daten.',
+    listLoading: 'Deine Einschätzungen werden geladen …',
+    listRetrying: 'Der Server antwortet gerade nicht. Neuer Versuch läuft …',
+    listFailedTitle: 'Einschätzungen können gerade nicht geladen werden',
+    autoRetryNote: 'Symtora versucht es automatisch weiter – du musst nichts tun.',
+    sessionExpiredTitle: 'Anmeldung abgelaufen',
+    sessionExpiredBody: 'Melde dich erneut an, um deine Einschätzungen zu sehen.',
+    signInAgain: 'Neu anmelden',
   },
   dates: { today: 'Heute', yesterday: 'Gestern' },
   urgency: {

@@ -7,7 +7,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/open-sans';
 import { Stack } from 'expo-router';
-import { useEffect } from 'react';
+import { useLayoutEffect, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -25,11 +25,23 @@ import { tokens } from '@/theme/tokens';
 function TokenBridge() {
   const { session } = useSession();
 
-  useEffect(() => {
+  // A layout effect runs before any passive effect in the same commit, so the
+  // client already has the new token when EntriesProvider loads on login.
+  useLayoutEffect(() => {
     setTokenGetter(() => (session.status === 'authenticated' ? session.token : null));
   }, [session]);
 
   return null;
+}
+
+/** Entries belong to whoever is signed in; nothing loads before that. */
+function SessionEntries({ children }: { children: ReactNode }) {
+  const { session } = useSession();
+  return (
+    <EntriesProvider sessionKey={session.status === 'authenticated' ? session.token : null}>
+      {children}
+    </EntriesProvider>
+  );
 }
 
 function RootNavigator({ fontsLoaded }: { fontsLoaded: boolean }) {
@@ -79,9 +91,9 @@ export default function RootLayout() {
       <SettingsProvider>
         <SessionProvider>
           <TokenBridge />
-          <EntriesProvider>
+          <SessionEntries>
             <RootNavigator fontsLoaded={fontsLoaded} />
-          </EntriesProvider>
+          </SessionEntries>
         </SessionProvider>
       </SettingsProvider>
     </SafeAreaProvider>

@@ -51,8 +51,10 @@ const en: Translations = {
   },
   start: {
     greeting: 'Good day',
-    trendSubtitle: '9 assessments in the last 14 days',
-    trendLabel: 'Symptom intensity',
+    trendNone: 'No assessments in the last 14 days',
+    trendOne: '1 assessment in the last 14 days',
+    trendMany: '{n} assessments in the last 14 days',
+    trendLabel: 'Assessments per day',
     trendRange: '14 days',
     kpiEntries: 'Entries 14d',
     kpiRegions: 'Regions',
@@ -61,6 +63,8 @@ const en: Translations = {
     emergencyPromoSub: 'Check warning signs, call directly',
     distributionTitle: 'Distribution by body region',
     distributionRange: '30 days',
+    distributionEmpty: 'No entries in the last 30 days yet.',
+    regionNone: 'Not specified',
     recentTitle: 'Recent assessments',
   },
   newDesc: {
@@ -69,7 +73,7 @@ const en: Translations = {
     placeholder: 'What’s wrong? Since when? Where exactly?',
     helperNote: 'Don’t enter names or addresses.',
     speakInstead: 'Speak instead',
-    speakSubtitle: 'Dictate your symptoms, the transcript stays on the device.',
+    speakSubtitle: 'Dictate your symptoms instead of typing.',
     analyze: 'Analyze',
   },
   record: {
@@ -77,6 +81,40 @@ const en: Translations = {
     hint: 'Speak calmly and close to the mic. Mention location, duration and intensity.',
     stopLabel: 'Stop recording',
     cancel: 'Cancel',
+    starting: 'Getting the microphone ready …',
+    listening: 'Start speaking – your words appear here.',
+    onDeviceNote: 'Recognition runs on this device, without the internet.',
+    serverNote: 'The recording is turned into text on the Symtora server and not stored.',
+    transcribing: 'Turning your recording into text …',
+    retry: 'Try again',
+    openSettings: 'Open settings',
+    typeInstead: 'Type instead',
+    errors: {
+      permissionDenied: {
+        title: 'No microphone access',
+        body: 'Allow Symtora to use the microphone in your settings to dictate symptoms.',
+      },
+      onDeviceUnavailable: {
+        title: 'Speech recognition unavailable',
+        body: 'No offline speech model is installed for this language. Symtora never sends audio to the internet.',
+      },
+      noSpeech: {
+        title: 'Nothing heard',
+        body: 'No speech was recognised. Speak a little louder and closer to the mic.',
+      },
+      unsupported: {
+        title: 'Dictation not available here',
+        body: 'Voice input isn’t available in this version (e.g. Expo Go or web). Type your symptoms instead.',
+      },
+      serverUnavailable: {
+        title: 'Can’t transcribe right now',
+        body: 'The Symtora server can’t be reached. Check your connection and try again.',
+      },
+      unknown: {
+        title: 'Recording failed',
+        body: 'Speech recognition stopped unexpectedly. Please try again.',
+      },
+    },
   },
   loading: { text: 'Analyzing your description …', subtitle: 'Processing on this device' },
   assess: {
@@ -157,6 +195,13 @@ const en: Translations = {
     emptyBody: 'Describe your symptoms to get started.',
     offlineTitle: 'Offline',
     offlineBody: 'No connection. Showing the data loaded last.',
+    listLoading: 'Loading your assessments …',
+    listRetrying: 'The server isn’t responding right now. Trying again …',
+    listFailedTitle: 'Your assessments can’t be loaded right now',
+    autoRetryNote: 'Symtora keeps trying automatically – you don’t need to do anything.',
+    sessionExpiredTitle: 'Signed out',
+    sessionExpiredBody: 'Your session has expired. Sign in again to see your assessments.',
+    signInAgain: 'Sign in again',
   },
   dates: { today: 'Today', yesterday: 'Yesterday' },
   urgency: {

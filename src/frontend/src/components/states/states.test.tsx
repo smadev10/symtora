@@ -82,7 +82,7 @@ describe('AsyncBoundary', () => {
       </AsyncBoundary>,
     );
 
-    expect(screen.getByText(TR.de.states.loading)).toBeTruthy();
+    expect(screen.getByText(TR.de.states.listLoading)).toBeTruthy();
   });
 
   it('keeps showing content while refreshing', async () => {
@@ -93,28 +93,55 @@ describe('AsyncBoundary', () => {
       </AsyncBoundary>,
     );
 
-    expect(screen.queryByText(TR.de.states.loading)).toBeNull();
+    expect(screen.queryByText(TR.de.states.listLoading)).toBeNull();
   });
 
-  it('shows the offline state for a network failure rather than a generic error', async () => {
-    // Offline is inferred from NetworkError; there is no connectivity library.
+  it('says it is retrying once the first attempt has failed', async () => {
     await show(
-      <AsyncBoundary status="error" errorKey={ERROR_KEYS.network} hasContent={false}>
+      <AsyncBoundary status="loading" attempt={1} hasContent={false}>
         {null}
       </AsyncBoundary>,
     );
 
-    expect(screen.getByText(TR.de.states.offlineTitle)).toBeTruthy();
+    expect(screen.getByText(TR.de.states.listRetrying)).toBeTruthy();
   });
 
-  it('shows the error state for any other failure', async () => {
+  it('explains a failure that is retried automatically, without a button', async () => {
+    const onRetry = jest.fn();
     await show(
-      <AsyncBoundary status="error" errorKey={ERROR_KEYS.server} hasContent={false}>
+      <AsyncBoundary status="error" errorKey={ERROR_KEYS.network} hasContent={false} onRetry={onRetry}>
         {null}
       </AsyncBoundary>,
     );
 
-    expect(screen.getByText(TR.de.errors.server)).toBeTruthy();
+    expect(screen.getByText(TR.de.states.listFailedTitle)).toBeTruthy();
+    expect(screen.getByText(TR.de.errors.network)).toBeTruthy();
+    expect(screen.getByText(TR.de.states.autoRetryNote)).toBeTruthy();
+    expect(screen.queryByText(TR.de.states.retry)).toBeNull();
+  });
+
+  it('asks the user to sign in again when the session was rejected', async () => {
+    const onSignIn = jest.fn();
+    await show(
+      <AsyncBoundary status="error" errorKey={ERROR_KEYS.unauthorized} hasContent={false} onSignIn={onSignIn}>
+        {null}
+      </AsyncBoundary>,
+    );
+
+    expect(screen.getByText(TR.de.states.sessionExpiredTitle)).toBeTruthy();
+    await userEvent.press(screen.getByText(TR.de.states.signInAgain));
+    expect(onSignIn).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers a manual retry only for failures that are not retried automatically', async () => {
+    await show(
+      <AsyncBoundary status="error" errorKey={ERROR_KEYS.notFound} hasContent={false} onRetry={() => {}}>
+        {null}
+      </AsyncBoundary>,
+    );
+
+    expect(screen.getByText(TR.de.errors.notFound)).toBeTruthy();
+    expect(screen.getByText(TR.de.states.retry)).toBeTruthy();
   });
 
   it('shows the empty state when a successful load returned nothing', async () => {
