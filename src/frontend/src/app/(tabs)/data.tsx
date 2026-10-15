@@ -2,11 +2,15 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
+import { meApi } from '@/api/me';
+import { ERROR_KEYS, isApiError } from '@/api/errors';
 import AppText from '@/components/AppText';
+import { saveExport } from '@/export/saveExport';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
 import ScreenHeader from '@/components/ScreenHeader';
 import { Avatar, IconChevron, IconDownload, IconMoon, IconSun } from '@/components/icons';
+import { translate } from '@/i18n/translate';
 import { LANGS, TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
 import { useSession } from '@/state/session/Provider';
@@ -54,6 +58,7 @@ const styles = themedStyles((tk) =>
       marginBottom: 16,
     },
     sheetTitle: { color: tk.textStrong, fontWeight: '800', fontSize: 16, marginBottom: 8 },
+    sheetError: { color: '#c62828', fontSize: 13, marginTop: 10 },
   }),
 );
 
@@ -68,7 +73,66 @@ export default function DataScreen() {
   const shared = sharedStyles(settings.theme);
   const tk = tokens(settings.theme);
 
-  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+  /** Which deletion the sheet is confirming, if it is open. */
+  const [confirming, setConfirming] = useState<'data' | 'account' | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+
+  const [exporting, setExporting] = useState(false);
+  const [exportErrorKey, setExportErrorKey] = useState<string | null>(null);
+
+  const exportData = async () => {
+    if (exporting) return;
+    setExporting(true);
+    setExportErrorKey(null);
+    try {
+      await saveExport(await meApi.exportData());
+    } catch (error) {
+      setExportErrorKey(isApiError(error) ? error.messageKey : ERROR_KEYS.unknown);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const openSheet = (kind: 'data' | 'account') => {
+    setErrorKey(null);
+    setConfirming(kind);
+  };
+  const closeSheet = () => {
+    if (!deleting) setConfirming(null);
+  };
+
+  // The server deletes first and the screen follows: clearing only the local list would leave
+  // everything on the server, to reappear on the next reload.
+  const confirmDelete = async () => {
+    setDeleting(true);
+    setErrorKey(null);
+    try {
+      if (confirming === 'account') {
+        await meApi.deleteAccount();
+        setConfirming(null);
+        signOut(); // drops the stored token; the entries empty themselves on sign-out
+        return;
+      }
+      await meApi.deleteData();
+      clear();
+      setConfirming(null);
+      router.navigate('/start');
+    } catch (error) {
+      setErrorKey(isApiError(error) ? error.messageKey : ERROR_KEYS.unknown);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const sheetText =
+    confirming === 'account'
+      ? {
+          title: t.data.deleteAccountConfirmTitle,
+          body: t.data.deleteAccountConfirmBody,
+          cta: t.data.deleteAccountConfirmCta,
+        }
+      : { title: t.data.deleteConfirmTitle, body: t.data.deleteConfirmBody, cta: t.data.deleteConfirmCta };
 
   const profileName = session.status === 'authenticated' ? session.user.name : '';
 
@@ -153,16 +217,31 @@ export default function DataScreen() {
       </View>
 
       <View style={shared.card}>
-        <View style={shared.rowBetween}>
+        <Pressable
+          onPress={() => void exportData()}
+          disabled={exporting}
+          style={[shared.rowBetween, exporting && { opacity: 0.5 }]}
+        >
           <View>
             <AppText style={shared.textStrong}>{t.data.export}</AppText>
             <AppText style={shared.rowSubtitle}>{t.data.exportSubtitle}</AppText>
           </View>
           <IconDownload color={tk.textFaint} />
-        </View>
+        </Pressable>
+        {exportErrorKey ? (
+          <AppText style={s.sheetError}>{translate(settings.lang, exportErrorKey)}</AppText>
+        ) : null}
         <View style={shared.divider} />
-        <Pressable onPress={() => setShowDeleteSheet(true)} style={shared.rowBetween}>
+        <Pressable onPress={() => openSheet('data')} style={shared.rowBetween}>
           <AppText style={s.dangerText}>{t.data.delete}</AppText>
+          <IconChevron color={tk.textFaint} />
+        </Pressable>
+        <View style={shared.divider} />
+        <Pressable onPress={() => openSheet('account')} style={shared.rowBetween}>
+          <View>
+            <AppText style={s.dangerText}>{t.data.deleteAccount}</AppText>
+            <AppText style={shared.rowSubtitle}>{t.data.deleteAccountSubtitle}</AppText>
+          </View>
           <IconChevron color={tk.textFaint} />
         </Pressable>
       </View>
@@ -177,32 +256,21 @@ export default function DataScreen() {
         </View>
       </Pressable>
 
-      <Modal
-        visible={showDeleteSheet}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowDeleteSheet(false)}
-      >
-        <Pressable style={s.sheetOverlay} onPress={() => setShowDeleteSheet(false)}>
+      <Modal visible={confirming !== null} transparent animationType="fade" onRequestClose={closeSheet}>
+        <Pressable style={s.sheetOverlay} onPress={closeSheet}>
           <Pressable style={s.sheet} onPress={(e) => e.stopPropagation()}>
             <View style={s.sheetHandle} />
-            <AppText style={s.sheetTitle}>{t.data.deleteConfirmTitle}</AppText>
-            <AppText style={shared.textMuted}>{t.data.deleteConfirmBody}</AppText>
+            <AppText style={s.sheetTitle}>{sheetText.title}</AppText>
+            <AppText style={shared.textMuted}>{sheetText.body}</AppText>
+            {errorKey ? <AppText style={s.sheetError}>{translate(settings.lang, errorKey)}</AppText> : null}
             <Button
-              label={t.data.deleteConfirmCta}
+              label={sheetText.cta}
               variant="danger"
-              onPress={() => {
-                clear();
-                setShowDeleteSheet(false);
-                router.navigate('/start');
-              }}
+              disabled={deleting}
+              onPress={() => void confirmDelete()}
               style={{ marginBottom: 10, marginTop: 10 }}
             />
-            <Button
-              label={t.data.cancel}
-              variant="secondary"
-              onPress={() => setShowDeleteSheet(false)}
-            />
+            <Button label={t.data.cancel} variant="secondary" disabled={deleting} onPress={closeSheet} />
           </Pressable>
         </Pressable>
       </Modal>
