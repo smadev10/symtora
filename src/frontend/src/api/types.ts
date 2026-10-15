@@ -68,3 +68,10 @@ export type PatternResponse = {
   lastUrgency: string | null;
   lastEntryAt: string;
 };
+
+/** GET /me/export: everything the server stores about the signed-in user. */
+export type MyDataExport = {
+  exportedAt: string;
+  profile: { email: string; name: string; createdAt: string };
+  entries: EntryResponse[];
+};
