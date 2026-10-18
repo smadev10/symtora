@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Symtora.Api.Auth;
 using Symtora.Api.Dtos;
 using Symtora.Api.Services.Auth;
 
@@ -48,5 +50,28 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
 
         return Ok(new AuthResponse(result.Token!, result.ExpiresAt!.Value, result.Name!));
+    }
+
+    /// <summary>Changes the signed-in user's password.</summary>
+    /// <remarks>
+    /// Needs the current password as well, so an unlocked phone alone can't be used to take over
+    /// the account. A wrong current password is a 400 on `currentPassword`, not a 401: the token
+    /// is fine, only the input is wrong. Tokens already issued stay valid until they expire.
+    /// </remarks>
+    /// <response code="204">Password changed. The old one no longer works for login.</response>
+    /// <response code="400">The current password is wrong, or a field is not a SHA-256 hash.</response>
+    [HttpPut("password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
+    {
+        var error = await authService.ChangePasswordAsync(User.GetUserId(), request.CurrentPassword, request.NewPassword, ct);
+
+        if (error != AuthError.None)
+        {
+            ModelState.AddModelError("currentPassword", "The current password is wrong.");
+            return ValidationProblem(ModelState);
+        }
+
+        return NoContent();
     }
 }

@@ -17,6 +17,10 @@ public record LoginRequest(
     [Required] string Email,
     [Required, RegularExpression("^[0-9a-f]{64}$", ErrorMessage = "Password must be a SHA-256 hash.")] string Password);
 
+public record ChangePasswordRequest(
+    [Required, RegularExpression("^[0-9a-f]{64}$", ErrorMessage = "Password must be a SHA-256 hash.")] string CurrentPassword,
+    [Required, RegularExpression("^[0-9a-f]{64}$", ErrorMessage = "Password must be a SHA-256 hash.")] string NewPassword);
+
 // `Name` is the display name given at registration, so a fresh device can greet the user
 // without a separate profile call.
 public record AuthResponse(string Token, DateTimeOffset ExpiresAt, string Name);

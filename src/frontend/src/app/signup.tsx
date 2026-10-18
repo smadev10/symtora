@@ -8,6 +8,7 @@ import Screen from '@/components/Screen';
 import { IconCheck, LogoMark } from '@/components/icons';
 import { translate } from '@/i18n/translate';
 import { TR } from '@/i18n/translations';
+import { MIN_PASSWORD_LENGTH } from '@/state/session/passwordHash';
 import { useSession } from '@/state/session/Provider';
 import { useAuth } from '@/state/session/useAuth';
 import { useSettings } from '@/state/settings/Provider';
@@ -16,7 +17,6 @@ import { sharedStyles } from '@/theme/styles';
 import { tokens } from '@/theme/tokens';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 8;
 
 export default function SignupScreen() {
   const router = useRouter();

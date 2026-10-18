@@ -40,7 +40,8 @@
           "speechRecognitionPermission": "Symtora turns your dictation into text on this device."
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-sharing"
     ],
     "scheme": "symtora",
     "experiments": {

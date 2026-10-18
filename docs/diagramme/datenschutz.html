@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<title>Symtora Datenschutz</title>
+<link rel="stylesheet" href="diagramm.css">
+<style>
+  /* Drei Aktions-Karten statt Swimlanes: hier geht es um das, was man tun kann, nicht um einen Ablauf. */
+  .privacy .section-title { margin-top: 26px; }
+  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .action {
+    display: flex; flex-direction: column;
+    padding: 18px 20px 18px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid var(--line);
+    border-top: 5px solid var(--c);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 6px 18px rgba(15, 23, 42, .06);
+  }
+  .action.export { --c: var(--app); }
+  .action.data   { --c: var(--srv); }
+  .action.acct   { --c: var(--err); }
+  .action .head { display: flex; align-items: center; gap: 12px; }
+  .action .icon {
+    flex: none; display: grid; place-items: center;
+    width: 44px; height: 44px; border-radius: 12px;
+    background: color-mix(in srgb, var(--c) 12%, #fff); color: var(--c);
+  }
+  .action .icon svg { width: 26px; height: 26px; }
+  .action h3 { margin: 0; font-size: 19px; line-height: 1.25; }
+  .action p { margin: 10px 0 14px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+
+  /* Mini-Kette: App → Server → Ergebnis */
+  /* margin-top: auto hält die Ketten aller drei Karten auf einer Linie, auch bei ungleich langem Text. */
+  .chain { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; margin-top: auto; }
+  .chip {
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; white-space: nowrap;
+  }
+  .chip.app { background: var(--app-soft); color: var(--app); }
+  .chip.srv { background: var(--srv-soft); color: var(--srv); }
+  .chip.ok  { background: #dcfce7; color: var(--ok); }
+  .chain .to { color: var(--faint); font-size: 14px; }
+
+  .compare { grid-template-columns: 1fr 1fr; }
+  .compare .tile { background: #fff; }
+  .compare .tile.err { background: var(--err-bg); border-color: #fecaca; }
+  .compare .tile.ok  { background: #f0fdf4; border-color: #bbf7d0; }
+  .compare ul { margin: 6px 0 0; padding-left: 20px; font-size: 15px; line-height: 1.5; color: var(--muted); }
+  .compare li + li { margin-top: 4px; }
+
+  .next {
+    margin-top: 16px;
+    font-size: 14.5px; color: var(--muted);
+  }
+  .next b { color: var(--ink); }
+  .next .tag {
+    display: inline-block; margin-right: 8px; padding: 2px 9px; border-radius: 6px;
+    background: #f1f5f9; color: #334155; font-size: 12.5px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="canvas simple privacy">
+
+  <h1>Datenschutz <span class="q">– deine Daten, deine Kontrolle</span></h1>
+  <p class="lead">Wer Symtora nutzt, kann jederzeit alles mitnehmen oder löschen – direkt in der App unter «Daten».</p>
+
+  <div class="section-title">Was du jetzt tun kannst</div>
+  <div class="actions">
+
+    <div class="action export">
+      <div class="head">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+        </div>
+        <h3>Daten exportieren</h3>
+      </div>
+      <p>Alles, was über dich gespeichert ist, kommt als Datei aufs Handy – zum Speichern, Teilen oder Mailen.</p>
+      <div class="chain">
+        <span class="chip app">App</span><span class="to">→</span>
+        <span class="chip srv">Server sammelt alles</span><span class="to">→</span>
+        <span class="chip ok">✓ Datei</span>
+      </div>
+    </div>
+
+    <div class="action data">
+      <div class="head">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </div>
+        <h3>Gesundheitsdaten löschen</h3>
+      </div>
+      <p>Alle Einträge und KI-Einschätzungen sind weg. Dein Konto bleibt, du kannst neu anfangen.</p>
+      <div class="chain">
+        <span class="chip app">App</span><span class="to">→</span>
+        <span class="chip srv">Server löscht</span><span class="to">→</span>
+        <span class="chip ok">✓ Einträge weg</span>
+      </div>
+    </div>
+
+    <div class="action acct">
+      <div class="head">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="m17 8 5 5M22 8l-5 5"/></svg>
+        </div>
+        <h3>Konto löschen</h3>
+      </div>
+      <p>Konto und alle Daten sind endgültig weg. Du wirst auf allen Geräten sofort abgemeldet.</p>
+      <div class="chain">
+        <span class="chip app">App</span><span class="to">→</span>
+        <span class="chip srv">Server löscht alles</span><span class="to">→</span>
+        <span class="chip ok">✓ Konto weg</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Vorher → Nachher</div>
+  <div class="tiles compare">
+    <div class="tile err">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+        Vorher
+      </h3>
+      <ul>
+        <li>«Löschen» leerte nur die Anzeige – die Daten blieben auf dem Server und tauchten wieder auf.</li>
+        <li>Seine Daten mitnehmen ging nicht.</li>
+        <li>Ein Konto ganz löschen ging nicht.</li>
+      </ul>
+    </div>
+    <div class="tile ok">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+        Nachher
+      </h3>
+      <ul>
+        <li>Zuerst löscht der Server – erst dann zeigt die App «gelöscht». Klappt es nicht, sagt die App das ehrlich.</li>
+        <li>Export als Datei mit einem Tipp.</li>
+        <li>Ein gelöschtes Konto meldet sofort überall ab, statt noch bis zu 7 Tage angemeldet zu bleiben.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+    <span><b>Das galt schon vorher:</b> Die KI und die Spracherkennung laufen auf dem eigenen Server – nichts geht an fremde Firmen. Sprachaufnahmen werden nie gespeichert.</span>
+  </div>
+
+  <p class="next"><span class="tag">Geplant</span><b>Als Nächstes:</b> Zustimmung bei der Registrierung · verschlüsselte Verbindung und Speicherung · alte Einträge automatisch löschen</p>
+
+  <div class="legend">
+    <span><i class="sw" style="background: var(--app)"></i>App auf dem Handy</span>
+    <span><i class="sw" style="background: var(--srv)"></i>Symtora-Server</span>
+    <span><i class="sw" style="background: var(--ok)"></i>Ergebnis</span>
+    <span class="src">Grundlage: Schweizer Datenschutzgesetz (nDSG) – Recht auf Auskunft, Herausgabe und Löschung</span>
+  </div>
+
+</div>
+</body>
+</html>

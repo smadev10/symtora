@@ -87,6 +87,48 @@ public class AuthServiceTests
         Assert.Equal(AuthError.InvalidCredentials, result.Error);
     }
 
+    [Fact]
+    public async Task ChangePasswordAsync_replaces_the_password_used_for_login()
+    {
+        using var db = CreateInMemoryDb();
+        var service = CreateService(db);
+        await service.RegisterAsync("Person", "person@example.com", "correct-password", CancellationToken.None);
+        var userId = (await db.Users.SingleAsync()).Id;
+
+        var error = await service.ChangePasswordAsync(userId, "correct-password", "new-password", CancellationToken.None);
+
+        Assert.Equal(AuthError.None, error);
+        Assert.True((await service.LoginAsync("person@example.com", "new-password", CancellationToken.None)).Success);
+        Assert.False((await service.LoginAsync("person@example.com", "correct-password", CancellationToken.None)).Success);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_keeps_the_password_when_the_current_one_is_wrong()
+    {
+        using var db = CreateInMemoryDb();
+        var service = CreateService(db);
+        await service.RegisterAsync("Person", "person@example.com", "correct-password", CancellationToken.None);
+        var user = await db.Users.SingleAsync();
+        var hashBefore = user.PasswordHash;
+
+        var error = await service.ChangePasswordAsync(user.Id, "wrong-password", "new-password", CancellationToken.None);
+
+        Assert.Equal(AuthError.InvalidCredentials, error);
+        Assert.Equal(hashBefore, user.PasswordHash);
+        Assert.True((await service.LoginAsync("person@example.com", "correct-password", CancellationToken.None)).Success);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_fails_for_unknown_user()
+    {
+        using var db = CreateInMemoryDb();
+        var service = CreateService(db);
+
+        var error = await service.ChangePasswordAsync(Guid.NewGuid(), "whatever", "new-password", CancellationToken.None);
+
+        Assert.Equal(AuthError.InvalidCredentials, error);
+    }
+
     private class FakeTokenGenerator : IJwtTokenGenerator
     {
         public const string Token = "fake-token";
