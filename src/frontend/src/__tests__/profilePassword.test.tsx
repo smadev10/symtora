@@ -77,7 +77,7 @@ afterEach(async () => {
   jest.restoreAllMocks();
 });
 
-it('changes the password on the server', async () => {
+it('changes the password on the server and signs out', async () => {
   const server = fakeServer('old-password');
   const view = await openProfile(server);
 
@@ -85,8 +85,9 @@ it('changes the password on the server', async () => {
   await fireEvent.changeText((await view.findAllByDisplayValue('')).at(-1)!, 'old-password');
   await fireEvent.press(view.getByText(t.profile.save));
 
-  expect(await view.findByText(t.profile.saved)).toBeTruthy();
+  await waitFor(async () => expect(await SecureStore.getItemAsync(STORAGE_KEYS.session)).toBeNull());
   expect(server.state.passwordHash).toBe(await hashPassword('new-password'));
+  expect(await view.findByText(t.login.loginCta)).toBeTruthy();
 });
 
 it('says the current password is wrong and keeps the old one', async () => {

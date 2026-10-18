@@ -21,7 +21,7 @@ import { tokens } from '@/theme/tokens';
 export default function ProfileScreen() {
   const router = useRouter();
   const { settings } = useSettings();
-  const { session, updateProfile } = useSession();
+  const { session, updateProfile, signOut } = useSession();
 
   const t = TR[settings.lang];
   const s = authStyles(settings.theme);
@@ -59,6 +59,12 @@ export default function ProfileScreen() {
         });
       }
       updateProfile({ name: name.trim(), email: email.trim() });
+      if (changingPassword) {
+        // Signing in again with the new password is the proof that it took; the screen
+        // redirects to the login once the session is gone.
+        signOut();
+        return;
+      }
       setCurrentPassword('');
       setNewPassword('');
       setSaved(true);
