@@ -9,6 +9,12 @@ export type LoginRequest = {
   password: string;
 };
 
+/** Both passwords already hashed on-device, like `LoginRequest.password`. */
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 /** The API accepts email and password only; there is no name field. */
 export type RegisterRequest = {
   name: string;

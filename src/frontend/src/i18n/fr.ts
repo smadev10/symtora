@@ -45,6 +45,8 @@ const fr: Translations = {
     editLink: 'Modifier le profil',
     nameLabel: 'Nom',
     emailLabel: 'E-mail',
+    currentPasswordLabel: 'Mot de passe actuel',
+    currentPasswordWrong: 'Le mot de passe actuel est incorrect.',
     newPasswordLabel: 'Nouveau mot de passe',
     newPasswordPlaceholder: 'Laisser vide pour conserver le mot de passe',
     save: 'Enregistrer',

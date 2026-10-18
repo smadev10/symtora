@@ -27,7 +27,7 @@ async function sha256(value: string): Promise<string> {
 }
 
 function fakeAuthApi(overrides: Partial<AuthApi> = {}): AuthApi {
-  return { login: async () => ok, register: async () => ok, ...overrides };
+  return { login: async () => ok, register: async () => ok, changePassword: async () => {}, ...overrides };
 }
 
 function wrapper({ children }: { children: ReactNode }) {

@@ -44,6 +44,8 @@ const de = {
     editLink: 'Profil bearbeiten',
     nameLabel: 'Name',
     emailLabel: 'E-Mail',
+    currentPasswordLabel: 'Aktuelles Passwort',
+    currentPasswordWrong: 'Das aktuelle Passwort stimmt nicht.',
     newPasswordLabel: 'Neues Passwort',
     newPasswordPlaceholder: 'Leer lassen, um Passwort zu behalten',
     save: 'Speichern',

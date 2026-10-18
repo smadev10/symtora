@@ -1,9 +1,10 @@
 import { api, type ApiClient } from './client';
-import type { AuthResponse, LoginRequest, RegisterRequest } from './types';
+import type { AuthResponse, ChangePasswordRequest, LoginRequest, RegisterRequest } from './types';
 
 export type AuthApi = {
   login: (request: LoginRequest) => Promise<AuthResponse>;
   register: (request: RegisterRequest) => Promise<AuthResponse>;
+  changePassword: (request: ChangePasswordRequest) => Promise<void>;
 };
 
 export function createAuthApi(client: ApiClient): AuthApi {
@@ -13,6 +14,9 @@ export function createAuthApi(client: ApiClient): AuthApi {
 
     register: (request) =>
       client.request<AuthResponse>('/auth/register', { method: 'POST', body: request }),
+
+    changePassword: (request) =>
+      client.request<void>('/auth/password', { method: 'PUT', body: request, auth: true }),
   };
 }
 

@@ -44,6 +44,8 @@ const en: Translations = {
     editLink: 'Edit profile',
     nameLabel: 'Name',
     emailLabel: 'Email',
+    currentPasswordLabel: 'Current password',
+    currentPasswordWrong: 'The current password is wrong.',
     newPasswordLabel: 'New password',
     newPasswordPlaceholder: 'Leave blank to keep password',
     save: 'Save',

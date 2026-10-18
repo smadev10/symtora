@@ -60,3 +60,16 @@ describe('register', () => {
     });
   });
 });
+
+describe('changePassword', () => {
+  it('puts both passwords to the password route with the token', async () => {
+    const { client, calls } = recordingClient(undefined);
+
+    await createAuthApi(client).changePassword({ currentPassword: 'old-hash', newPassword: 'new-hash' });
+
+    expect(calls[0].path).toBe('/auth/password');
+    expect(calls[0].options?.method).toBe('PUT');
+    expect(calls[0].options?.auth).toBe(true);
+    expect(calls[0].options?.body).toEqual({ currentPassword: 'old-hash', newPassword: 'new-hash' });
+  });
+});
