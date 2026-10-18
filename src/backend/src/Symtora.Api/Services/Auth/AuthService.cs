@@ -53,4 +53,24 @@ public class AuthService(
 
         return AuthResult.Ok(tokenGenerator.GenerateToken(user.Id, user.Email), user.Name);
     }
+
+    public async Task<AuthError> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword, CancellationToken ct)
+    {
+        var user = await db.Users.FindAsync([userId], ct);
+        if (user is null)
+        {
+            return AuthError.InvalidCredentials;
+        }
+
+        var verification = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, currentPassword);
+        if (verification == PasswordVerificationResult.Failed)
+        {
+            return AuthError.InvalidCredentials;
+        }
+
+        user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
+        await db.SaveChangesAsync(ct);
+
+        return AuthError.None;
+    }
 }
