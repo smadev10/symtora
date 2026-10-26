@@ -194,6 +194,7 @@ const fr: Translations = {
     validation: 'Vérifie les informations saisies.',
     unauthorized: 'E-mail ou mot de passe incorrect.',
     notFound: 'Introuvable.',
+    conflict: 'Un compte existe déjà avec cette adresse e-mail. Connecte-toi plutôt.',
     server: 'Une erreur est survenue sur le serveur.',
     unknown: 'Une erreur est survenue.',
   },

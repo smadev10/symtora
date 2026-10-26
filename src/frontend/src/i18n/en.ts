@@ -193,6 +193,7 @@ const en: Translations = {
     validation: 'Please check your input.',
     unauthorized: 'Email or password is incorrect.',
     notFound: 'Not found.',
+    conflict: 'An account with this email already exists. Sign in instead.',
     server: 'Something went wrong on the server.',
     unknown: 'Something went wrong.',
   },
