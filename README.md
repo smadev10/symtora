@@ -28,6 +28,10 @@ third party.
 > **Symtora is not a medical device and gives no diagnosis.** It is a student project.
 > In an emergency in Switzerland, call **144**.
 
+> [!TIP]
+> **Just want to try it?** Follow the step-by-step guide for Windows and macOS — no coding needed:
+> **[English](docs/run-guide.en.md)** · **[Deutsch](docs/run-guide.de.md)**
+
 ---
 
 ## What it is
@@ -61,14 +65,11 @@ This is a working prototype, not a finished product. Being precise about what is
 |---|---|
 | Screens, navigation, theming, i18n | **Done** — all 12 screens, DE/EN/FR, light/dark, switchable at runtime |
 | Sign-in & registration | **Live against the API** — the session and your settings survive a restart |
-| Entries, assessments, patterns | **Demo data** from `src/frontend/src/data/cases.ts`, behind the `EntriesRepository` seam the API implementation will replace |
+| Entries & assessments | **Live against the API** — new entries are analysed by the self-hosted model and the result screen renders the stored assessment |
+| Patterns heatmap, triggers, home KPIs | **Demo data** from `src/frontend/src/data/cases.ts` |
 | Backend analysis pipeline | **Built** — `POST /entries` enqueues a job, a worker runs it through Ollama, `GET /entries/:id` is polled until it is `Done` |
 | Google / Apple sign-in | **Placeholders** — the buttons render, the API has password auth only |
 | Voice transcription | **Works everywhere** — development builds recognise on-device (offline); Expo Go and web record and transcribe on the self-hosted Whisper container. The transcript lands in the text box for review |
-
-The client and the analysis pipeline are not joined up yet: the backend's assessment shape
-doesn't carry the findings, transcript segments and probabilities the result screen renders.
-That mapping is the next piece of work.
 
 ## Architecture
 
@@ -89,6 +90,11 @@ Two decisions shape the rest:
   a mobile network.
 
 ## Getting started
+
+> [!TIP]
+> Not a developer? The [step-by-step run guide](docs/run-guide.en.md)
+> ([Deutsch](docs/run-guide.de.md)) covers installing Docker and Node, configuration, the phone
+> setup and troubleshooting on Windows and macOS. The options below are the short version.
 
 ### Option A — the whole stack, with Docker
 
