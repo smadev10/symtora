@@ -4,6 +4,7 @@ import { TextInput, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import Button from '@/components/Button';
+import PhoneQr from '@/components/PhoneQr';
 import Screen from '@/components/Screen';
 import { LogoMark } from '@/components/icons';
 import { translate } from '@/i18n/translate';
@@ -75,6 +76,8 @@ export default function LoginScreen() {
             onPress={() => router.push('/signup')}
           />
         </View>
+
+        <PhoneQr />
 
         <AppText style={s.footnote}>{t.on.emergencyNote}</AppText>
       </View>

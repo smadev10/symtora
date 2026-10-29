@@ -80,7 +80,8 @@ services:
 
   # The Expo dev server, so the app runs without Node installed. Browser: http://localhost:8081;
   # phone: Expo Go on exp://<LAN_IP>:8081. LAN_IP is what Expo Go is told to connect to — without it
-  # Metro would hand out the container's internal address. The start scripts fill it in.
+  # Metro would hand out the container's internal address — and what the login screen's QR code
+  # points at in the browser. The start scripts fill it in.
   app:
     build:
       context: ./src/frontend
@@ -89,6 +90,7 @@ services:
       - api
     environment:
       REACT_NATIVE_PACKAGER_HOSTNAME: ${LAN_IP:-}
+      EXPO_PUBLIC_LAN_IP: ${LAN_IP:-}
     ports:
       - "8081:8081"
 

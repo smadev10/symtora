@@ -24,6 +24,9 @@ const fr: Translations = {
     passwordPlaceholder: 'Mot de passe',
     loginCta: 'Se connecter',
     signupCta: 'Créer un compte',
+    phoneTitle: 'Ouvrir sur le téléphone',
+    phoneBody:
+      'Scanne le code avec l’appareil photo (iPhone) ou dans Expo Go (Android). Le téléphone et l’ordinateur doivent être sur le même Wi-Fi.',
   },
   signup: {
     subtitle: 'Crée ton compte.',

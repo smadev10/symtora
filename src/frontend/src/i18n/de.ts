@@ -23,6 +23,9 @@ const de = {
     passwordPlaceholder: 'Passwort',
     loginCta: 'Anmelden',
     signupCta: 'Konto erstellen',
+    phoneTitle: 'Auf dem Handy öffnen',
+    phoneBody:
+      'Scanne den Code mit der Kamera (iPhone) oder in Expo Go (Android). Handy und Computer müssen im gleichen WLAN sein.',
   },
   signup: {
     subtitle: 'Erstelle dein Konto.',
