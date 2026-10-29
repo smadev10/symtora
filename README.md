@@ -116,7 +116,6 @@ Then start the app against it:
 ```bash
 cd src/frontend
 npm install
-cp .env.example .env         # EXPO_PUBLIC_API_URL=http://localhost:8080
 npm start                    # press a / i / w, or scan the QR in Expo Go
 ```
 
@@ -140,7 +139,7 @@ dotnet run --project src/Symtora.Api
 
 > [!IMPORTANT]
 > Run this way the API listens on **`5014`**, not `8080` — set `EXPO_PUBLIC_API_URL` in
-> `src/frontend/.env` accordingly.
+> `src/frontend/.env` accordingly (see below).
 
 In Development you also get the browsable API reference (Scalar) at
 **`http://localhost:5014/scalar`**, and the raw OpenAPI document at `/openapi/v1.json`.
@@ -150,14 +149,18 @@ container both are off unless you set `EXPOSE_API_DOCS=true` in `.env`.
 
 ### Pointing the app at the API
 
-`EXPO_PUBLIC_API_URL` is inlined into the JS bundle at build time, so nothing secret
-belongs in it. Which value you need depends on where the app runs:
+Nothing to configure for the usual setup: the app calls the API on the machine it was loaded
+from, on port `8080`. Expo Go on a phone, the web build and the simulators find it on their own,
+also after the PC moves to another Wi-Fi. Device and PC must be on the same network.
 
-| Running the app on | `EXPO_PUBLIC_API_URL` |
+To point the app elsewhere, copy `.env.example` to `.env` and set `EXPO_PUBLIC_API_URL`, then
+restart with `npx expo start -c` (the value is inlined into the bundle, so nothing secret
+belongs in it):
+
+| When | `EXPO_PUBLIC_API_URL` |
 |---|---|
-| Web / iOS simulator | `http://localhost:8080` (or `:5014` for Option B) |
-| Android emulator | `http://10.0.2.2:8080` |
-| A physical device (Expo Go) | `http://<your-lan-ip>:8080` — device and host must be on the same network |
+| Option B (`dotnet run`) | `http://<your-lan-ip>:5014` |
+| Android emulator, if auto-detection fails | `http://10.0.2.2:8080` |
 
 ### Everyday commands
 

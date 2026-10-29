@@ -44,14 +44,14 @@ function SessionEntries({ children }: { children: ReactNode }) {
   );
 }
 
-function RootNavigator({ fontsLoaded }: { fontsLoaded: boolean }) {
+function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
   const { settings, hydrated } = useSettings();
   const { session } = useSession();
   const tk = tokens(settings.theme);
 
   // Holding here keeps any screen from redirecting on a guess before the
   // persisted session and settings have actually been read.
-  if (!fontsLoaded || !hydrated || session.status === 'restoring') {
+  if (!fontsReady || !hydrated || session.status === 'restoring') {
     return (
       <View style={{ flex: 1, backgroundColor: tk.screenBg, justifyContent: 'center' }}>
         <LoadingState />
@@ -78,7 +78,9 @@ function RootNavigator({ fontsLoaded }: { fontsLoaded: boolean }) {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  // A font that fails to load falls back to the system font instead of
+  // holding the app on the loading screen forever.
+  const [fontsLoaded, fontError] = useFonts({
     OpenSans_400Regular,
     OpenSans_500Medium,
     OpenSans_600SemiBold,
@@ -92,7 +94,7 @@ export default function RootLayout() {
         <SessionProvider>
           <TokenBridge />
           <SessionEntries>
-            <RootNavigator fontsLoaded={fontsLoaded} />
+            <RootNavigator fontsReady={fontsLoaded || fontError != null} />
           </SessionEntries>
         </SessionProvider>
       </SettingsProvider>

@@ -157,6 +157,16 @@ describe('error mapping', () => {
     await expect(client.request('/entries/nope')).rejects.toMatchObject({ kind: 'notFound' });
   });
 
+  it('maps 409 to a conflict, e.g. an email that is already registered', async () => {
+    const { client } = clientWith(() => json({ title: 'Email already registered.' }, 409));
+
+    await expect(client.request('/auth/register')).rejects.toMatchObject({
+      kind: 'conflict',
+      messageKey: ERROR_KEYS.conflict,
+      status: 409,
+    });
+  });
+
   it('maps 5xx to a server error', async () => {
     const { client } = clientWith(() => json({}, 503));
 

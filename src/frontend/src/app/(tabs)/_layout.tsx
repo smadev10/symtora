@@ -6,8 +6,9 @@ import { useSettings } from '@/state/settings/Provider';
 
 /**
  * The screens that show the bottom nav. `emergency` and `assessment` are in
- * the group with `href: null` — they keep the bar visible without being tabs,
- * which is exactly what the old `showBottomNav` exclusion list encoded.
+ * the group so they keep the bar visible; BottomNav draws its own fixed
+ * buttons, so they never get one. Not `href: null`: since expo-router 58 a
+ * hidden tab redirects to the first visible one as soon as it is focused.
  */
 export default function TabsLayout() {
   const { session } = useSession();
@@ -22,8 +23,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="patterns" />
       <Tabs.Screen name="new" />
       <Tabs.Screen name="data" />
-      <Tabs.Screen name="emergency" options={{ href: null }} />
-      <Tabs.Screen name="assessment/[id]" options={{ href: null }} />
+      <Tabs.Screen name="emergency" />
+      <Tabs.Screen name="assessment/[id]" />
     </Tabs>
   );
 }

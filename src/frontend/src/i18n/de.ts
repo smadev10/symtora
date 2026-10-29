@@ -196,6 +196,7 @@ const de = {
     validation: 'Bitte überprüfe deine Eingaben.',
     unauthorized: 'E-Mail oder Passwort stimmt nicht.',
     notFound: 'Nicht gefunden.',
+    conflict: 'Für diese E-Mail gibt es bereits ein Konto. Melde dich stattdessen an.',
     server: 'Auf dem Server ist ein Fehler aufgetreten.',
     unknown: 'Etwas ist schiefgelaufen.',
   },

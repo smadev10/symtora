@@ -1,3 +1,7 @@
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+import { resolveApiBaseUrl } from './baseUrl';
 import { ApiError, kindForStatus } from './errors';
 
 export type RequestOptions = {
@@ -103,10 +107,15 @@ export function createClient({
 }
 
 /**
- * Inlined at build time by the Expo CLI. Dot notation is required — bracket
- * access silently does not get replaced.
+ * `EXPO_PUBLIC_API_URL` is inlined at build time by the Expo CLI (dot notation
+ * is required — bracket access silently does not get replaced). Left unset,
+ * the API is assumed on the machine that served the app.
  */
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080';
+export const API_BASE_URL = resolveApiBaseUrl({
+  explicitUrl: process.env.EXPO_PUBLIC_API_URL,
+  webHostname: Platform.OS === 'web' ? globalThis.location?.hostname : undefined,
+  devServerHostUri: Constants.expoConfig?.hostUri,
+});
 
 let tokenGetter: () => string | null = () => null;
 

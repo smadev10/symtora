@@ -4,6 +4,7 @@ export type ApiErrorKind =
   | 'validation'
   | 'unauthorized'
   | 'notFound'
+  | 'conflict'
   | 'server'
   | 'unknown';
 
@@ -17,6 +18,7 @@ export const ERROR_KEYS: Record<ApiErrorKind, string> = {
   validation: 'errors.validation',
   unauthorized: 'errors.unauthorized',
   notFound: 'errors.notFound',
+  conflict: 'errors.conflict',
   server: 'errors.server',
   unknown: 'errors.unknown',
 };
@@ -45,6 +47,8 @@ export function kindForStatus(status: number): ApiErrorKind {
   if (status === 400 || status === 422) return 'validation';
   if (status === 401 || status === 403) return 'unauthorized';
   if (status === 404) return 'notFound';
+  // Only registration answers 409, for an email that already has an account.
+  if (status === 409) return 'conflict';
   if (status >= 500) return 'server';
   return 'unknown';
 }
