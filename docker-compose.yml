@@ -36,7 +36,11 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: http://model:11434
-    command: ["pull", "${OLLAMA_MODEL:-llama3.2:3b}"]
+      MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+    # `pull` checks the registry even when the weights are already here, so a flaky or missing
+    # connection would block every start. Fall back to the local copy if there is one.
+    entrypoint: ["/bin/sh", "-c"]
+    command: ['ollama pull "$$MODEL" || ollama show "$$MODEL" > /dev/null']
 
   # Speech to text for voice input. The model is downloaded into `whisper_models` on the first
   # transcription (≈500 MB for `small`), so that first request is slow. Published on loopback only,
