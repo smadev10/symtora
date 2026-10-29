@@ -29,7 +29,8 @@ third party.
 > In an emergency in Switzerland, call **144**.
 
 > [!TIP]
-> **Just want to try it?** Follow the step-by-step guide for Windows and macOS — no coding needed:
+> **Just want to try it?** Install Docker Desktop, download the code and double-click
+> `Start Symtora` — the step-by-step guide for Windows and macOS walks you through it:
 > **[English](docs/run-guide.en.md)** · **[Deutsch](docs/run-guide.de.md)**
 
 ---
@@ -93,8 +94,9 @@ Two decisions shape the rest:
 
 > [!TIP]
 > Not a developer? The [step-by-step run guide](docs/run-guide.en.md)
-> ([Deutsch](docs/run-guide.de.md)) covers installing Docker and Node, configuration, the phone
-> setup and troubleshooting on Windows and macOS. The options below are the short version.
+> ([Deutsch](docs/run-guide.de.md)) needs only Docker Desktop: `Start Symtora.bat` /
+> `Start Symtora.command` creates `.env` with a fresh `JWT_SECRET`, starts the whole stack including
+> the Expo dev server, and prints the Expo Go QR code. The options below are the developer version.
 
 ### Option A — the whole stack, with Docker
 
@@ -111,7 +113,16 @@ docker compose up --build
 The API is then on **`http://localhost:8080`**. The first run downloads the model
 (multi-GB); later runs reuse the `ollama_models` volume.
 
-Then start the app against it:
+This also starts the `app` service: the Expo dev server in a container, on
+**`http://localhost:8081`** for the browser. For Expo Go on a phone it needs `LAN_IP` in `.env`
+(the start scripts fill it in), otherwise Metro hands out the container's address.
+
+To work on the frontend with live reload instead, bring up only the backend so port 8081 stays
+free, and start the app on your machine:
+
+```bash
+docker compose up --build api   # api and what it depends on, without `app`
+```
 
 ```bash
 cd src/frontend
@@ -181,8 +192,10 @@ Everything at the root is project-level; all code sits under `src/`.
 
 | Path | Purpose |
 |---|---|
-| `docker-compose.yml` | The whole stack: API, Postgres, Ollama, model-pull job |
+| `docker-compose.yml` | The whole stack: API, Postgres, Ollama, model-pull job, Whisper, Expo dev server |
 | `.env.example` | Compose configuration — copy to `.env` |
+| `Start Symtora.*`, `Stop Symtora.*` | Double-click launchers (`.bat` Windows, `.command` macOS) for the run guide |
+| `scripts/` | What the launchers run: `start.ps1` (Windows), `start.sh` (macOS) |
 | `docs/` | Design spec, README images, and the app-icon generator |
 | `src/backend/` | The .NET API — has its own [README](src/backend/README.md) |
 | `src/frontend/` | The Expo app |
