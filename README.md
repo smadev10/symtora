@@ -30,7 +30,7 @@ third party.
 
 > [!TIP]
 > **Just want to try it?** Install Docker Desktop, download the code and double-click
-> `Start Symtora` — the step-by-step guide for Windows and macOS walks you through it:
+> `Symtora` — the step-by-step guide for Windows and macOS walks you through it:
 > **[English](docs/run-guide.en.md)** · **[Deutsch](docs/run-guide.de.md)**
 
 ---
@@ -94,8 +94,8 @@ Two decisions shape the rest:
 
 > [!TIP]
 > Not a developer? The [step-by-step run guide](docs/run-guide.en.md)
-> ([Deutsch](docs/run-guide.de.md)) needs only Docker Desktop: `Start Symtora.bat` /
-> `Start Symtora.command` creates `.env` with a fresh `JWT_SECRET`, starts the whole stack including
+> ([Deutsch](docs/run-guide.de.md)) needs only Docker Desktop: `Symtora.bat` /
+> `Symtora.command` creates `.env` with a fresh `JWT_SECRET`, starts the whole stack including
 > the Expo dev server, and prints the Expo Go QR code. The options below are the developer version.
 
 ### Option A — the whole stack, with Docker
@@ -194,8 +194,8 @@ Everything at the root is project-level; all code sits under `src/`.
 |---|---|
 | `docker-compose.yml` | The whole stack: API, Postgres, Ollama, model-pull job, Whisper, Expo dev server |
 | `.env.example` | Compose configuration — copy to `.env` |
-| `Start Symtora.*`, `Stop Symtora.*` | Double-click launchers (`.bat` Windows, `.command` macOS) for the run guide |
-| `scripts/` | What the launchers run: `start.ps1` (Windows), `start.sh` (macOS) |
+| `Symtora.bat`, `Symtora.command` | Double-click launcher for the run guide (Windows, macOS): starts the stack, or offers to reopen or stop it |
+| `scripts/` | What the launchers run: `symtora.ps1` (Windows), `symtora.sh` (macOS) |
 | `docs/` | Design spec, README images, and the app-icon generator |
 | `src/backend/` | The .NET API — has its own [README](src/backend/README.md) |
 | `src/frontend/` | The Expo app |

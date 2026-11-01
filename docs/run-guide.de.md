@@ -84,23 +84,23 @@ klicken. Die Datei an einem leicht auffindbaren Ort entpacken, z. B. im Ordner *
 > **Windows:** Rechtsklick auf die ZIP-Datei → **Alle extrahieren…**. Nicht direkt in der ZIP-Datei
 > doppelklicken – dort funktionieren die Startdateien nicht.
 
-Im entpackten Ordner (er heisst `symtora-main`) liegen unter anderem diese vier Dateien:
+Im entpackten Ordner (er heisst `symtora-main`) liegt die Datei, mit der du alles startest und
+beendest:
 
-| | Windows | macOS |
-|---|---|---|
-| Starten | `Start Symtora.bat` | `Start Symtora.command` |
-| Beenden | `Stop Symtora.bat` | `Stop Symtora.command` |
+| Windows | macOS |
+|---|---|
+| `Symtora.bat` | `Symtora.command` |
 
 ---
 
 ## 3. Symtora starten
 
-**Windows:** Doppelklick auf **`Start Symtora.bat`**.
+**Windows:** Doppelklick auf **`Symtora.bat`**.
 
 > Erscheint *«Der Computer wurde durch Windows geschützt»*: auf **Weitere Informationen** →
 > **Trotzdem ausführen** klicken. Fragt Windows *«Möchten Sie diese Datei ausführen?»*: **Ausführen**.
 
-**macOS:** **Beim ersten Mal** Rechtsklick auf **`Start Symtora.command`** → **Öffnen** → im
+**macOS:** **Beim ersten Mal** Rechtsklick auf **`Symtora.command`** → **Öffnen** → im
 Dialog nochmals **Öffnen**. (Ein normaler Doppelklick wird beim ersten Mal von macOS blockiert,
 weil die Datei aus dem Internet kommt.) Ab dann reicht ein Doppelklick.
 
@@ -142,8 +142,10 @@ längst zu ist.
 3. Das erste Laden dauert bis zu einer Minute. Fragt das iPhone nach Zugriff auf das **lokale
    Netzwerk**, erlauben.
 
-Eine IP-Adresse musst du nirgends eintragen – das Startfenster findet sie selbst, auch wenn du
-später in einem anderen WLAN bist.
+Eine IP-Adresse musst du nirgends eintragen – das Startfenster findet sie selbst. Bist du später in
+einem anderen WLAN, Symtora einmal beenden und neu starten.
+
+**QR-Code oder Browser nochmals öffnen:** `Symtora` erneut doppelklicken und **1** wählen.
 
 Das Fenster kannst du danach mit <kbd>Enter</kbd> schliessen. **Symtora läuft im Hintergrund weiter**,
 bis du es beendest.
@@ -171,10 +173,10 @@ bis du es beendest.
 
 ## 6. Beenden, neu starten, zurücksetzen
 
-**Beenden:** Doppelklick auf **`Stop Symtora.bat`** (Windows) bzw. **`Stop Symtora.command`**
-(macOS). Deine Konten und Einträge bleiben gespeichert.
+**Beenden:** **`Symtora`** erneut doppelklicken. Weil es schon läuft, erscheint ein Menü – **2**
+(*Stop Symtora*) wählen. Deine Konten und Einträge bleiben gespeichert.
 
-**Beim nächsten Mal starten:** wieder **`Start Symtora`** doppelklicken. Diesmal wird nichts mehr
+**Beim nächsten Mal starten:** wieder **`Symtora`** doppelklicken. Diesmal wird nichts mehr
 heruntergeladen; nach etwa 1–2 Minuten ist alles bereit.
 
 **Alles zurücksetzen** (löscht alle Konten und Einträge **und** das heruntergeladene KI-Modell – beim
@@ -224,12 +226,12 @@ aller Teile (beenden mit <kbd>Ctrl</kbd>+<kbd>C</kbd>).
 | Windows: Fehler wie *«Virtualization not enabled»* oder *«WSL»* | WSL 2 fehlt oder die Virtualisierung ist im BIOS ausgeschaltet | PowerShell **als Administrator** öffnen: `wsl --install`, dann neu starten. Klappt es dann nicht, im BIOS/UEFI *Intel VT-x* bzw. *AMD-V (SVM)* einschalten. |
 | Windows: Das Fenster blitzt nur kurz auf | Die Datei wurde direkt aus der ZIP-Datei gestartet | Die ZIP zuerst mit **Alle extrahieren…** entpacken und im entpackten Ordner starten. |
 | macOS: *«kann nicht geöffnet werden, da es von einem nicht verifizierten Entwickler stammt»* | Gatekeeper blockiert Dateien aus dem Internet | Rechtsklick → **Öffnen** → **Öffnen** (siehe [Schritt 3](#3-symtora-starten)). |
-| macOS: *«Permission denied»* | Die Datei hat beim Entpacken ihre Ausführungsrechte verloren | Terminal im Projektordner öffnen und `bash scripts/start.sh` ausführen. |
-| `port is already allocated` / `address already in use` (8080, 8081 oder 5432) | Ein anderes Programm benutzt den Port – oft ein früherer Start | **Stop Symtora** doppelklicken und nochmals starten. Immer noch belegt? Computer neu starten. |
+| macOS: *«Permission denied»* | Die Datei hat beim Entpacken ihre Ausführungsrechte verloren | Terminal im Projektordner öffnen und `bash scripts/symtora.sh` ausführen. |
+| `port is already allocated` / `address already in use` (8080, 8081 oder 5432) | Ein anderes Programm benutzt den Port – oft ein früherer Start | Symtora beenden ([Schritt 6](#6-beenden-neu-starten-zurücksetzen)) und nochmals starten. Immer noch belegt? Computer neu starten. |
 | *«The AI model could not be downloaded»* | Keine oder zu langsame Internetverbindung | Verbindung prüfen und nochmals starten – der Download geht dort weiter, wo er aufgehört hat. |
 | Handy: App lädt nicht nach dem Scannen | Anderes WLAN, Firewall, oder das Netzwerk verhindert, dass Geräte miteinander sprechen | Beide im gleichen WLAN? Windows: Einstellungen → Netzwerk → WLAN auf **Privat** stellen oder Docker in der Firewall für öffentliche Netzwerke zulassen. **Schul-, Firmen- und Gäste-WLANs blockieren das oft komplett** – den Computer stattdessen mit dem **Hotspot des Handys** verbinden und Symtora neu starten, oder den Browser nehmen. |
 | iPhone: App lädt endlos oder *«Could not connect»* | Expo Go darf das lokale Netzwerk nicht benutzen | iPhone-Einstellungen → Datenschutz & Sicherheit → **Lokales Netzwerk** → **Expo Go** einschalten. |
 | Handy: QR-Code fehlt (*«No Wi-Fi/network address found»*) | Der Computer ist mit keinem Netzwerk verbunden | Mit dem WLAN verbinden und Symtora neu starten. |
 | Die Analyse dauert ewig oder schlägt fehl | Zu wenig Arbeitsspeicher, oder das Modell wird noch heruntergeladen | Den ersten Start fertig laufen lassen. Andere grosse Programme schliessen. macOS: Docker mehr Speicher geben ([Schritt 1](#1-docker-desktop-installieren-einmalig)). Nachsehen, was los ist: `docker compose logs api`. |
 | Spracheingabe klappt beim ersten Mal nicht | Das Spracherkennungsmodell wird heruntergeladen | Eine Minute warten und nochmals versuchen. |
-| Etwas anderes | – | **Stop Symtora**, Docker Desktop neu starten, **Start Symtora** nochmals ausführen. |
+| Etwas anderes | – | Symtora beenden, Docker Desktop neu starten, **Symtora** nochmals doppelklicken. |

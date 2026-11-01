@@ -84,23 +84,22 @@ Unpack the file somewhere easy to find, e.g. your *Documents* folder.
 > **Windows:** right-click the ZIP file → **Extract All…**. Don't double-click into the ZIP – the
 > start files don't work from inside it.
 
-The unpacked folder (called `symtora-main`) contains, among others, these four files:
+The unpacked folder (called `symtora-main`) contains the file that starts and stops everything:
 
-| | Windows | macOS |
-|---|---|---|
-| Start | `Start Symtora.bat` | `Start Symtora.command` |
-| Stop | `Stop Symtora.bat` | `Stop Symtora.command` |
+| Windows | macOS |
+|---|---|
+| `Symtora.bat` | `Symtora.command` |
 
 ---
 
 ## 3. Start Symtora
 
-**Windows:** double-click **`Start Symtora.bat`**.
+**Windows:** double-click **`Symtora.bat`**.
 
 > If *"Windows protected your PC"* appears: click **More info** → **Run anyway**. If Windows asks
 > *"Do you want to run this file?"*: **Run**.
 
-**macOS:** **the first time**, right-click **`Start Symtora.command`** → **Open** → **Open** again in
+**macOS:** **the first time**, right-click **`Symtora.command`** → **Open** → **Open** again in
 the dialog. (macOS blocks a plain double-click the first time because the file came from the
 internet.) From then on, a double-click is enough.
 
@@ -139,8 +138,10 @@ on the sign-in screen (the **"Open on your phone"** card) – there even after t
 3. The first load takes up to a minute. If the iPhone asks for access to the **local network**,
    allow it.
 
-You never type in an IP address – the start window finds it itself, also when you're on a different
-Wi-Fi later.
+You never type in an IP address – the start window finds it itself. If you're on a different Wi-Fi
+later, stop Symtora once and start it again.
+
+**Show the QR code or open the browser again:** double-click `Symtora` again and choose **1**.
 
 You can then close the window with <kbd>Enter</kbd>. **Symtora keeps running in the background**
 until you stop it.
@@ -166,10 +167,10 @@ until you stop it.
 
 ## 6. Stop, restart, reset
 
-**Stop:** double-click **`Stop Symtora.bat`** (Windows) or **`Stop Symtora.command`** (macOS). Your
-accounts and entries are kept.
+**Stop:** double-click **`Symtora`** again. Because it's already running, a menu appears – choose
+**2** (*Stop Symtora*). Your accounts and entries are kept.
 
-**Next time:** double-click **`Start Symtora`** again. Nothing is downloaded this time; everything
+**Next time:** double-click **`Symtora`** again. Nothing is downloaded this time; everything
 is ready after about 1–2 minutes.
 
 **Reset everything** (deletes all accounts and entries **and** the downloaded AI model – it is
@@ -219,12 +220,12 @@ messages of every part (stop with <kbd>Ctrl</kbd>+<kbd>C</kbd>).
 | Windows: errors like *"Virtualization not enabled"* or *"WSL"* | WSL 2 is missing or virtualisation is switched off in the BIOS | Open PowerShell **as administrator**: `wsl --install`, then restart. If that doesn't help, enable *Intel VT-x* or *AMD-V (SVM)* in the BIOS/UEFI. |
 | Windows: the window just flashes | The file was started from inside the ZIP | Unpack the ZIP with **Extract All…** first and start from the unpacked folder. |
 | macOS: *"cannot be opened because it is from an unidentified developer"* | Gatekeeper blocks files from the internet | Right-click → **Open** → **Open** (see [step 3](#3-start-symtora)). |
-| macOS: *"Permission denied"* | The file lost its execute permission while unpacking | Open a terminal in the project folder and run `bash scripts/start.sh`. |
-| `port is already allocated` / `address already in use` (8080, 8081 or 5432) | Another program uses the port – often an earlier start | Double-click **Stop Symtora** and start again. Still taken? Restart the computer. |
+| macOS: *"Permission denied"* | The file lost its execute permission while unpacking | Open a terminal in the project folder and run `bash scripts/symtora.sh`. |
+| `port is already allocated` / `address already in use` (8080, 8081 or 5432) | Another program uses the port – often an earlier start | Stop Symtora ([step 6](#6-stop-restart-reset)) and start it again. Still taken? Restart the computer. |
 | *"The AI model could not be downloaded"* | No or too slow internet connection | Check the connection and start again – the download resumes where it stopped. |
 | Phone: the app doesn't load after scanning | Different Wi-Fi, firewall, or the network stops devices talking to each other | Both on the same Wi-Fi? Windows: Settings → Network → set the Wi-Fi to **Private**, or allow Docker for public networks in the firewall. **School, office and guest Wi-Fi often block this completely** – connect the computer to your **phone's hotspot** instead and restart Symtora, or use the browser. |
 | iPhone: endless loading or *"Could not connect"* | Expo Go isn't allowed on the local network | iPhone Settings → Privacy & Security → **Local Network** → turn on **Expo Go**. |
 | Phone: no QR code (*"No Wi-Fi/network address found"*) | The computer isn't connected to a network | Connect to Wi-Fi and restart Symtora. |
 | The analysis takes forever or fails | Not enough memory, or the model is still downloading | Let the first start finish. Close other big programs. macOS: give Docker more memory ([step 1](#1-install-docker-desktop-once)). See what's going on: `docker compose logs api`. |
 | Voice input fails the first time | The speech model is downloading | Wait a minute and try again. |
-| Something else | – | **Stop Symtora**, restart Docker Desktop, run **Start Symtora** again. |
+| Something else | – | Stop Symtora, restart Docker Desktop, double-click **Symtora** again. |

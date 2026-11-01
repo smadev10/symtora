@@ -1,4 +1,5 @@
-# Starts the whole Symtora stack in Docker and opens the app. Run via "Start Symtora.bat".
+# Starts the whole Symtora stack in Docker and opens the app. Run via "Symtora.bat";
+# when it is already running, offers to open it again or stop it instead.
 # Keep this file ASCII-only: Windows PowerShell 5.1 reads BOM-less files as ANSI.
 $ErrorActionPreference = 'Stop'
 Set-Location (Join-Path $PSScriptRoot '..')
@@ -36,6 +37,54 @@ if (-not (DockerRunning)) {
   }
 }
 Write-Host 'Docker is running.'
+
+function Open-App($ip) {
+  Step 'Symtora is running'
+  Start-Process 'http://localhost:8081'
+  Write-Host 'Browser: http://localhost:8081  (the first load takes up to a minute)'
+
+  if ($ip) {
+    Write-Host ''
+    Write-Host 'Phone: install Expo Go, join the same Wi-Fi as this computer, then scan this code'
+    Write-Host '(iPhone: with the Camera app; Android: inside Expo Go):'
+    docker compose exec -T app node scripts/print-qr.js "exp://${ip}:8081"
+  } else {
+    Write-Host 'No Wi-Fi/network address found, so the phone option is unavailable. The browser works.'
+  }
+
+  Write-Host ''
+  Write-Host 'Symtora keeps running in the background. To stop it, double-click "Symtora.bat" again.'
+  Read-Host 'Press Enter to close this window'
+  exit 0
+}
+
+# --- Already running? ---------------------------------------------------------------------------
+# Quietly: before the first start there is no .env yet, and compose complains about JWT_SECRET.
+if (cmd /c "docker compose ps --status running -q app 2>nul") {
+  Write-Host ''
+  Write-Host 'Symtora is already running.'
+  Write-Host '  [1] Open the app again (browser + phone QR code)'
+  Write-Host '  [2] Stop Symtora'
+  Write-Host '  [3] Close this window'
+  $choice = Read-Host 'Choose 1, 2 or 3'
+  switch ($choice) {
+    '1' {
+      # The address the running app was started with, which is what the phone has to use.
+      $ip = (Get-Content .env | Where-Object { $_ -match '^LAN_IP=' } | Select-Object -First 1) -replace '^LAN_IP=', ''
+      Open-App $ip.Trim()
+    }
+    '2' {
+      Step 'Stopping Symtora'
+      docker compose down
+      Write-Host ''
+      Write-Host 'Symtora is stopped. Your accounts and entries are kept for next time.'
+      Read-Host 'Press Enter to close this window'
+      exit 0
+    }
+    default { exit 0 }
+  }
+}
+
 
 # --- 2. Settings (.env) ---------------------------------------------------------------------------
 Step 'Preparing settings'
@@ -103,20 +152,4 @@ function WaitFor($url, $what) {
 WaitFor 'http://localhost:8080/health' 'server'
 WaitFor 'http://localhost:8081/status' 'app'
 
-# --- 4. Open --------------------------------------------------------------------------------------
-Step 'Symtora is running'
-Start-Process 'http://localhost:8081'
-Write-Host 'Browser: http://localhost:8081  (the first load takes up to a minute)'
-
-if ($lanIp) {
-  Write-Host ''
-  Write-Host 'Phone: install Expo Go, join the same Wi-Fi as this computer, then scan this code'
-  Write-Host '(iPhone: with the Camera app; Android: inside Expo Go):'
-  docker compose exec -T app node scripts/print-qr.js "exp://${lanIp}:8081"
-} else {
-  Write-Host 'No Wi-Fi/network address found, so the phone option is unavailable. The browser works.'
-}
-
-Write-Host ''
-Write-Host 'Symtora keeps running in the background. To stop it, double-click "Stop Symtora.bat".'
-Read-Host 'Press Enter to close this window'
+Open-App $lanIp

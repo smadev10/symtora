@@ -1,5 +1,6 @@
 #!/bin/bash
-# Starts the whole Symtora stack in Docker and opens the app. Run via "Start Symtora.command".
+# Starts the whole Symtora stack in Docker and opens the app. Run via "Symtora.command";
+# when it is already running, offers to open it again or stop it instead.
 # Written for the bash 3.2 that ships with macOS.
 set -u
 cd "$(dirname "$0")/.."
@@ -30,6 +31,52 @@ if ! docker info >/dev/null 2>&1; then
   done
 fi
 echo 'Docker is running.'
+
+open_app() {
+  step 'Symtora is running'
+  open http://localhost:8081
+  echo 'Browser: http://localhost:8081  (the first load takes up to a minute)'
+
+  if [ -n "$1" ]; then
+    echo
+    echo 'Phone: install Expo Go, join the same Wi-Fi as this computer, then scan this code'
+    echo '(iPhone: with the Camera app; Android: inside Expo Go):'
+    docker compose exec -T app node scripts/print-qr.js "exp://$1:8081"
+  else
+    echo 'No Wi-Fi/network address found, so the phone option is unavailable. The browser works.'
+  fi
+
+  echo
+  echo 'Symtora keeps running in the background. To stop it, double-click "Symtora.command" again.'
+  read -r -p 'Press Enter to close this window'
+  exit 0
+}
+
+# --- Already running? -----------------------------------------------------------------------------
+# Quietly: before the first start there is no .env yet, and compose complains about JWT_SECRET.
+if [ -n "$(docker compose ps --status running -q app 2>/dev/null)" ]; then
+  echo
+  echo 'Symtora is already running.'
+  echo '  [1] Open the app again (browser + phone QR code)'
+  echo '  [2] Stop Symtora'
+  echo '  [3] Close this window'
+  read -r -p 'Choose 1, 2 or 3: ' choice
+  case "$choice" in
+    1)
+      # The address the running app was started with, which is what the phone has to use.
+      open_app "$(grep '^LAN_IP=' .env | head -n 1 | cut -d= -f2- | tr -d '[:space:]')"
+      ;;
+    2)
+      step 'Stopping Symtora'
+      docker compose down
+      echo
+      echo 'Symtora is stopped. Your accounts and entries are kept for next time.'
+      read -r -p 'Press Enter to close this window'
+      exit 0
+      ;;
+    *) exit 0 ;;
+  esac
+fi
 
 # --- 2. Settings (.env) ---------------------------------------------------------------------------
 step 'Preparing settings'
@@ -79,20 +126,4 @@ wait_for() {
 wait_for http://localhost:8080/health server
 wait_for http://localhost:8081/status app
 
-# --- 4. Open --------------------------------------------------------------------------------------
-step 'Symtora is running'
-open http://localhost:8081
-echo 'Browser: http://localhost:8081  (the first load takes up to a minute)'
-
-if [ -n "$lan_ip" ]; then
-  echo
-  echo 'Phone: install Expo Go, join the same Wi-Fi as this computer, then scan this code'
-  echo '(iPhone: with the Camera app; Android: inside Expo Go):'
-  docker compose exec -T app node scripts/print-qr.js "exp://$lan_ip:8081"
-else
-  echo 'No Wi-Fi/network address found, so the phone option is unavailable. The browser works.'
-fi
-
-echo
-echo 'Symtora keeps running in the background. To stop it, double-click "Stop Symtora.command".'
-read -r -p 'Press Enter to close this window'
+open_app "$lan_ip"
