@@ -12,6 +12,8 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     EXPO_PUBLIC_API_URL?: string;
+    /** This computer's Wi-Fi address, set by the start scripts; drives the login screen's phone QR. */
+    EXPO_PUBLIC_LAN_IP?: string;
   }
 }
 

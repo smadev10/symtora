@@ -36,7 +36,11 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: http://model:11434
-    command: ["pull", "${OLLAMA_MODEL:-llama3.2:3b}"]
+      MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+    # `pull` checks the registry even when the weights are already here, so a flaky or missing
+    # connection would block every start. Fall back to the local copy if there is one.
+    entrypoint: ["/bin/sh", "-c"]
+    command: ['ollama pull "$$MODEL" || ollama show "$$MODEL" > /dev/null']
 
   # Speech to text for voice input. The model is downloaded into `whisper_models` on the first
   # transcription (≈500 MB for `small`), so that first request is slow. Published on loopback only,
@@ -73,6 +77,22 @@ services:
       OpenApi__Enabled: ${EXPOSE_API_DOCS:-false}
     ports:
       - "8080:8080"
+
+  # The Expo dev server, so the app runs without Node installed. Browser: http://localhost:8081;
+  # phone: Expo Go on exp://<LAN_IP>:8081. LAN_IP is what Expo Go is told to connect to — without it
+  # Metro would hand out the container's internal address — and what the login screen's QR code
+  # points at in the browser. The start scripts fill it in.
+  app:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    environment:
+      REACT_NATIVE_PACKAGER_HOSTNAME: ${LAN_IP:-}
+      EXPO_PUBLIC_LAN_IP: ${LAN_IP:-}
+    ports:
+      - "8081:8081"
 
 volumes:
   pgdata:

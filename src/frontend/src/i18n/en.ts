@@ -23,6 +23,9 @@ const en: Translations = {
     passwordPlaceholder: 'Password',
     loginCta: 'Log in',
     signupCta: 'Create account',
+    phoneTitle: 'Open on your phone',
+    phoneBody:
+      'Scan the code with the Camera (iPhone) or in Expo Go (Android). Phone and computer must be on the same Wi-Fi.',
   },
   signup: {
     subtitle: 'Create your account.',

@@ -1,0 +1,6 @@
+# The start scripts are run by double-click on either OS, so their line endings must not depend on
+# the checkout (or the GitHub ZIP download).
+*.bat     text eol=crlf
+*.ps1     text eol=crlf
+*.sh      text eol=lf
+*.command text eol=lf
