@@ -18,6 +18,8 @@ const styles = themedStyles((tk) =>
     danger: { backgroundColor: '#c62828' },
     labelPrimary: { color: tk.accentText, fontWeight: '700', fontSize: 15 },
     labelSecondary: { color: tk.textStrong, fontWeight: '700', fontSize: 15 },
+    secondaryOnDark: { borderColor: 'rgba(255,255,255,.35)' },
+    labelOnDark: { color: '#fff' },
     labelDanger: { color: '#fff', fontWeight: '700', fontSize: 14 },
     labelDisabled: { color: tk.textFaint, fontWeight: '700', fontSize: 15 },
   }),
@@ -30,6 +32,11 @@ type Props = {
   /** `inline` sits in a row of buttons; `block` spans the screen. */
   layout?: 'block' | 'inline';
   disabled?: boolean;
+  /**
+   * The button sits on a fixed dark surface (e.g. the record screen) that does
+   * not follow the theme, so the secondary label must stay light in both themes.
+   */
+  onDark?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -39,6 +46,7 @@ export default function Button({
   variant = 'primary',
   layout = 'block',
   disabled = false,
+  onDark = false,
   style,
 }: Props) {
   const { settings } = useSettings();
@@ -65,11 +73,20 @@ export default function Button({
         s.base,
         layout === 'inline' ? s.inline : s.block,
         disabled && variant === 'primary' ? s.primaryDisabled : surface,
+        onDark && variant === 'secondary' ? s.secondaryOnDark : null,
         disabled && variant !== 'primary' ? { borderColor: tk.divider, opacity: 0.6 } : null,
         style,
       ]}
     >
-      <AppText style={[label$, disabled ? s.labelDisabled : null]}>{label}</AppText>
+      <AppText
+        style={[
+          label$,
+          onDark && variant === 'secondary' ? s.labelOnDark : null,
+          disabled ? s.labelDisabled : null,
+        ]}
+      >
+        {label}
+      </AppText>
     </Pressable>
   );
 }

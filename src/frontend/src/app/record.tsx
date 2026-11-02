@@ -152,6 +152,7 @@ export default function RecordScreen() {
               <Button
                 label={t.record.typeInstead}
                 variant="secondary"
+                onDark
                 onPress={() => router.dismissTo('/new')}
               />
             </View>
