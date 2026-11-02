@@ -3,9 +3,9 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import AppText from '@/components/AppText';
 import {
-  IconHistory,
   IconHome,
   IconMic,
+  IconPhone,
   IconPlus,
   IconSettings,
 } from '@/components/icons';
@@ -65,12 +65,12 @@ export default function BottomNav() {
       </Pressable>
 
       <Pressable
-        onPress={() => router.navigate('/patterns')}
+        onPress={() => router.navigate('/emergency')}
         style={s.item}
         accessibilityRole="button"
       >
-        <IconHistory color={colorFor('/patterns')} />
-        <AppText style={[s.label, { color: colorFor('/patterns') }]}>{t.nav.history}</AppText>
+        <IconPhone color={colorFor('/emergency')} />
+        <AppText style={[s.label, { color: colorFor('/emergency') }]}>{t.nav.emergency}</AppText>
       </Pressable>
 
       <Pressable onPress={() => router.navigate('/new')} style={s.plus} accessibilityRole="button">

@@ -5,7 +5,6 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '@/components/AppText';
 import Screen from '@/components/Screen';
 import { AsyncBoundary } from '@/components/states';
-import { IconChevron, IconWarning } from '@/components/icons';
 import { DEMO_KPIS } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
@@ -38,26 +37,6 @@ const styles = themedStyles((tk) =>
     kpiCard: { flex: 1, backgroundColor: tk.card, borderRadius: 18, padding: 14, alignItems: 'center', ...cardShadow },
     kpiVal: { color: tk.textStrong, fontSize: 22, fontWeight: '700', letterSpacing: ls(22, -0.02) },
     kpiLabel: { color: tk.textMuted, fontSize: 11, marginTop: 2 },
-    promo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-      backgroundColor: tk.card,
-      borderRadius: 19,
-      padding: 14,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor: 'rgba(198,40,40,.25)',
-      ...cardShadow,
-    },
-    iconBoxAlert: {
-      width: 40,
-      height: 40,
-      borderRadius: 12,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    promoTitle: { color: tk.textStrong, fontWeight: '700', fontSize: 14 },
     distRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
     distLabel: { color: tk.textNormal, fontSize: 12.5, width: 86 },
     distCount: { color: tk.textStrong, fontSize: 13, fontWeight: '700', minWidth: 38, textAlign: 'right' },
@@ -149,22 +128,6 @@ export default function StartScreen() {
       </View>
 
       <View style={shared.screenPadNoTop}>
-        <Pressable onPress={() => router.push('/emergency')} style={s.promo}>
-          <View
-            style={[
-              s.iconBoxAlert,
-              { backgroundColor: settings.theme === 'dark' ? '#3a1a1a' : '#fdeaea' },
-            ]}
-          >
-            <IconWarning color="#b9770e" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText style={s.promoTitle}>{t.start.emergencyPromoTitle}</AppText>
-            <AppText style={shared.rowSubtitle}>{t.start.emergencyPromoSub}</AppText>
-          </View>
-          <IconChevron color={tk.textFaint} />
-        </Pressable>
-
         <View style={shared.card}>
           <View style={shared.rowBetween}>
             <AppText style={shared.sectionTitleInCard}>{t.start.distributionTitle}</AppText>
