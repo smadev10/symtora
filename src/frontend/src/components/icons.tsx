@@ -114,30 +114,11 @@ export function IconPhone({ size = 22, color = '#142939' }: IconProps) {
   );
 }
 
-export function IconLocation({ size = 22, color = '#142939' }: IconProps) {
-  return (
-    <Base size={size} color={color}>
-      <Path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-      <Circle cx="12" cy="10" r="3" />
-    </Base>
-  );
-}
-
 export function IconHome({ size = 22, color = '#142939' }: IconProps) {
   return (
     <Base size={size} color={color}>
       <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
       <Polyline points="9 22 9 12 15 12 15 22" />
-    </Base>
-  );
-}
-
-export function IconHistory({ size = 22, color = '#142939' }: IconProps) {
-  return (
-    <Base size={size} color={color}>
-      <Path d="M3 3v5h5" />
-      <Path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
-      <Polyline points="12 7 12 12 15 14" />
     </Base>
   );
 }

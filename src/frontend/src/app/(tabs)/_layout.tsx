@@ -5,9 +5,9 @@ import { useSession } from '@/state/session/Provider';
 import { useSettings } from '@/state/settings/Provider';
 
 /**
- * The screens that show the bottom nav. `emergency` and `assessment` are in
- * the group so they keep the bar visible; BottomNav draws its own fixed
- * buttons, so they never get one. Not `href: null`: since expo-router 58 a
+ * The screens that show the bottom nav. `assessment` is in the group so it
+ * keeps the bar visible; BottomNav draws its own fixed buttons, so it never
+ * gets one. Not `href: null`: since expo-router 58 a
  * hidden tab redirects to the first visible one as soon as it is focused.
  */
 export default function TabsLayout() {
@@ -20,7 +20,6 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }} tabBar={() => <BottomNav />}>
       <Tabs.Screen name="start" />
-      <Tabs.Screen name="patterns" />
       <Tabs.Screen name="new" />
       <Tabs.Screen name="data" />
       <Tabs.Screen name="emergency" />

@@ -115,7 +115,7 @@ describe('entry redirect', () => {
 
 describe('route guards', () => {
   it('keeps a signed-out visitor out of the tab screens', async () => {
-    const view = await open('/patterns');
+    const view = await open('/emergency');
 
     await expectVisible(view, TR.de.login.subtitle);
   });
@@ -129,7 +129,7 @@ describe('route guards', () => {
   it('sends a signed-in visitor without consent back to onboarding', async () => {
     await signIn();
 
-    const view = await open('/patterns');
+    const view = await open('/emergency');
 
     await expectVisible(view, TR.de.on.headline);
   });
@@ -165,9 +165,9 @@ describe('persisted settings survive a restart', () => {
     await signIn();
     await persistSettings({ consentAccepted: true, lang: 'fr' });
 
-    const view = await open('/patterns');
+    const view = await open('/emergency');
 
-    await expectVisible(view, TR.fr.patterns.title);
+    await expectVisible(view, TR.fr.emergency.warningTitle);
   });
 
   it('shows the restored user on the data screen', async () => {
