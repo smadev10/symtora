@@ -131,7 +131,6 @@ const fr: Translations = {
     failedBody: 'Ta description n’a pas pu être évaluée. Réessaie avec une nouvelle description.',
     failedCta: 'Nouvelle description',
     disclaimer: 'Ceci n’est pas un diagnostic médical. Consulte en cas d’aggravation ou de doute.',
-    correct: 'Corriger',
     save: 'Enregistrer',
   },
   emergency: {
