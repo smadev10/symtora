@@ -130,7 +130,6 @@ const en: Translations = {
     failedBody: 'Your description could not be assessed. Please try again with a new description.',
     failedCta: 'New description',
     disclaimer: 'This is not a medical diagnosis. Seek medical help if symptoms worsen or you’re unsure.',
-    correct: 'Correct',
     save: 'Save',
   },
   emergency: {

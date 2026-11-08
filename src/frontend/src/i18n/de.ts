@@ -131,7 +131,6 @@ const de = {
     failedCta: 'Neue Beschreibung',
     disclaimer:
       'Dies ist keine ärztliche Diagnose. Bei Verschlechterung oder Unsicherheit medizinische Hilfe beiziehen.',
-    correct: 'Korrigieren',
     save: 'Speichern',
   },
   emergency: {

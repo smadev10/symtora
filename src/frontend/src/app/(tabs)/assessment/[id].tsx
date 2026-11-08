@@ -24,10 +24,15 @@ const POLL_INTERVAL_MS = 2_000;
 /** After this the entry is shown as failed rather than spinning forever. */
 const POLL_LIMIT_MS = 180_000;
 
-const CAUSE_BORDER_COLORS = {
-  light: ['#142939', '#e08a2e', '#5aa7d8'],
-  dark: ['#b9dcf7', '#e0b060', '#6fcf97'],
-} as const;
+/**
+ * Cause border follows the cause's probability so it always agrees with its pill.
+ * Green is deliberately absent: on a medical screen it reads as "all clear".
+ */
+function causeBorder(prob: Probability, theme: 'light' | 'dark', tk: ThemeTokens) {
+  if (prob === 'high') return theme === 'dark' ? '#b9dcf7' : '#142939';
+  if (prob === 'mid') return theme === 'dark' ? '#e0b060' : '#e08a2e';
+  return tk.textMuted;
+}
 
 /**
  * Urgency tag on the navy card. It must never look reassuring when the advice is to
@@ -40,7 +45,7 @@ const URGENCY_PILL = {
 } as const;
 
 function probPill(prob: Probability, tk: ThemeTokens) {
-  if (prob === 'high') return { bg: '#c9ecd4', fg: '#227a44' };
+  if (prob === 'high') return { bg: '#dbe9f5', fg: '#142939' };
   if (prob === 'mid') return { bg: '#fbe3b8', fg: '#8a5a08' };
   return { bg: tk.inset, fg: tk.textMuted };
 }
@@ -96,7 +101,6 @@ const styles = themedStyles((tk) =>
       marginBottom: 18,
     },
     disclaimerText: { flex: 1, color: '#7a5d0a', fontSize: 12, lineHeight: lh(12, 1.5) },
-    twoButtonRow: { flexDirection: 'row', gap: 10 },
   }),
 );
 
@@ -207,7 +211,6 @@ export default function AssessmentScreen() {
   }
 
   const urgency = t.urgency[view.urgency];
-  const causeColors = CAUSE_BORDER_COLORS[settings.theme];
 
   return (
     <Screen padded>
@@ -236,7 +239,7 @@ export default function AssessmentScreen() {
                   style={[
                     s.causeBox,
                     {
-                      borderLeftColor: causeColors[i % 3],
+                      borderLeftColor: causeBorder(cause.prob, settings.theme, tk),
                       marginBottom: i < view.causes.length - 1 ? 8 : 0,
                     },
                   ]}
@@ -282,10 +285,7 @@ export default function AssessmentScreen() {
         <AppText style={s.disclaimerText}>{t.assess.disclaimer}</AppText>
       </View>
 
-      <View style={s.twoButtonRow}>
-        <Button label={t.assess.correct} variant="secondary" layout="inline" onPress={back} />
-        <Button label={t.assess.save} layout="inline" onPress={back} />
-      </View>
+      <Button label={t.assess.save} onPress={back} />
     </Screen>
   );
 }
