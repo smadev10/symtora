@@ -5,10 +5,10 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import AppText from '@/components/AppText';
 import Screen from '@/components/Screen';
 import { AsyncBoundary } from '@/components/states';
-import { DEMO_KPIS } from '@/data/cases';
 import { TR } from '@/i18n/translations';
 import { useEntries } from '@/state/entries/Provider';
 import { regionDistribution } from '@/state/entries/distribution';
+import { homeKpis } from '@/state/entries/kpis';
 import { assessmentsPerDay } from '@/state/entries/trend';
 import { useSession } from '@/state/session/Provider';
 import { useSettings } from '@/state/settings/Provider';
@@ -77,6 +77,7 @@ export default function StartScreen() {
         ? t.start.trendOne
         : t.start.trendMany.replace('{n}', String(trendTotal));
   const distribution = useMemo(() => regionDistribution(entries.items, new Date()), [entries.items]);
+  const kpis = useMemo(() => homeKpis(entries.items, new Date()), [entries.items]);
   // Bars are scaled to the largest share, so the leading region fills the track.
   const distMax = Math.max(1, ...distribution.map((row) => row.percent));
 
@@ -114,15 +115,15 @@ export default function StartScreen() {
 
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
-          <AppText style={s.kpiVal}>{DEMO_KPIS.entries}</AppText>
+          <AppText style={s.kpiVal}>{kpis.entries}</AppText>
           <AppText style={s.kpiLabel}>{t.start.kpiEntries}</AppText>
         </View>
         <View style={s.kpiCard}>
-          <AppText style={s.kpiVal}>{DEMO_KPIS.regions}</AppText>
+          <AppText style={s.kpiVal}>{kpis.regions}</AppText>
           <AppText style={s.kpiLabel}>{t.start.kpiRegions}</AppText>
         </View>
         <View style={s.kpiCard}>
-          <AppText style={s.kpiVal}>{DEMO_KPIS.emergencies}</AppText>
+          <AppText style={s.kpiVal}>{kpis.emergencies}</AppText>
           <AppText style={s.kpiLabel}>{t.start.kpiEmergencies}</AppText>
         </View>
       </View>
