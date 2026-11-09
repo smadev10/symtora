@@ -10,8 +10,11 @@ A symptom-triage app built as a Swiss *Vertiefungsarbeit* (capstone): an Expo cl
 a .NET API, and a self-hosted language model that never sends health text to a
 third party.
 
+**[🌐 Website & demo → symtora-website-67bd.vercel.app](https://symtora-website-67bd.vercel.app)**
+
 <br>
 
+[![Website](https://img.shields.io/badge/website-live-142939?logo=vercel&logoColor=white)](https://symtora-website-67bd.vercel.app)
 [![Status](https://img.shields.io/badge/status-prototype-f2a33c)](#project-status)
 [![Version](https://img.shields.io/badge/version-0.1.0--dev-4a8fd4)](src/frontend/app.json)
 [![Expo SDK](https://img.shields.io/badge/Expo_SDK-57-000020?logo=expo&logoColor=white)](https://docs.expo.dev/versions/v57.0.0/)
